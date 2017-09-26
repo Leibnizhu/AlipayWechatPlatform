@@ -1,0 +1,29 @@
+#mybatis.config-locations=classpath:mybatis/mybatis-config.xml
+
+server:
+  context-path: /airport
+
+#多数据源配置
+spring:
+  datasource:
+    mysql:
+      driverClassName: com.mysql.jdbc.Driver
+      password: turingdi
+      username: root
+      url: jdbc:mysql://192.168.1.235:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false
+      validationQuery: select 1 from dual
+      type: com.alibaba.druid.pool.DruidDataSource
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: true
+      # poolPreparedStatements在oracle中使用会提高数据库性能，mysql情况下最好是关闭的
+      poolPreparedStatements: false
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filters: stat,wall,slf4j
+
