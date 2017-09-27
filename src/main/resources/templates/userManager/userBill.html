@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>支付宝-微信管理平台</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content=""/>
+
+    <!-- ========== Css Files ========== -->
+    <link href="css/root.css" rel="stylesheet">
+
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+  </head>
+
+  <body>
+    <!-- Start Page Loading -->
+    <div class="loading">
+      <img src="img/loading.gif" alt="loading-img">
+    </div>
+    <!-- End Page Loading -->
+
+    <!-- START TOP -->
+    <div id="top" class="clearfix">
+      <!-- Start App Logo -->
+      <div class="applogo">
+          <a href="index.html" class="logo">支付宝-微信管理平台</a>
+      </div>
+      <!-- End App Logo -->
+
+      <!-- Start Sidebar Show Hide Button -->
+      <a href="#" class="sidebar-open-button">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="#" class="sidebar-open-button-mobile">
+        <i class="fa fa-bars"></i>
+      </a>
+      <!-- End Sidebar Show Hide Button -->
+
+      <!-- Start Sidepanel Show-Hide Button -->
+      <a href="#sidepanel" class="sidepanel-open-button">
+        <i class="fa fa-sign-out"></i>
+      </a>
+      <!-- End Sidepanel Show-Hide Button -->
+
+      <!-- Start Top Right -->
+      <ul class="top-right">
+        <li class="dropdown link">
+          <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
+            <img src="img/profileimg.png" alt="img">
+            <b>管理员</b>
+            <span class="caret"></span>
+          </a>
+        </li>
+      </ul>
+      <!-- End Top Right -->
+    </div>
+    <!-- END TOP -->
+
+    <!-- START SIDEBAR -->
+    <div class="sidebar sidebar-colorful clearfix">
+      <ul class="sidebar-panel nav">
+        <li>
+          <a href="admin.html">
+            <span class="icon color5">
+              <i class="fa fa-home"></i>
+            </span>
+            客户管理中心
+          </a>
+        </li>
+        <li>
+          <a href="admin-user.html">
+            <span class="icon color3">
+              <i class="fa fa-home"></i>
+            </span>
+            新增客户
+          </a>
+        </li>
+        <li>
+          <a href="admin-bill.html">
+            <span class="icon color4">
+              <i class="fa fa-envelope-o"></i>
+            </span>
+            对账单
+          </a>
+        </li>
+      </ul>
+    </div>
+    <!-- END SIDEBAR -->
+
+    <!-- START CONTENT -->
+    <div class="content">
+      <!-- Start Page Header -->
+      <div class="page-header">
+        <h1 class="title">客户管理中心</h1>
+        <ol class="breadcrumb">
+          <li class="active">客户管理中心</li>
+        </ol>
+      </div>
+      <!-- End Page Header -->
+
+      <!-- START CONTAINER -->
+      <div class="container-padding">
+        <!-- Start Row -->
+        <div class="row">
+          <!-- Start Panel -->
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="pull-right"></div>
+              <div class="panel-title">
+                <div class="pull-right padding-t-10 padding-r-15">
+                  <select class="form-control">
+                    <option>2017年3月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                    <option>2017年4月</option>
+                  </select>
+                </div>
+                <h4>对账单</h4>
+              </div>
+
+              <div class="panel-body table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr class="text-center">
+                      <td>客户名称</td>
+                      <td>费用</td>
+                      <td>返点</td>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr class="text-center">
+                      <td>李大钊</td>
+                      <td>123.00</td>
+                      <td>1230</td>
+                    </tr>
+                    <tr class="text-center">
+                      <td>李大23钊</td>
+                      <td>123.00</td>
+                      <td>230</td>
+                    </tr>
+                    <tr class="text-center">
+                      <td>李大12钊</td>
+                      <td>123.00</td>
+                      <td>30</td>
+                    </tr>
+                    <tr class="text-center">
+                      <td>李大钊</td>
+                      <td>123.00</td>
+                      <td>1230</td>
+                    </tr>
+                    <tr class="text-center">
+                      <td>李大钊</td>
+                      <td>123.00</td>
+                      <td>230</td>
+                    </tr>
+                    <tr class="text-center">
+                      <td>李大钊</td>
+                      <td>123.00</td>
+                      <td>30</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- End Panel -->
+        </div>
+        <!-- End Row -->
+      </div>
+      <!-- END CONTAINER -->
+
+      <!-- Start Footer -->
+      <div class="row footer">
+        <div class="col-md-12 text-c">广州图灵科技有限公司</div>
+      </div>
+      <!-- End Footer -->
+    </div>
+    <!-- End Content -->
+
+    <!-- ================================================
+    jQuery Library
+    ================================================ -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+
+    <!-- ================================================
+    Bootstrap Core JavaScript File
+    ================================================ -->
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+
+    <!-- ================================================
+    Plugin.js - Some Specific JS codes for Plugin Settings
+    ================================================ -->
+    <script type="text/javascript" src="js/plugins.js"></script>
+  </body>
+</html>

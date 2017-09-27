@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!-- 用户编辑模态框开始 -->
+<div  th:fragment="menuPermissionModalFragment">
+<div class="modal fade" id="menuPermissionModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true"   >
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">权限</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- 页面内容开始 -->
+
+                    <div class="col-md-12 col-sm-12">
+                        <!-- 新建角色窗口 -->
+                        <div class="container-fluid">
+                            <div class="row-fluid">
+                                <div class="col-xs-12">
+                                    <form id="form_menuPermission" class="form-horizontal">
+                                        <fieldset>
+                                            <div class="form-group">
+                                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+                                                    <ul class="ztree" style="height:300px;border:1px solid #ccc; overflow:auto;"></ul>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+                                                <button class="btn btn-primary" type="submit">
+                                                    <i class="fa fa-save"></i> 修改
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 页面内容结束 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- 优惠券模态框结束 -->

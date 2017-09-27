@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Kode is a Premium Bootstrap Admin Template, It's responsive, clean coded and mobile friendly">
+    <meta name="keywords" content="bootstrap, admin, dashboard, flat admin template, responsive," />
+    <meta th:replace="common/commonJs::js"/>
+    <title>支付宝-微信管理平台</title>
+
+    <!-- ========== Css Files ========== -->
+    <link href="../static/css/root.css" rel="stylesheet" th:href="@{/css/root.css}">
+    <style type="text/css">
+        body{background: #F5F5F5;}
+    </style>
+    <script type="text/javascript" src="../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" src="../static/js/jquery.validate.js" th:src="@{/js/jquery.validate.js}"></script>
+    <script type="text/javascript" src="../static/js/bootstrap/bootstrap.min.js" th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+    <script type="text/javascript" src="../static/js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+    <script type="text/javascript" src="../static/js/jquery.md5.js" th:src="@{/js/jquery.md5.js}"></script>
+</head>
+<body onkeydown="keyLogin();">
+
+<div class="login-form">
+    <form id="signupForm" action="" >
+        <div class="top">
+            <h1 class="padding-t-15">支付宝-微信管理平台</h1>
+        </div>
+        <div class="form-area">
+            <div class="group">
+                <input type="text" class="form-control" placeholder="您的帐号" id="username" name="username">
+                <i class="fa fa-user"></i>
+            </div>
+            <div class="group">
+                <input type="password" class="form-control" placeholder="您的密码" id="password" name="password">
+                <i class="fa fa-key"></i>
+            </div>
+            <div id="tips"></div>
+            <!--<div class="checkbox checkbox-primary">
+                <input id="checkbox101" type="checkbox" checked>
+                <label for="checkbox101">记住我</label>
+            </div>-->
+            <button type="submit" class="btn btn-default btn-block">登录</button>
+            <p style="text-align: center">还没注册吧，赶紧<a th:href="@{/user/showRegister}" style="color: #337ab7;text-decoration: underline; ">注册</a>一个！</p>
+        </div>
+    </form>
+    <br>
+</div>
+
+<script type="text/javascript">
+    var requestPath;
+    var skipPath;
+    $.validator.setDefaults({
+        submitHandler: function() {
+            $.ajax({
+                type : "post",  //提交方式
+                url : requestPath,
+                data :{
+                    username : $('#username').val(),
+                    password : $.md5($('#password').val())
+                },
+                dataType :"text",
+                success : function(result) {//返回数据根据结果进行相应的处理
+                    if(result == "success") {
+                        window.location.href = skipPath;s
+                    } else if (result == "StatusWrong"){
+                        var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>该用户已欠费停用，请联系管理员</div>";
+                        $('#tips').html(tips);
+                    } else if (result == "fill"){
+                        window.location.href = '[[@{/camAnalysis/show}]]';
+                    }else{
+                        var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";
+                        $('#tips').html(tips);
+                    }
+
+                }
+            });
+        }
+
+    });
+    $().ready(function() {
+        /*$(submit).bind('keyup', function(event) {
+            if (event.keyCode == "13") {
+                //回车执行查询
+                $(submit).click();
+            }
+        });*/
+//        $.cookie('TURING_CAMPAIGN_ID', null, {path:"/"});
+//        alert(window.sessionStorage.getItem("turinguser"));
+        var url = location.href.split("#")[0];
+
+        if (url.indexOf('/user/showLogin') == -1 && url.indexOf('/user/logout') == -1){
+            requestPath = location.href.split('#')[0] + 'user/login';
+            skipPath = location.href.split('#')[0] + 'wechatNumber/editWechatNumber';
+            $.ajax({
+                type : "get",  //提交方式
+                url : location.href.split('#')[0] + 'user/judge',
+                dataType :"text",
+                success : function(result) {//返回数据根据结果进行相应的处理
+                    if (result == "success"){
+                        window.location.href=location.href.split('#')[0] + 'wechatNumber/editWechatNumber';
+                    }
+                }
+            });
+        }else{
+            requestPath = '[[@{/user/login}]]';
+            skipPath = '[[@{/wechatNumber/editWechatNumber}]]';
+        }
+
+
+        // 在键盘按下并释放及提交后验证提交表单
+        $("#signupForm").validate({
+            rules: {
+                username: {
+                    required: true,
+                    minlength: 2
+                },
+                password: {
+                    required: true,
+                    minlength: 5
+                }
+            },
+            messages: {
+                username: {
+                    required: "请输入用户名",
+                    minlength: "用户名必需由两个字母组成"
+                },
+                password: {
+                    required: "请输入密码",
+                    minlength: "密码长度不能小于 5 个字母"
+                }
+            }
+        });
+    });
+    function keyLogin(){
+        if (event.keyCode==13){ //回车键的键值为13
+            $("#signupForm").submit(); //调用登录按钮的登录事件
+        }
+    }
+</script>
+</body>
+
+</html>

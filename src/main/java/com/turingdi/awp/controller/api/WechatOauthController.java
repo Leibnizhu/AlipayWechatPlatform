@@ -1,8 +1,8 @@
-package com.turingdi.awp.controller;
+package com.turingdi.awp.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.turingdi.awp.entity.WxAccount;
-import com.turingdi.awp.service.WxAccountService;
+import com.turingdi.awp.entity.Account;
+import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.util.Constants;
 import com.turingdi.awp.util.NetworkUtils;
 import com.turingdi.awp.util.TuringBase64Util;
@@ -30,11 +30,11 @@ import static com.turingdi.awp.util.Constants.*;
 @RequestMapping("wxOauth")
 public class WechatOauthController {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private WxAccountService wxAccServ;
+    private AccountService wxAccServ;
     private Constants constants;
 
     @Autowired
-    public WechatOauthController(WxAccountService wxAccServ, Constants constants) {
+    public WechatOauthController(AccountService wxAccServ, Constants constants) {
         this.wxAccServ = wxAccServ;
         this.constants = constants;
     }
@@ -46,7 +46,7 @@ public class WechatOauthController {
 
     @RequestMapping("apply/{eid}/{type}/{callback}")
     public String applyForOauth(@PathVariable int eid, @PathVariable int type, @PathVariable String callback) throws UnsupportedEncodingException {
-        WxAccount account = wxAccServ.getById(eid);
+        Account account = wxAccServ.getById(eid);
         String redirectAfterUrl = constants.PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
         String returnUrl = String.format(
                 (type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)
@@ -59,7 +59,7 @@ public class WechatOauthController {
         try {
             log.debug("code={},RemoteAddr={},RemoteHost={}", code, request.getRemoteAddr(), request.getRemoteHost());
             assert code != null;
-            WxAccount account = wxAccServ.getById(eid);
+            Account account = wxAccServ.getById(eid);
             String openIdUrl = String.format(OPENID_API, account.getAppid(), account.getAppsecret(), code);
             JSONObject openIdJson = JSONObject.parseObject(NetworkUtils.postRequestWithData(openIdUrl, null, null));
             log.debug("授权返回的json数据：{}", openIdJson);
@@ -86,7 +86,7 @@ public class WechatOauthController {
         try {
             log.debug("code={},远程地址={},远程域名={}", code, request.getRemoteAddr(), request.getRemoteHost());
             assert code != null;
-            WxAccount account = wxAccServ.getById(eid);
+            Account account = wxAccServ.getById(eid);
             String openIdUrl = String.format(OPENID_API, account.getAppid(), account.getAppsecret(), code);
             JSONObject openIdJson = JSONObject.parseObject(NetworkUtils.postRequestWithData(openIdUrl, null, null));
             log.debug("授权返回的json数据：{}", openIdJson);

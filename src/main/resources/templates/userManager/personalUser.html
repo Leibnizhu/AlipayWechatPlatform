@@ -1,0 +1,172 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta th:replace="common/commonJs::js"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="Kode is a Premium Bootstrap Admin Template, It's responsive, clean coded and mobile friendly">
+    <meta name="keywords" content="bootstrap, admin, dashboard, flat admin template, responsive,"/>
+    <title>用户管理</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/root.css" th:href="@{/css/root.css}">
+    <!-- Data Tables 表格插件-->
+    <script type="text/javascript" src="../../static/js/datatables/datatables.min.js"
+            th:src="@{/js/datatables/datatables.min.js}"></script>
+    <script type="text/javascript" src="././js/jquery.md5.js" th:src="@{/js/jquery.md5.js}"></script>
+    <!-- validate.js - 表格验证 -->
+    <script type="text/javascript" src="../../static/js/jquery.validate.js" th:src="@{/js/jquery.validate.js}"></script>
+    <!-- Developer Defined -->
+    <script type="text/javascript" src="../../static/turing/userManager/personalUser.js"
+            th:src="@{/turing/userManager/personalUser.js}"></script>
+
+    <style type="text/css">
+        span.required {
+            color: red;
+        }
+
+        label.error {
+            color: #ef4836;
+        }
+
+        span.required {
+            color: #ef4836;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="menu::menu"></div>
+<!-- //////////////////////////////////////////////////////////////////////////// -->
+<!-- START CONTENT -->
+<div class="content">
+
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <h1 class="title">系统管理</h1>
+        <ol class="breadcrumb">
+            <li class="active">个人信息</li>
+        </ol>
+    </div>
+    <!-- End Page Header -->
+
+    <!-- //////////////////////////////////////////////////////////////////////////// -->
+    <!-- START CONTAINER -->
+    <div class="container-padding">
+        <!-- Start Row -->
+        <div class="row">
+            <!-- Start Panel -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="pull-right">
+                    </div>
+
+                    <div class="panel-title">
+                        <h4>个人信息</h4>
+                    </div>
+
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="personalForm">
+                            <div class="col-md-20">
+                                <div class="form-group">
+                                    <label for="email" class="col-sm-4 control-label">登录邮箱<span
+                                            class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="email" placeholder="" name="email"
+                                               readonly="readonly">
+                                        <!-- readonly="readonly" -->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-4 control-label">企业名称<span
+                                            class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="name" name="name"
+                                               placeholder="企业名称">
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="oldPassword" class="col-sm-4 control-label">原密码<span
+                                            class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <input type="password" class="form-control" id="oldPassword" placeholder=""
+                                               name="password">
+                                        <!-- readonly="readonly" -->
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword" class="col-sm-4 control-label">新密码<span
+                                            class="required"></span></label>
+                                    <div class="col-sm-4">
+                                        <input type="password" class="form-control" id="newPassword" placeholder=""
+                                               name="newPassword">
+                                        <!-- readonly="readonly" -->
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPasswords" class="col-sm-4 control-label">重复密码<span
+                                            class="required"></span></label>
+                                    <div class="col-sm-4">
+                                        <input type="password" class="form-control" id="newPasswords" placeholder=""
+                                               name="newPasswords">
+                                        <!-- readonly="readonly" -->
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="mobile" class="col-sm-4 control-label">手机号</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="mobile" msgId="mobileMsg"
+                                               placeholder="" name="mobile"><label id="mobileMsg"></label>
+                                    </div>
+                                </div>
+                                <!--<div class="form-group">
+                                    <label for="phone" class="col-sm-4 control-label">固定电话</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="phone"
+                                               placeholder="" msgId="phoneMsg"
+                                               name="phone"><label id="phoneMsg"></label>
+                                    </div>
+                                </div>-->
+                                <!--<div class="form-group">
+                                    <label for="website" class="col-sm-4 control-label">网址</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="website" placeholder="以http或https开头"
+                                               msgId="websiteMsg"
+                                               name="website"><label id="websiteMsg"></label>
+                                    </div>
+                                </div>-->
+                                <!--<div class="form-group">
+                                    <label for="industry" class="col-sm-4 control-label">行业<span class="required">*</span></label>
+                                    <div class="col-sm-4">
+                                        <select id="industry" name="industry" class="form-control"></select>
+                                    </div>
+                                </div>-->
+                                <input type="hidden" name="id" id="id" th:value="${session.turinguser.id}">
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center"
+                                         style="padding-right:40px">
+
+                                        <button class="btn  btn-success" type="submit">
+                                            <i class="fa fa-save"></i> 提交
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Panel -->
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- END CONTAINER -->
+    <!-- //////////////////////////////////////////////////////////////////////////// -->
+</div>
+<!-- End Content -->
+<div th:replace="footer::foot"></div>
+</body>
+</html>

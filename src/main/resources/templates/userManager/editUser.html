@@ -1,0 +1,144 @@
+<meta charset="utf-8" pageEncoding="utf-8"/>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 用户编辑模态框开始 -->
+<div th:fragment="editUserFragment">
+    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">客户信息</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- 页面内容开始 -->
+                        <div class="col-md-12 col-sm-12">
+                            <form class="form-horizontal"  id="enterpriseForm">
+                                <input type="hidden" name="id" id="id">
+                                <div class="form-group">
+                                    <div style="height: 61px; display: inline">
+                                        <label for="email" class="col-sm-2 control-label">
+                                            登录邮箱
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="email" placeholder="登录邮箱" name="email">
+                                            <!-- readonly="readonly" -->
+                                        </div>
+                                    </div>
+
+                                    <div style="height: 61px; display: inherit">
+                                        <label for="mobile" class="col-sm-2 control-label">
+                                            手机
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="mobile" msgId="mobileMsg" placeholder="手机号码" name="mobile">
+                                            <label id="mobileMsg"></label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div style="height: 61px; display: inline">
+                                        <label for="name" class="col-sm-2 control-label">
+                                            客户名称
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="客户名称">
+                                        </div>
+                                    </div>
+
+                                    <div style="height: 61px; display: inherit">
+                                        <label for="roleOpt" class="col-sm-2 control-label">
+                                            角色
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <select id="roleOpt" name="role" class="form-control" >
+                                                <option value="1" th:if="${session.turinguser.role == 0}">主帐号</option>
+                                                <option value="2" th:if="${session.turinguser.role == 0}">子帐号</option>
+                                                <option value="2" th:if="${session.turinguser.role == 1}">子帐号</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div style="height: 61px; display: inline">
+                                        <label for="password" class="col-sm-2 control-label">
+                                            登录密码
+                                            <span class="required flag">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="登录密码">
+                                        </div>
+                                    </div>
+
+                                    <div style="height: 61px; display: inherit">
+                                        <label for="industry" class="col-sm-2 control-label">
+                                            行业
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <select id="industry" name="industry" class="form-control"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div style="height: 61px; display: inline">
+                                        <label for="confirmPassword" class="col-sm-2 control-label">
+                                            重复密码
+                                            <span class="required flag">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="重复密码">
+                                        </div>
+                                    </div>
+
+                                    <div id="depositDiv" style="height: 61px; display: inherit">
+                                        <label id="depLab" for="deposit" class="col-sm-2 control-label">
+                                            保证金
+                                            <span id="depFlag" class="required">*</span>
+                                        </label>
+                                        <div id="depDiv" class="col-sm-4">
+                                            <input type="number" class="form-control" id="deposit" name="deposit" placeholder="保证金,单位为元">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="oldDiv" class="form-group" style="display: none">
+                                    <div style="height: 61px;">
+                                        <label for="oldPassword" class="col-sm-2 control-label">
+                                            旧密码
+                                            <span class="required flag">*</span>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="oldPassword" name="oldPassword" placeholder="旧密码">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-4 col-sm-10">
+                                        <button id="submitButton" type="submit" class="btn btn-success"style="width:150px;">提交</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- 页面内容结束 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 优惠券模态框结束 -->

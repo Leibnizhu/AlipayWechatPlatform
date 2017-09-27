@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="page">
+    <div class="pagination-div">
+        <input type="hidden" id="_id_pageNum" name="pageNum" value="${pagination.pageNum}"/>
+        <a th:if="${pagination.firstPage}" href="javascript:void(0);" disabled="disabled" class="disable-a" style="cursor: default;">首 页</a>
+        <a th:unless="${pagination.firstPage}" href="javascript:void(0);" onclick="_queryPage('1')">首 页</a>
+        <a th:if="${pagination.firstPage}" href="javascript:void(0);" disabled="disabled" class="disable-a" style="cursor: default;">上一页</a>
+        <a th:unless="${pagination.firstPage}" href="javascript:void(0);" onclick="_queryPage(PageNum - 1);">上一页</a>
+        <span th:text="'第 '+ ${pagination.pageNum}+'/'+${pagination.totalPageCount}+' 页'">第1/1页</span>
+
+        <a th:if="${pagination.lastPage}" href="javascript:void(0);" disabled="disabled" class="disable-a" style="cursor: default;">下一页</a>
+        <a th:unless="${pagination.lastPage}" href="javascript:void(0);" onclick="_queryPage(PageNum + 1);">下一页</a>
+        <a th:if="${pagination.lastPage}" href="javascript:void(0);" disabled="disabled" class="disable-a" style="cursor: default;">尾 页</a>
+        <a th:unless="${pagination.lastPage}" href="javascript:void(0);" onclick="_queryPage(TotalPageCount);">尾 页</a>
+        <span style="float:right;" th:text="'共 '+${pagination.totalItemsCount}+' 条记录'">共 1 条记录</span>
+    </div>
+
+    <script type="text/javascript">
+        PageNum = [[${pagination.pageNum}]];
+        TotalPageCount = [[${pagination.totalPageCount}]];
+        function _queryPage(pageNum) {
+            if (pageNum == undefined) pageNum = 1;
+            document.getElementById('_id_pageNum').value = pageNum;
+            document.getElementById('queryPageForm').submit();
+        }
+    </script>
+</div>
+</body>
+</html>

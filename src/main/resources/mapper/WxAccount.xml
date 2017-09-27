@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.turingdi.awp.dao.WxAccountDao">
-	<resultMap id="TWxcmsAccount" type="com.turingdi.awp.entity.WxAccount">
+<mapper namespace="com.turingdi.awp.dao.AccountDao">
+	<resultMap id="TWxcmsAccount" type="com.turingdi.awp.entity.Account">
 		<id property="id" column="id" jdbcType="INTEGER" />
 		<result property="name" column="name" jdbcType="VARCHAR" />
 		<result property="account" column="account" jdbcType="VARCHAR" />
@@ -9,13 +9,7 @@
 		<result property="appsecret" column="appsecret" jdbcType="VARCHAR" />
 		<result property="url" column="url" jdbcType="VARCHAR" />
 		<result property="token" column="token" jdbcType="VARCHAR" />
-		<result property="msgCount" column="msgCount" jdbcType="VARCHAR" />
 		<result property="createTime" column="createTime" jdbcType="DATE" />
-		<result property="type" column="type" jdbcType="VARCHAR" />
-		<result property="encodingAESKey" column="EncodingAESKey" jdbcType="VARCHAR" />
-		<result property="wxAccount" column="wxAccount" jdbcType="VARCHAR" />
-		<result property="msgDomain" column="msgDomain" jdbcType="VARCHAR" />
-		<result property="siteid" column="siteid" jdbcType="INTEGER" />
 		<result property="mchUrl" column="mchUrl" jdbcType="VARCHAR" />
 		<result property="mchKey" column="mchKey" jdbcType="VARCHAR" />
 		<result property="mchId" column="mchId" jdbcType="VARCHAR" />

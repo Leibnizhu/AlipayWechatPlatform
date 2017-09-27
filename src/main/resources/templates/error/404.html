@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>error</title>
+    <style>
+        span{
+            font-size: 25px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>error-页面不存在，请联系后台管理员</h1>
+<br></br>
+<span>status:<span style="color: red" th:text="${status}"></span></span>
+<br></br>
+<span>path:<span  th:text="${path}"></span></span>
+</body>
+</html>
