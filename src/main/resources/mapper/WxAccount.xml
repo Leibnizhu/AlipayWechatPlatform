@@ -120,7 +120,7 @@
 	</select>
 
 	<!-- 根据id从微信公众号表中获取公众号数据 -->
-	<select id="getById" parameterType="java.lang.String" resultMap="TWxcmsAccount">
+	<select id="getById" parameterType="java.lang.Integer" resultMap="TWxcmsAccount">
 		SELECT * FROM t_wxcms_account WHERE ID = #{id}
 	</select>
 

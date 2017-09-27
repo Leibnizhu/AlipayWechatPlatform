@@ -5,6 +5,7 @@ import com.turingdi.awp.entity.WxAccount;
 import com.turingdi.awp.service.WxAccountService;
 import com.turingdi.awp.util.Constants;
 import com.turingdi.awp.util.NetworkUtils;
+import com.turingdi.awp.util.TuringBase64Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,13 @@ import static com.turingdi.awp.util.Constants.*;
 @RequestMapping("wxOauth")
 public class WechatOauthController {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private final WxAccountService wxAccServ;
+    private WxAccountService wxAccServ;
+    private Constants constants;
 
     @Autowired
-    public WechatOauthController(WxAccountService wxAccServ) {
+    public WechatOauthController(WxAccountService wxAccServ, Constants constants) {
         this.wxAccServ = wxAccServ;
+        this.constants = constants;
     }
 
     /**
@@ -41,10 +44,10 @@ public class WechatOauthController {
      */
     private static final String[] REMOVE_PARAMS = {"appid", "appsecret", "eid"};
 
-    @RequestMapping("apply/{eid}/{type}")
-    public String applyForOauth(@PathVariable int eid, @PathVariable int type, String callback) throws UnsupportedEncodingException {
+    @RequestMapping("apply/{eid}/{type}/{callback}")
+    public String applyForOauth(@PathVariable int eid, @PathVariable int type, @PathVariable String callback) throws UnsupportedEncodingException {
         WxAccount account = wxAccServ.getById(eid);
-        String redirectAfterUrl = Constants.PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
+        String redirectAfterUrl = constants.PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
         String returnUrl = String.format(
                 (type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)
                 , account.getAppid(), URLEncoder.encode(redirectAfterUrl, "UTF-8"));
@@ -69,7 +72,7 @@ public class WechatOauthController {
                 }
             } else if (openIdJson.containsKey("errcode")) {
                 //有错误
-                return "redirect:" + PROJ_URL + "templates/error.html?st=8&errmsg=" + openIdJson.getString("errmsg");
+                return "redirect:" + constants.PROJ_URL + "templates/error.html?st=8&errmsg=" + openIdJson.getString("errmsg");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,8 +105,9 @@ public class WechatOauthController {
                 String visitUrl = getRedirectAddr(request, REMOVE_PARAMS);
                 if (visitUrl.length() > 0) {
                     if (null != userInfoJson) {
+                        visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
                         log.debug("当前授权的用户信息:{}", userInfoJson.toString());
-                        return "redirect:" + visitUrl + (visitUrl.contains("?") ? "&userinfo=" : "?userinfo=") + userInfoJson.toString();
+                        return "redirect:" + visitUrl + (visitUrl.contains("?") ? "&userinfo=" : "?userinfo=") + TuringBase64Util.encode(userInfoJson.toString());
                     } else {
                         return "redirect:" + visitUrl;
                     }

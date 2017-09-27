@@ -2,6 +2,7 @@
 
 server:
   context-path: /airport
+  port: 8083
 
 #多数据源配置
 spring:
@@ -10,7 +11,8 @@ spring:
       driverClassName: com.mysql.jdbc.Driver
       password: turingdi
       username: root
-      url: jdbc:mysql://192.168.1.235:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false
+#      url: jdbc:mysql://192.168.1.235:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false
+      url: jdbc:mysql://127.0.0.1:3306/shop?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false
       validationQuery: select 1 from dual
       type: com.alibaba.druid.pool.DruidDataSource
       initialSize: 5

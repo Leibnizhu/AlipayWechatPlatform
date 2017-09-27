@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Constants {
     @Value("${PROJECT_URL}")
-    public static String PROJ_URL;
+    public String PROJ_URL;
 
     /**
      * 微信公众号授权URL，scope=snsapi_userinfo，可用于获取用户信息
