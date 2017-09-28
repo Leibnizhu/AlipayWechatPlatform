@@ -12,6 +12,9 @@ public class Constants {
     @Value("${PROJECT_URL}")
     public String PROJ_URL;
 
+    @Value("${weixin.CERT_DIR}")
+    public String CERT_DIR;
+
     /**
      * 微信公众号授权URL，scope=snsapi_userinfo，可用于获取用户信息
      */

@@ -1,11 +1,11 @@
 package com.turingdi.awp.controller.api;
 
-import com.alibaba.fastjson.JSONObject;
 import com.turingdi.awp.entity.Account;
 import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.util.Constants;
 import com.turingdi.awp.util.NetworkUtils;
 import com.turingdi.awp.util.TuringBase64Util;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class WechatOauthController {
             assert code != null;
             Account account = wxAccServ.getById(eid);
             String openIdUrl = String.format(OPENID_API, account.getAppid(), account.getAppsecret(), code);
-            JSONObject openIdJson = JSONObject.parseObject(NetworkUtils.postRequestWithData(openIdUrl, null, null));
+            JSONObject openIdJson = JSONObject.fromObject(NetworkUtils.postRequestWithData(openIdUrl, null, null));
             log.debug("授权返回的json数据：{}", openIdJson);
             //重定向到原访问URL
             if (openIdJson.containsKey("openid")) {
@@ -88,7 +88,7 @@ public class WechatOauthController {
             assert code != null;
             Account account = wxAccServ.getById(eid);
             String openIdUrl = String.format(OPENID_API, account.getAppid(), account.getAppsecret(), code);
-            JSONObject openIdJson = JSONObject.parseObject(NetworkUtils.postRequestWithData(openIdUrl, null, null));
+            JSONObject openIdJson = JSONObject.fromObject(NetworkUtils.postRequestWithData(openIdUrl, null, null));
             log.debug("授权返回的json数据：{}", openIdJson);
             if (openIdJson.containsKey("openid")) {
                 String openId = openIdJson.getString("openid");
@@ -96,7 +96,7 @@ public class WechatOauthController {
                 try {
                     String userinfo_url = String.format(USERINFO_API, openIdJson.getString("access_token"), openId);
                     String strJson = NetworkUtils.postRequestWithData(userinfo_url, null, null);
-                    userInfoJson = JSONObject.parseObject(strJson);
+                    userInfoJson = JSONObject.fromObject(strJson);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

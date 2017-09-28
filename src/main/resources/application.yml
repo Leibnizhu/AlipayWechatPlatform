@@ -2,7 +2,7 @@
 
 server:
   context-path: /airport
-  port: 8080
+  port: 8083
 
 #多数据源配置
 spring:

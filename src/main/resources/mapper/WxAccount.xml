@@ -47,21 +47,9 @@
 			<if test="token != null and token != ''" >
 	        	 token = #{token},
 	      	</if>	      	
-			<if test="msgCount != null and msgCount != ''" >
-	        	 msgCount = #{msgCount},
-	      	</if>	      		      	 
 	      	<if test="createTime != null" >
 	        	 createTime = #{createTime},
 	      	</if>	
-	      	<if test="type != null and type != ''" >
-	        	 type = #{type},
-	      	</if>	
-	      	<if test="encodingAESKey != null and encodingAESKey != ''" >
-	        	 EncodingAESKey = #{encodingAESKey},
-	      	</if>
-	      	<if test="wxAccount != null and wxAccount != ''" >
-	        	 wxAccount = #{wxAccount},
-	      	</if>
 		</trim>
 		where id =#{id}
 	</update>
