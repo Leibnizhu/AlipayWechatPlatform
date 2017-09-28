@@ -1,6 +1,10 @@
 # Alipay-Wechat-Platform
 ## 命名
 原来命名是Wechat-Alipay-Platform，但这样缩写WAP、可能引起歧义，所以改成Alipay-Wechat-Platform，缩写AWP（还是有歧义，但至少不是一个领域的）。
+## 意义
+本项目旨在减少Web项目关于微信、支付宝的重复代码，以及解决公众号的安全域名只能配置一个的问题。  
+未来还可以托管Access Token。
+本项目部署后，将公众号安全域名配置到本项目的域名，此后多个web项目（不同域名）可以使用同一个公众号~~（理论上）~~。  
 
 ## API
 ### 微信授权
