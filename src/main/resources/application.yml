@@ -1,7 +1,7 @@
 #mybatis.config-locations=classpath:mybatis/mybatis-config.xml
 
 server:
-  context-path: /airport
+  context-path: /awp
   port: 8083
 
 #多数据源配置

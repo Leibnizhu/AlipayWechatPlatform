@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.turingdi.awp.util.Constants.*;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author Leibniz.Hu
@@ -44,8 +45,31 @@ public class WechatOauthController {
      */
     private static final String[] REMOVE_PARAMS = {"appid", "appsecret", "eid"};
 
-    @RequestMapping("apply/{eid}/{type}/{callback}")
-    public String applyForOauth(@PathVariable int eid, @PathVariable int type, @PathVariable String callback) throws UnsupportedEncodingException {
+    /**
+     * 申请微信授权
+     * /awp/wxOauth/apply/{body}
+     * web服务需要授权时，向用户发送重定向，重定向到当前接口
+     * 参数只有一个，内容为JSON，请用http://localhost:8083/awp/base64.html进行加密
+     * {
+     *     "eid":web项目使用的公众号在本项目中的用户ID
+     *     "type":0=静默授权，只能获取OpenID，1=正常授权，会弹出授权确认页面，可以获取到用户信息
+     *     "callback":授权成功后调用的web项目回调接口地址,请使用完整地址,
+     *                  回调时会使用GET方法，加上rs参数，
+     *                  如果静默授权，rs参数内容就是openid
+     *                  如果正常授权，rs参数内容是turingBase64加密的授权结果(JSON)
+     * }
+     *
+     * @param body json格式的请求数据,用TURINGBase64进行编码
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    @RequestMapping(value = "apply/{body}", method = GET)
+    public String applyForOauth(@PathVariable String body) throws UnsupportedEncodingException {
+        body = TuringBase64Util.decode(body);
+        JSONObject reqJson = JSONObject.fromObject(body);
+        int eid = reqJson.getInt("eid");
+        int type = reqJson.getInt("type");
+        String callback = TuringBase64Util.encode(reqJson.getString("callback"));
         Account account = wxAccServ.getById(eid);
         String redirectAfterUrl = constants.PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
         String returnUrl = String.format(
@@ -68,7 +92,7 @@ public class WechatOauthController {
                 String openId = openIdJson.getString("openid");
                 String visitUrl = getRedirectAddr(request, REMOVE_PARAMS);
                 if (visitUrl.length() > 0) {
-                    return "redirect:" + visitUrl + (visitUrl.contains("?") ? "&openid=" : "?openid=") + openId;
+                    return "redirect:" + visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + openId;
                 }
             } else if (openIdJson.containsKey("errcode")) {
                 //有错误
@@ -107,7 +131,7 @@ public class WechatOauthController {
                     if (null != userInfoJson) {
                         visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
                         log.debug("当前授权的用户信息:{}", userInfoJson.toString());
-                        return "redirect:" + visitUrl + (visitUrl.contains("?") ? "&userinfo=" : "?userinfo=") + TuringBase64Util.encode(userInfoJson.toString());
+                        return "redirect:" + visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(userInfoJson.toString());
                     } else {
                         return "redirect:" + visitUrl;
                     }
