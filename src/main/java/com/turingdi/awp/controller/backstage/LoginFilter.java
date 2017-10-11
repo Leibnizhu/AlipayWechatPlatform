@@ -29,20 +29,21 @@ public class LoginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if(request instanceof HttpServletRequest){
+        if(request instanceof HttpServletRequest) {
             HttpServletRequest req = (HttpServletRequest) request;
             String uri = req.getRequestURI().substring(req.getContextPath().length());
             if(uri.startsWith("/bs") && notContainStrings(uri, AUTH_EXCLUDED_URL)) {
                 HttpSession session = req.getSession();
                 Account user = (Account) session.getAttribute(SESSION_ENTERPRISE_USER_KEY);
-                if (user == null) {
-                    if (response instanceof HttpServletResponse) {
+                if(user == null) {
+                    if(response instanceof HttpServletResponse) {
                         ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/bs/user/showLogin");
                         return;
                     }
                 }
             }
         }
+
         chain.doFilter(request,response);
     }
 

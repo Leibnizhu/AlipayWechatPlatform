@@ -81,7 +81,6 @@ public class DataSourceMysqlConfig {
     @Value("${spring.datasource.mysql.filters}")
     private String filters;
 
-
     //    @Value("{spring.datasource.connectionProperties}")
 //    private String connectionProperties;
     @Bean(name = "mysqlDataSource")
@@ -136,10 +135,8 @@ public class DataSourceMysqlConfig {
         return new DataSourceTransactionManager(dataSource);
     }
 
-
     @Bean(name = "mysqlSqlSessionTemplate")
     public SqlSessionTemplate testSqlSessionTemplate(@Qualifier("mysqlSqlSessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
-
 }

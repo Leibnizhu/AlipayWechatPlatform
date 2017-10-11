@@ -19,7 +19,6 @@ import java.util.Map;
  */
 @Configuration
 public class DruidConfiguration {
-
     private static final Logger log = LoggerFactory.getLogger(DruidConfiguration.class);
 
     @Bean
@@ -28,7 +27,7 @@ public class DruidConfiguration {
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
         servletRegistrationBean.setServlet(new StatViewServlet());
         servletRegistrationBean.addUrlMappings("/druid/*");
-        Map<String, String> initParameters = new HashMap<String, String>();
+        Map<String, String> initParameters = new HashMap<>();
         initParameters.put("loginUsername", "turing");// 用户名
         initParameters.put("loginPassword", "turingdi");// 密码
         initParameters.put("resetEnable", "false");// 禁用HTML页面上的“Reset All”功能
@@ -46,5 +45,4 @@ public class DruidConfiguration {
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.txt,*.php,*.zip,/druid/*");
         return filterRegistrationBean;
     }
-
 }

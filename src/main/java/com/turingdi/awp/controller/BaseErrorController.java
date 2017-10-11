@@ -135,7 +135,6 @@ public class BaseErrorController implements ErrorController {
         return new ResponseEntity<Map<String, Object>>(body, status);
     }
 
-
     /**
      * Determine if the stacktrace attribute should be included.
      * @param request the source request
