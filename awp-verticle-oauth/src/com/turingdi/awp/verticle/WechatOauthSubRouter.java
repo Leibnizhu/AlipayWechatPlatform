@@ -5,7 +5,6 @@ import com.turingdi.awp.db.AccountService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
-import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
 
 import static com.turingdi.awp.util.common.Constants.*;
 
@@ -115,9 +113,10 @@ public class WechatOauthSubRouter implements SubRouter {
                     //重定向到原访问URL
                     if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
                         String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
-                        String visitUrl = getRedirectAddress(request, REMOVE_PARAMS);
+                        String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
                         if (visitUrl.length() > 0) {
-                            response.setStatusCode(302).putHeader("Location", "redirect:" + visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + openId).end();
+                            visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
+                            response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + openId).end();
                         } else {
                             log.error("没有找到授权后回调地址" + request.absoluteURI());
                             response.end("未设置授权后回调地址");
@@ -154,7 +153,7 @@ public class WechatOauthSubRouter implements SubRouter {
                         try {
                             NetworkUtils.asyncPostJson(vertx, userinfo_url, userInfoJson -> {
                                 //重定向到原访问URL
-                                String visitUrl = getRedirectAddress(request, REMOVE_PARAMS);
+                                String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
                                 if (visitUrl.length() > 0) {
                                     if (userInfoJson.size() > 0) {
                                         visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
@@ -177,38 +176,5 @@ public class WechatOauthSubRouter implements SubRouter {
                 log.error("静默授权回调方法处理时发生错误！", e);
             }
         });
-    }
-
-    /**
-     * 从请求中删掉不需要的请求参数，保留需要的，返回处理后的授权前请求路径
-     *
-     * @param request      Http请求对象
-     * @param removeParams 需要删除的请求参数
-     * @return 授权前请求路径，已去掉多余的请求参数
-     *
-     * @author Leibniz
-     */
-    private static String getRedirectAddress(HttpServerRequest request, String[] removeParams) {
-        String visitUrl = request.getParam("visitUrl");
-        MultiMap parameterMap = request.params();
-        if (removeParams != null) {
-            for (String param : removeParams) {
-                parameterMap.remove(param);
-            }
-        }
-        parameterMap.remove("code");
-        parameterMap.remove("state");
-        parameterMap.remove("visitUrl");
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> entry : parameterMap.entries()) {
-            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-        }
-
-        if (sb.length() != 0) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        String split = visitUrl.contains("?") ? "&" : "?";
-        return visitUrl + split + sb.toString();
     }
 }

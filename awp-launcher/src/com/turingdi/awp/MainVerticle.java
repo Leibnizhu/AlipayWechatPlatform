@@ -1,6 +1,8 @@
 package com.turingdi.awp;
 
 import com.turingdi.awp.base.SubRouter;
+import com.turingdi.awp.db.AccountService;
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.verticle.WechatOauthSubRouter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
@@ -19,11 +21,13 @@ public class MainVerticle extends AbstractVerticle{
         Router mainRouter = Router.router(vertx);
         //静态资源路由
         mainRouter.route("/static/*").handler(StaticHandler.create().setWebRoot("static"));
+        AccountService accountSrv = new AccountService(vertx);
+        Constants constants = new Constants();
         //微信授权的子路由
-        SubRouter wechatOauthRouter = new WechatOauthSubRouter(null, null).setVertx(vertx);
+        SubRouter wechatOauthRouter = new WechatOauthSubRouter(accountSrv, constants).setVertx(vertx);
         mainRouter.mountSubRouter("/wxOauth", wechatOauthRouter.getSubRouter());
         //TODO 其他子路由
         //如 mainRouter.mountSubRouter("/……"， ……);
-        server.requestHandler(mainRouter::accept).listen(8080);
+        server.requestHandler(mainRouter::accept).listen(8083);
     }
 }

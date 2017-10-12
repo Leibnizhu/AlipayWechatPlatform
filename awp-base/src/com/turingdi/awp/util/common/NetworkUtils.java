@@ -3,6 +3,7 @@ package com.turingdi.awp.util.common;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
@@ -22,25 +23,25 @@ public class NetworkUtils {
 
     public static void asyncPostJson(Vertx vertx, String url, Handler<JsonObject> callback) throws IOException {
         checkHttpClient(vertx);
-        client.request(HttpMethod.POST, url, resp -> {
+        client.requestAbs(HttpMethod.POST, url, resp -> {
             resp.bodyHandler(buf -> {
                callback.handle(buf.toJsonObject());
             });
-        });
+        }).end();
     }
 
     public static void asyncPostString(Vertx vertx, String url, Handler<String> callback) throws IOException {
         checkHttpClient(vertx);
-        client.request(HttpMethod.POST, url, resp -> {
+        client.requestAbs(HttpMethod.POST, url, resp -> {
             resp.bodyHandler(buf -> {
                callback.handle(buf.toString());
             });
-        });
+        }).end();
     }
 
     private static void checkHttpClient(Vertx vertx) {
         if(client == null){
-            client = vertx.createHttpClient();
+            client = vertx.createHttpClient(new HttpClientOptions().setLogActivity(false));
         }
     }
 
