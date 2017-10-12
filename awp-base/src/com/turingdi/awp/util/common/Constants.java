@@ -6,7 +6,7 @@ package com.turingdi.awp.util.common;
  */
 public class Constants {
 
-    public final static String PROJ_URL = "http://2767vu.natappfree.cc/airport/";
+    public final static String PROJ_URL = "http://itq46u.natappfree.cc/";
 
     public final static String CERT_DIR = "/home/leibniz/";
 

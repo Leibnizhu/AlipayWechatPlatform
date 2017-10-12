@@ -20,15 +20,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.turingdi.awp</groupId>
             <artifactId>awp-base</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.turingdi.awp</groupId>
             <artifactId>awp-launcher</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.turingdi.awp</groupId>
             <artifactId>awp-verticle-admin</artifactId>
@@ -53,6 +57,17 @@
 
     <build>
         <finalName>${finalName}</finalName>
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
