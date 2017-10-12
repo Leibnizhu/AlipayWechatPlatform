@@ -1,6 +1,6 @@
 package com.turingdi.awp.verticle;
 
-import com.turingdi.awp.entity.Account;
+import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.wechat.WechatJdk;
 import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.service.WechatPayService;

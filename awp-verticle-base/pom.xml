@@ -8,13 +8,11 @@
         <groupId>com.turingdi.awp</groupId>
         <artifactId>awp-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>awp-verticle-base</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>awp-verticle-base</name>
-    <packaging>pom</packaging>
 
     <dependencies>
         <!--Vert.X Web基础包-->

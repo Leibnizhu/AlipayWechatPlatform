@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:display="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <title>公众号管理</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../awp-verticle-admin/src/static/css/root.css" th:href="@{/css/root.css}">
+    <link href="../../../../../awp-verticle-admin/src/static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../../../../../awp-verticle-admin/src/static/css/fileinput.css" rel="stylesheet" th:href="@{/css/fileinput.css}"/>
+    <link href="../../../../../awp-verticle-admin/src/static/css/responsive.css" rel="stylesheet" th:href="@{/css/responsive.css}"/>
+    <link href="../../../../../awp-verticle-admin/src/static/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../awp-verticle-admin/src/static/css/plugin/sweet-alert/sweet-alert.css"
+          th:href="@{/css/plugin/sweet-alert/sweet-alert.css}">
+    <link href="../../../../../awp-verticle-admin/src/static/css/fileinput.css" rel="stylesheet" th:href="@{/css/fileinput.css}"/>
+
+    <style type="text/css">
+        .required {
+            color: red;
+        }
+    </style>
+    <style type="text/css">
+        label.error {
+            color: #ef4836;
+        }
+
+        /*错误信息的颜色*/
+        span.required {
+            color: #ef4836;
+        }
+
+        /*必填字段星号的颜色*/
+    </style>
+</head>
+<head th:include="common/commonJs::js"></head>
+<body>
+<!-- Start Page Loading -->
+<div class="loading"><img src="img/loading.gif" alt="loading-img" th:src="@{/img/loading.gif}"></div>
+<!-- End Page Loading -->
+<!-- //////////////////////////////////////////////////////////////////////////// -->
+<!-- START TOP -->
+<div id="top" class="clearfix">
+
+    <!-- Start App Logo -->
+    <div class="applogo">
+        <a href="index.html" th:href="@{/index.html}" class="logo">支付宝-微信管理平台</a>
+    </div>
+    <!-- End App Logo -->
+    <!-- Start Sidebar Show Hide Button -->
+    <a href="#" class="sidebar-open-button"><i class="fa fa-bars"></i></a>
+    <a href="#" class="sidebar-open-button-mobile"><i class="fa fa-bars"></i></a>
+    <!-- End Sidebar Show Hide Button -->
+
+    <!-- Start Sidepanel Show-Hide Button -->
+    <a href="#sidepanel" class="sidepanel-open-button"><i class="fa fa-sign-out"></i></a>
+    <!-- End Sidepanel Show-Hide Button -->
+
+    <!-- Start Top Right -->
+    <ul class="top-right">
+        <li class="dropdown link">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
+                <img src="img/profileimg.png" alt="img" th:src="@{/img/profileimg.png}"><b>客户</b><span
+                    class="caret"></span>
+            </a>
+        </li>
+    </ul>
+    <!-- End Top Right -->
+
+</div>
+<div th:replace="menu::menu"></div>
+<!-- START CONTENT -->
+<div class="content">
+
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <h1 class="title">公众号管理</h1>
+        <ol class="breadcrumb">
+            <li class="active">公众号配置</li>
+        </ol>
+        <!-- 主账号操作公众号配置时显示出来。 -->
+        <div th:if="${userRole == 0 || userRole == 1}" class="right text-r">
+            <div class="pull-right padding-r-15">
+                <span id="accountTitle" style="display: inline-block;padding-top: 6px;">子帐号：</span>
+                <div class="pull-right padding-r-50">
+                    <select class="form-control" style="width: 200px;" id="enterpriseName" >
+                        <option value="-1" th:each="enterprise : ${enterpriseList}" th:text="${enterprise.name}" th:value="${enterprise.id}">无用户</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+
+    <!-- //////////////////////////////////////////////////////////////////////////// -->
+    <!-- START CONTAINER -->
+    <div class="container-padding">
+
+        <!-- Start Row -->
+        <div class="row">
+
+            <!-- Start Panel -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+
+                    <div class="pull-right">
+
+                    </div>
+
+                    <div class="panel-title">
+                        <h4>公众号配置</h4>
+                    </div>
+
+                    <div class="panel-body">
+                        <!-- 隐藏域 账号类型 -->
+                        <input type="hidden" id="roleOperate" th:value="${userRole}" value="-1">
+                        <!-- 如果是主账号操作，那么填充数据的主账号是  如果是管理员则填充管理员账号 -->
+                        <input type="hidden" id="userOperate" th:value="${userId}" value="-1">
+                        <!-- 如果是超级管理员或主账号操作，并且无子账号，标识被激活 -->
+                        <input type="hidden" id="isExistChild" th:value="${isExistChild}" value="-1">
+                        <form id="wechatInfo" class="form-horizontal" role="form" method="POST"
+                              enctype="multipart/form-data">
+                            <div class="col-md-10">
+                                <div class="form-group" style="display: none">
+                                    <label for="type" class="col-sm-4 control-label">公众号类型<span class="required"
+                                                                                                aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="type" id="type" value="服务已认证（不可修改）">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-4 control-label">公众号名称<span class="required"
+                                                                                                aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入公众号名称"
+                                               msgid="nameMsg" name="name" id="name" value="${tWxcmsAccount.name}"
+                                               th:value="${tWxcmsAccount.name}">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="account" class="col-sm-4 control-label">公众号ID<span class="required"
+                                                                                                   aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入公众号ID"
+                                               msgid="nameMsg" name="account" id="account" value="${tWxcmsAccount.account}"
+                                               th:value="${tWxcmsAccount.account}">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="wxAccount" class="col-sm-4 control-label">微信号<span class="required"
+                                                                                                   aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入微信号" msgid="nameMsg"
+                                               name="wxAccount" id="wxAccount" th:value="${tWxcmsAccount.wxAccount}">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="token" class="col-sm-4 control-label">Token</label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="token" id="token" th:value="${tWxcmsAccount.token}">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="url" class="col-sm-4 control-label">Url</label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="url" id="url" th:value="${tWxcmsAccount.url}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appid" class="col-sm-4 control-label">AppID (应用ID)<span
+                                            class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入应用ID"
+                                               msgid="nameMsg" name="appid" id="appid"
+                                               th:value="${tWxcmsAccount.appid}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                <label for="appsecret" class="col-sm-4 control-label">AppSecret (应用密钥)<span
+                                        class="required" aria-required="true">*</span></label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" placeholder="请输入应用密钥"
+                                           msgid="nameMsg" name="appsecret" id="appsecret"
+                                           th:value="${tWxcmsAccount.appsecret}">
+                                </div>
+                            </div>
+                                <div class="form-group">
+                                    <label for="fileTxt" class="col-sm-4 control-label">请上传公众号文件<span
+                                            class="required" aria-required="true" id="txt">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="file" class="form-control" placeholder=""
+                                               id="fileTxt" name="file" th:value="${tWxcmsAccount.appsecret}">
+                                        <label id="inputFile" style="display: none"><font
+                                                color="red">上传文不能为空</font></label>
+                                        <label id="inputFileError" style="display: none"><font color="red">上传文件格式不正确,应为MP_verify**.txt</font></label>
+                                        <label id="fileName" style="display: none"><font color="red">文件名错误,应为MP_verify**.txt</font></label>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="encodingAESKey" class="col-sm-4 control-label">EncodingAESKey<span
+                                            class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="encodingAESKey" value="明文模式（不可修改）">
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-5 col-sm-10">
+                                        <input class="btn btn btn-success wechatNumber-btn" style="width:150px"
+                                              id="submits" type="submit" value="提交">
+                                    </div>
+                                </div>
+                                <input style="margin-left:100px;width:500px; display:none;" name="id" id="id" type="text" th:value="${tWxcmsAccount.id}">
+                                <input style="margin-left:100px;width:500px; display:none;" id="commit" name="label" type="text" th:value="${commitType}">
+                            </div>
+                        </form>
+                        <input class="variable-src" style="margin-left:100px;width:500px;display:none"
+                               name="src" type="text" value="${src!=null}">
+                    </div>
+                </div>
+            </div>
+            <!-- End Panel -->
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- END CONTAINER -->
+    <!-- //////////////////////////////////////////////////////////////////////////// -->
+</div>
+<div th:replace="footer::foot"></div>
+<script type="text/javascript" src="../js/jquery.validate.js" th:src="@{/js/jquery.validate.js}"></script>
+<script src="js/fileinput/fileinput.js" type="text/javascript" th:src="@{/js/fileinput/fileinput.js}"></script>
+<script src="js/fileinput/zh.js" type="text/javascript" th:src="@{/js/fileinput/zh.js}"></script>
+<script type="text/javascript" src="../../../../../awp-verticle-admin/src/static/js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+<script type="text/javascript" src="../../../../../awp-verticle-admin/src/static/turing/weixin/wechatNumber.js" th:src="@{/turing/weixin/wechatNumber.js}"></script>
+</body>
+</html>

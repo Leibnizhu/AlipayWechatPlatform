@@ -8,7 +8,6 @@
         <groupId>com.turingdi.awp</groupId>
         <artifactId>awp-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>awp-launcher</artifactId>
@@ -16,7 +15,15 @@
     <name>awp-launcher</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.turingdi.awp</groupId>
+            <artifactId>awp-verticle-oauth</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

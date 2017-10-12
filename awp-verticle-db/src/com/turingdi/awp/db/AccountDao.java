@@ -1,41 +1,80 @@
 package com.turingdi.awp.db;
 
 
-import com.turingdi.awp.entity.Account;
+import com.turingdi.awp.entity.db.Account;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public interface AccountDao {
-	List<Account> selectByUserId(int userID);
+public class AccountDao extends BaseVertXDao {
+    private Logger log = LoggerFactory.getLogger(getClass());
 
-	int insert(Account tWxcmsAccount);
+    public AccountDao(Vertx vertx) {
+        hikariCPM = HikariCPManager.getInstance(vertx);
+    }
 
-	int update(Account tWxcmsAccount);
+    List<Account> selectByUserId(int userID) {
+        return null;
+    }
 
-	/**
-	 * 该方法根据id从微信公众号表中获取公众号数据，具体实现在TWxcmsAccount.xml中；
-	 *
-	 * @param id 企业ID
-	 * @return 相关公众号信息
-	 * Create by quandong
-	 */
-	Account getById(int id);
+    int insert(Account tWxcmsAccount) {
+        return 0;
+    }
 
-	Account getByAccount(String account);
+    int update(Account tWxcmsAccount) {
+        return 0;
+    }
 
-	Account getSingleAccount();
+    /**
+     * 该方法根据id从微信公众号表中获取公众号数据，具体实现在TWxcmsAccount.xml中；
+     *
+     * @param id       企业ID
+     * @param callback 获取到数据后回调方法
+     */
+    void getById(int id, Handler<JsonObject> callback) {
+        query("SELECT * FROM t_wxcms_account WHERE ID = ?",
+                new JsonArray().add(id),
+                result -> {
+                    callback.handle(result.size() > 0 ? result.get(0) : null);
+                });
+    }
 
-	List<Account> getAllAccount();
+    Account getByAccount(String account) {
+        return null;
+    }
 
-	List<Account> listForPage(Account searchEntity);
+    Account getSingleAccount() {
+        return null;
+    }
 
-	void add(Account entity);
+    List<Account> getAllAccount() {
+        return null;
+    }
 
-	void delete(Account entity);
+    List<Account> listForPage(Account searchEntity) {
+        return null;
+    }
 
-	Account getByAppId(String appId);
+    void add(Account entity) {
+    }
 
-	int updateWxPay(Account tWxcmsAccount);
+    void delete(Account entity) {
+    }
 
-	int updateZfbPay(Account tWxcmsAccount);
+    Account getByAppId(String appId) {
+        return null;
+    }
+
+    int updateWxPay(Account tWxcmsAccount) {
+        return 0;
+    }
+
+    int updateZfbPay(Account tWxcmsAccount) {
+        return 0;
+    }
 }

@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.turingdi.awp</groupId>
-        <artifactId>awp-verticle-base</artifactId>
+        <artifactId>awp-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../awp-verticle-base</relativePath>
     </parent>

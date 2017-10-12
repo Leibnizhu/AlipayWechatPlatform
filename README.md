@@ -5,6 +5,9 @@
 本项目旨在减少Web项目关于微信、支付宝的重复代码，以及解决公众号的安全域名只能配置一个的问题。  
 未来还可以托管Access Token。
 本项目部署后，将公众号安全域名配置到本项目的域名，此后多个web项目（不同域名）可以使用同一个公众号~~（理论上）~~。  
+## 技术栈
+原来：`Vue.js + Spring Boot + Druid + MySQL`  
+现在：`Vue.js + Vert.X(Core+Web+JDBC) + HikariCP + MySQL(可能换成PostgreSQL)`
 
 ## API
 ### 微信授权

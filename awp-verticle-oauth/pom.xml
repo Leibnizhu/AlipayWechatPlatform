@@ -6,9 +6,8 @@
 
     <parent>
         <groupId>com.turingdi.awp</groupId>
-        <artifactId>awp-verticle-base</artifactId>
+        <artifactId>awp-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../awp-verticle-base</relativePath>
     </parent>
 
     <artifactId>awp-verticle-oauth</artifactId>
@@ -32,6 +31,16 @@
         <dependency>
             <groupId>com.turingdi.awp</groupId>
             <artifactId>awp-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.turingdi.awp</groupId>
+            <artifactId>awp-verticle-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.turingdi.awp</groupId>
+            <artifactId>awp-verticle-db</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

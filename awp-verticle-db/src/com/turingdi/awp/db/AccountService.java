@@ -1,17 +1,18 @@
 package com.turingdi.awp.db;
 
-import com.turingdi.awp.entity.Account;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.turingdi.awp.entity.db.Account;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 
-@Service
-@Transactional
 public class AccountService {
-	@Autowired
 	private AccountDao wxAccountDao;
+
+	public AccountService(Vertx vertx){
+		this.wxAccountDao = new AccountDao(vertx);
+	}
 
 	public List<Account> selectByUserId(int userId) {
 		return wxAccountDao.selectByUserId(userId);
@@ -32,8 +33,8 @@ public class AccountService {
 	 * @return 获取到的公众号数据
 	 * Create by quandong
 	 */
-	public Account getById(int id) {
-		return wxAccountDao.getById(id); // 调用dao层方法
+	public void getById(int id, Handler<JsonObject> callback) {
+		wxAccountDao.getById(id, callback); // 调用dao层方法
 	}
 
 	public List<Account> listForPage(Account searchEntity){

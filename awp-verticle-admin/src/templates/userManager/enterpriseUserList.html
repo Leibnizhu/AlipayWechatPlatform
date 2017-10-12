@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description"
+			content="Kode is a Premium Bootstrap Admin Template, It's responsive, clean coded and mobile friendly">
+		<meta name="keywords"
+			content="bootstrap, admin, dashboard, flat admin template, responsive," />
+		<meta th:replace="common/commonJs::js" />
+		<title>用户管理</title>
+		<link rel="stylesheet" type="text/css" href="../../../../../awp-verticle-admin/src/static/css/root.css"
+			th:href="@{/css/root.css}" />
+		<!-- Data Tables 表格插件-->
+		<script type="text/javascript" src="../../../../../awp-verticle-admin/src/static/js/datatables/datatables.min.js" th:src="@{/js/datatables/datatables.min.js}" ></script>
+		<!-- validate.js - 表格验证 -->
+		<script type="text/javascript" src="../../../../../awp-verticle-admin/src/static/js/jquery.validate.js" th:src="@{/js/jquery.validate.js}" ></script>
+		<!-- Developer Defined -->
+		<script type="text/javascript" src="../../../../../awp-verticle-admin/src/static/turing/userManager/userCenter.js" th:src="@{/turing/userManager/userCenter.js}" ></script>
+		<script type="text/javascript" src="../../js/title.js"	th:src="@{/js/title.js}"></script>
+
+
+		<!-- zTree -->
+		<link rel="stylesheet" href="../../js/ztree/zTreeStyle.css"
+			type="text/css" th:href="@{/js/ztree/zTreeStyle.css}" />
+		<script src="../../js/ztree/jquery.ztree.core-3.5.js"
+			th:src="@{/js/ztree/jquery.ztree.core-3.5.js}" ></script>
+		<script src="../../js/ztree/jquery.ztree.exedit-3.5.js"
+			th:src="@{/js/ztree/jquery.ztree.exedit-3.5.js}" ></script>
+		<script src="../../js/ztree/jquery.ztree.excheck-3.5.js"
+			th:src="@{/js/ztree/jquery.ztree.excheck-3.5.js}"></script>
+		<!-- END zTree -->
+
+		<style type="text/css">
+		span.required {
+			color: red;
+		}
+		</style>
+
+		<!-- jQuery Validate -->
+		<script type="text/javascript" src="../../../../../awp-verticle-admin/src/static/js/jquery.validate.js"
+			th:src="@{/js/jquery.validate.js}" ></script>
+			 <script type="text/javascript">
+			 $role = [[${session.turinguser.role}]]
+			 </script>
+		<style type="text/css">
+		label.error {
+			color: #ef4836;
+		}
+
+		span.required {
+			color: #ef4836;
+		}
+		</style>
+	</head>
+
+	<body>
+		<div th:replace="menu::menu"></div>
+		<!-- START CONTENT -->
+		<div class="content">
+			<div class="content1">
+				<div class="container-widget">
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<div style="height: 35px;">
+								<!-- Start Page Header -->
+								<div class="page-header" style="border-bottom: 1px solid #eee;">
+									<h1 class="title">系统管理</h1>
+									<ol class="breadcrumb">
+										<li class="active">帐号管理中心</li>
+									</ol>
+								</div>
+								<!-- End Page Header -->
+
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right"
+									style="padding-right: 0px">
+									<a type='button' class='btn btn-rounded btn-default btn-icon'
+										id="btn_add_user"><i class='fa fa-plus'
+										data-toggle='tooltip' data-placement='bottom' title='新增用户信息'></i>新增</a>
+								</div>
+							</div>
+							<table class="panel-body table-responsive" id="EnterpriseUseList"
+								width="100%">
+								<thead class="table-th-2">
+									<tr>
+										<!-- <td class="text-center"><div class="checkbox margin-0 checkbox-warning"><input id="checkbox" type="checkbox" onclick="checkAll(this)"><label for="checkbox"></td> -->
+										<td>客户名称</td>
+										<td>登录账号</td>
+										<td>保证金</td>
+										<td>状态</td>
+										<td>创建日期</td>
+										<td style="width: 10%;">操作</td>
+									</tr>
+								</thead>
+							</table>
+							<!-- table end -->
+
+							<div th:replace="userManager/editUser::editUserFragment"></div>
+							<div
+								th:replace="userManager/menuPermission::menuPermissionModalFragment"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--提示语-->
+		<div class="mouse-over-tips css3 ">
+			<span>▲</span>
+			<p class="txt1">提示语</p>
+		</div>
+		<div th:replace="footer::foot"></div>
+	</body>
+</html>

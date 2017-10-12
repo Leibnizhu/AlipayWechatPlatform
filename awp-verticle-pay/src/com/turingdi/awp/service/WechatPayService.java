@@ -1,7 +1,7 @@
 package com.turingdi.awp.service;
 
 import com.turingdi.awp.dao.AccountDao;
-import com.turingdi.awp.entity.Account;
+import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.wechat.WechatPay;
 import com.turingdi.awp.util.CommonUtils;
 import com.turingdi.awp.util.Constants;

@@ -8,36 +8,18 @@
         <groupId>com.turingdi.awp</groupId>
         <artifactId>awp-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../awp-verticle-base</relativePath>
     </parent>
 
-    <artifactId>awp-verticle-pay</artifactId>
+    <artifactId>awp-verticle-admin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>awp-verticle-pay</name>
-
-    <properties>
-        <vertx.version>3.4.2</vertx.version>
-    </properties>
+    <name>awp-verticle-admin</name>
 
     <dependencies>
-        <dependency>
-            <groupId>com.alipay</groupId>
-            <artifactId>api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.antgroup</groupId>
-            <artifactId>zmxy.openplatform</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.turingdi.awp</groupId>
-            <artifactId>awp-base</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
-        <finalName>awp-verticle-pay</finalName>
+        <finalName>awp-verticle-admin</finalName>
         <sourceDirectory>src</sourceDirectory>
         <resources>
             <resource>
@@ -50,7 +32,6 @@
                 </excludes>
             </resource>
         </resources>
-
     </build>
 
 </project>
