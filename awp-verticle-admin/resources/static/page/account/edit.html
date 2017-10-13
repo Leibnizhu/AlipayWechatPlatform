@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>公众号管理</title>
+    <link rel="stylesheet" type="text/css" href="../../css/root.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/fileinput.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/responsive.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/plugin/sweet-alert/sweet-alert.css">
+    <style type="text/css">
+        label.error {
+            color: #ef4836; /*错误信息的颜色*/
+        }
+        span.required {
+            color: #ef4836; /*必填字段星号的颜色*/
+        }
+    </style>
+</head>
+<body>
+<div class="loading"><img src="../../img/loading.gif" alt="loading-img"></div>
+<!-- START TOP -->
+<div id="top" class="clearfix">
+    <div class="applogo">
+        <img src="../img/Logo.png" height="50" style="margin-top:-13px;">
+    </div>
+    <a href="#" class="sidebar-open-button">
+        <i class="fa fa-bars"></i>
+    </a>
+    <a href="#" class="sidebar-open-button-mobile">
+        <i class="fa fa-bars"></i>
+    </a>
+    <a class="sidepanel-open-button dropdown-toggle profilebox" href="login.html">
+        <i class="fa fa-sign-out"></i>
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-list dropdown-menu-right">
+        <li role="presentation" class="dropdown-header">设置</li>
+        <li>
+            <a href="userManager/personalUser.html">
+                <i class="fa falist fa-lock"></i>
+                个人信息
+            </a>
+        </li>
+    </ul>
+    <ul class="top-right">
+        <li class="dropdown link" onclick="window.location.href='../user/display'" title="个人信息">
+            <a href="#" class="profilebox">
+                <span id="userNameSpan"></span>
+            </a>
+            <span id="topIdsteName"></span>
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
+                <img src="../../img/profileimg.png" alt="img"><b id="userName">客户</b><span class="caret"></span>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- END TOP -->
+
+<!-- START SIDEBAR -->
+<div class="sidebar clearfix">
+    <div class="sidebar-colorful">
+        <ul class="sidebar-panel nav" id="leftmenu">
+            <li id="publicAccountLi">
+                <a href="#"><span class="icon color3"><i class="fa fa-weixin" aria-hidden="true"></i></span>公众号管理<span
+                        class="caret"></span></a>
+                <ul id="publicAccount">
+                    <li id="wechatNumberId">
+                        <a href="account/edit.html">公众号配置</a>
+                    </li>
+                    <li id="wechatTemplateListLi">
+                        <a id="wechatTemplateList" href="activityManager/activity-list.html">微信模板列表</a>
+                    </li>
+                    <li id="fansListLi">
+                        <a id="fansList" href="wxcms/fansPagination.html">粉丝列表</a>
+                    </li>
+                    <li id="wxpayListLi">
+                        <a id="wxpayList" href="shopping/bms/pay.html">支付中心</a>
+                    </li>
+                </ul>
+            </li>
+            <li id="systemManagerLi">
+                <a href="#"><span class="icon color7"><i class="fa fa-cogs" aria-hidden="true"></i></span>系统管理<span
+                        class="caret"></span></a>
+                <ul id="systemManager">
+                    <li id="enterpriseListMenuLi">
+                        <a id="enterpriseListMenu" href="userManager/enterpriseUserList.html">帐号管理中心</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- END SIDEBAR -->
+
+<!-- START CONTENT -->
+<div class="content">
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <h1 class="title">公众号管理</h1>
+        <ol class="breadcrumb">
+            <li class="active">公众号配置</li>
+        </ol>
+        <!-- 主账号操作公众号配置时显示出来。 -->
+        <div class="right text-r">
+            <div class="pull-right padding-r-15">
+                <span id="accountTitle" style="display: inline-block;padding-top: 6px;">子帐号：</span>
+                <div class="pull-right padding-r-50">
+                    <select class="form-control" style="width: 200px;" id="enterpriseName">
+                        <option value="-1">无用户</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+    <!-- START CONTAINER -->
+    <div class="container-padding">
+        <!-- Start Row -->
+        <div class="row">
+            <!-- Start Panel -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="pull-right"></div>
+                    <div class="panel-title"><h4>公众号配置</h4></div>
+                    <div class="panel-body">
+                        <!-- 隐藏域 账号类型 -->
+                        <input type="hidden" id="roleOperate" value="-1">
+                        <!-- 如果是主账号操作，那么填充数据的主账号是  如果是管理员则填充管理员账号 -->
+                        <input type="hidden" id="userOperate" value="-1">
+                        <!-- 如果是超级管理员或主账号操作，并且无子账号，标识被激活 -->
+                        <input type="hidden" id="isExistChild" value="-1">
+                        <form id="wechatInfo" class="form-horizontal" role="form" method="POST"
+                              enctype="multipart/form-data">
+                            <div class="col-md-10">
+                                <div class="form-group" style="display: none">
+                                    <label for="type" class="col-sm-4 control-label">公众号类型
+                                        <span class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control"
+                                               name="type" id="type" value="服务已认证（不可修改）">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-4 control-label">公众号名称
+                                        <span class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入公众号名称"
+                                               name="name" id="name" value="${tWxcmsAccount.name}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appid" class="col-sm-4 control-label">AppID (应用ID)
+                                        <span class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入应用ID"
+                                               name="appid" id="appid">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appsecret" class="col-sm-4 control-label">AppSecret (应用密钥)
+                                        <span class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入应用密钥"
+                                               name="appsecret" id="appsecret">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="verify" class="col-sm-4 control-label">安全域名验证文件名
+                                        <span class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="MP_vertify_******"
+                                               name="verify" id="verify">
+                                    </div>
+                                </div>
+                                <!-- FIXME 其他字段，留用，勿删
+                                <div class="form-group" style="display: none">
+                                    <label for="account" class="col-sm-4 control-label">公众号ID<span class="required"
+                                                                                                   aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入公众号ID"
+                                               name="account" id="account"
+                                               value="${tWxcmsAccount.account}">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="wxAccount" class="col-sm-4 control-label">微信号<span class="required"
+                                                                                                   aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" placeholder="请输入微信号" msgid="nameMsg"
+                                               name="wxAccount" id="wxAccount">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="token" class="col-sm-4 control-label">Token</label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="token" id="token">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="url" class="col-sm-4 control-label">Url</label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="url" id="url">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: none">
+                                    <label for="encodingAESKey" class="col-sm-4 control-label">EncodingAESKey<span
+                                            class="required" aria-required="true">*</span></label>
+                                    <div class="col-sm-6">
+                                        <input readonly="readonly" type="text" class="form-control" msgid="nameMsg"
+                                               name="encodingAESKey" value="明文模式（不可修改）">
+                                    </div>
+                                </div>-->
+                                <div class="form-group">
+                                    <div class="col-sm-offset-5 col-sm-10">
+                                        <input class="btn btn btn-success wechatNumber-btn" style="width:150px"
+                                               id="submits" type="submit" value="提交">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Panel -->
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- END CONTAINER -->
+</div>
+<!-- END CONTENT -->
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.validate.js"></script>
+<script type="text/javascript" src="../../js/jquery.cookie.js"></script>
+<script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/vue.min.js"></script>
+<script type="text/javascript" src="../../js/plugins.js"></script>
+<script type="text/javascript" src="../../js/sweet-alert/sweet-alert.min.js"></script>
+<script type="text/javascript" src="../../turing/menu.js"></script>
+<script type="text/javascript" src="../../turing/browserVersion.js"></script>
+<script type="text/javascript" src="../../turing/weixin/wechatNumber.js"></script>
+</body>
+</html>

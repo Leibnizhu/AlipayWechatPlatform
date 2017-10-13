@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <script src="../../../../awp-verticle-admin/src/static/js/jquery.min.js" th:src="" type="text/javascript"></script>
@@ -12,53 +12,34 @@
         <div th:fragment="menu">
             <!-- Start Page Loading -->
             <div class="loading">
-                <img src="../../../../awp-verticle-admin/src/static/img/loading.gif" th:src="@{/img/loading.gif}" alt="loading-img">
+                <img src="../img/loading.gif" alt="loading-img">
             </div>
             <!-- End Page Loading -->
 
             <!-- START TOP -->
             <div id="top" class="clearfix">
-                <!-- Start App Logo -->
                 <div class="applogo">
-                    <img src="../img/Logo.png" th:src="@{/img/Logo.png}" height="50" style="margin-top:-13px;">
+                    <img src="../img/Logo.png" height="50" style="margin-top:-13px;">
                 </div>
-                <!-- End App Logo -->
-
-                <!-- Start Sidebar Show Hide Button -->
                 <a href="#" class="sidebar-open-button">
                     <i class="fa fa-bars"></i>
                 </a>
                 <a href="#" class="sidebar-open-button-mobile">
                     <i class="fa fa-bars"></i>
                 </a>
-                <!-- End Sidebar Show Hide Button -->
-
-                <!-- Start Sidepanel Show-Hide Button -->
-                <a class="sidepanel-open-button dropdown-toggle profilebox" href="login.html" th:href="@{/user/logout}">
+                <a class="sidepanel-open-button dropdown-toggle profilebox" href="login.html">
                     <i class="fa fa-sign-out"></i>
                 </a>
-               <!-- <a href="#" class="sidepanel-open-button dropdown-toggle profilebox" data-toggle="dropdown">
-                    <i class="fa fa-gear"></i>
-                </a>-->
-                <!-- End Sidepanel Show-Hide Button -->
 
                 <ul class="dropdown-menu dropdown-menu-list dropdown-menu-right">
                     <li role="presentation" class="dropdown-header">设置</li>
                     <li>
-                        <a href="userManager/personalUser.html" th:href="@{/user/display}">
+                        <a href="account/personalUser.html">
                             <i class="fa falist fa-lock"></i>
                             个人信息
                         </a>
                     </li>
-                    <!--<li>
-                        <a href="#">
-                            <i class="fa falist fa-lock"></i>
-                            修改密码
-                        </a>
-                    </li>-->
                 </ul>
-
-                <!-- Start Top Right -->
                 <ul class="top-right">
                     <li class="dropdown link" onclick="window.location.href='../user/display'" title="个人信息">
                         <a href="#" class="profilebox">
@@ -66,7 +47,7 @@
                         </a>
                         <span id="topIdsteName"></span>
                         <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox" >
-                            <img src="../../../../awp-verticle-admin/src/static/img/profileimg.png" th:src="@{/img/profileimg.png}" alt="img"><b id="userName">客户</b><span class="caret"></span>
+                            <img src="../img/profileimg.png" alt="img"><b id="userName">客户</b><span class="caret"></span>
                         </a>
                     </li>
                 </ul>
@@ -89,7 +70,7 @@
                             </a>
                             <ul id="publicAccount">
                                 <li id="wechatNumberId">
-                                    <a href="wxaccount/edit.html" th:href="@{/wechatNumber/editWechatNumber}">公众号配置</a>
+                                    <a href="account/edit.html" th:href="@{/wechatNumber/editWechatNumber}">公众号配置</a>
                                 </li>
                                 <li id="wechatTemplateListLi">
                                     <a id="wechatTemplateList" href="activityManager/activity-list.html" th:href="@{/templateManager/listTemplate}">微信模板列表</a>
@@ -113,7 +94,7 @@
                             </a>
                             <ul id="systemManager">
                                 <li id="enterpriseListMenuLi">
-                                    <a id="enterpriseListMenu" href="userManager/enterpriseUserList.html" th:href="@{/user/showEnterpriseUserList}">帐号管理中心</a>
+                                    <a id="enterpriseListMenu" href="account/list.html" th:href="@{/user/showEnterpriseUserList}">帐号管理中心</a>
                                 </li>
                             </ul>
                         </li>
