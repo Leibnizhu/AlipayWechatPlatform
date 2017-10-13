@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content=""/>
+    <title>品牌联盟</title>
+
+    <!-- ========== Css Files ========== -->
+    <link href="../../../css/root.css" rel="stylesheet" th:href="@{/css/root.css}"/>
+    <link href="../../../css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../../../css/fileinput.css" rel="stylesheet" th:href="@{/css/fileinput.css}"/>
+    <link href="../../../css/responsive.css" rel="stylesheet" th:href="@{/css/responsive.css}"/>
+    <link href="../../../css/plugin/date-range-picker/daterangepicker-bs3.css" rel="stylesheet"
+          th:href="@{/css/plugin/date-range-picker/daterangepicker-bs3.css}"/>
+    <link href="../../../css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link href="../../../css/plugin/sweet-alert/sweet-alert.css" rel="stylesheet" type="text/css"
+          th:href="@{/css/plugin/sweet-alert/sweet-alert.css}"/>
+    <script type="text/javascript" src="../../../js/echarts.min.js" th:src="@{/js/echarts.min.js}"></script>
+    <style type="text/css">
+        label.error {color: #ef4836;} /*错误信息的颜色*/
+        span.required {color: #ef4836;}
+    </style>
+</head>
+<head th:include="common/commonJs::js"></head>
+
+<body>
+<!-- Start Page Loading -->
+<div class="loading"><img src="img/loading.gif" alt="loading-img" th:src="@{/img/loading.gif}"></div>
+<!-- End Page Loading -->
+
+<!-- START TOP -->
+<div id="top" class="clearfix">
+    <!-- Start App Logo -->
+    <div class="applogo">
+        <a href="index.html" th:href="@{/index.html}" class="logo">品牌联盟</a>
+    </div>
+    <!-- End App Logo -->
+
+    <!-- Start Sidebar Show Hide Button -->
+    <a href="#" class="sidebar-open-button">
+        <i class="fa fa-bars"></i>
+    </a>
+    <a href="#" class="sidebar-open-button-mobile">
+        <i class="fa fa-bars"></i>
+    </a>
+    <!-- End Sidebar Show Hide Button -->
+
+    <!-- Start Sidepanel Show-Hide Button -->
+    <a href="#sidepanel" class="sidepanel-open-button">
+        <i class="fa fa-sign-out"></i>
+    </a>
+    <!-- End Sidepanel Show-Hide Button -->
+
+    <!-- Start Top Right -->
+    <ul class="top-right">
+        <li class="dropdown link">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
+                <img src="img/profileimg.png" alt="img" th:src="@{/img/profileimg.png}">
+                <b>客户</b>
+                <span class="caret"></span>
+            </a>
+        </li>
+    </ul>
+    <!-- End Top Right -->
+</div>
+<!-- END TOP -->
+
+<!-- menu -->
+<div th:replace="menu::menu"></div>
+
+<!-- START CONTENT -->
+<div class="content" id="content">
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <h1 class="title">公众号管理</h1>
+        <ol class="breadcrumb">
+            <li class="active">支付设置</li>
+        </ol>
+        <div th:if="${userRole == 1 || userRole == 0}" class="right text-r">
+            <div class="pull-right padding-r-15">
+                <span style="display: inline-block;padding-top: 6px;">子帐号：</span>
+                <div class="pull-right padding-r-50">
+                    <select class="form-control" style="width: 200px;" id="enterpriseName" v-model="uid">
+                        <option value="-1" th:each="enterprise : ${enterpriseList}" th:text="${enterprise.name}"
+                                th:value="${enterprise.id}">无子账号
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+    <!-- START CONTAINER -->
+    <div class="container-padding">
+        <!-- Start Row -->
+        <div class="row">
+            <!-- Start Panel -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="pull-right"></div>
+
+                    <div class="panel-title">
+                        <h4>支付设置</h4>
+                    </div>
+
+                    <div>
+                        <div th:if="${userId == null}">
+                            <span>没有子帐号</span>
+                        </div>
+                        <table th:if="${userId != null}" border="1">
+                            <tbody>
+                            <tr>
+                                <th colspan="4">支付参数</th>
+                            </tr>
+                            <tr>
+                                <td>支付宝</td>
+                                <td>
+                                    <div>备注</div>
+                                </td>
+                                <td>{{this.zfbPay.opened==='1'?'开启':'关闭'}}</td>
+                                <td class="text-center">
+                                    <div @click="showEditZfbPay">修改</div>
+                            </tr>
+                            <tr>
+                                <td>微信支付</td>
+                                <td>
+                                    <div>备注</div>
+                                </td>
+                                <td class="">{{this.wxPay.opened==='1'?'开启':'关闭'}}</td>
+                                <td class="text-center">
+                                    <div @click="showEditWxPay">修改</div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 微信支付编辑模态框开始 -->
+                        <div class="modal fade" id="editWxPay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                            <span class="sr-only">Close</span>
+                                        </button>
+                                        <h4 class="modal-title">微信支付</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                    <span>微信支付的接口说明如下：<br/>
+                                                        JS API网页支付参数<br/>
+                                                        支付授权目录: http://brand.turing.asia/brand/mb/pay/
+                                                    </span>
+                                                <form class="form-horizontal" id="wxPayForm" action="wxInfo/" method="POST" enctype="multipart/form-data">
+                                                    <input type="hidden" name="uid" v-model="uid">
+                                                    支付功能：<input type="radio" name="paySwitch" value="0" v-model="wxPay.opened">关闭
+                                                    <input type="radio" name="paySwitch" value="1" v-model="wxPay.opened">开启
+                                                    <div class="form-group">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="appId" class="col-sm-2 control-label">
+                                                                AppID<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-6">
+                                                                <input disabled="disabled" type="text"
+                                                                       class="form-control" name="appId" :value="wxPay.appId">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="appSecret" class="col-sm-2 control-label">
+                                                                AppSecret<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-6">
+                                                                <input disabled="disabled" type="text"
+                                                                       class="form-control" id="appSecret" name="appSecret" :value="wxPay.appSecret">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" v-if="wxPay.opened == '1'">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="mchId" class="col-sm-2 control-label">
+                                                                商户ID<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-6">
+                                                                <input type="text" class="form-control" id="mchId" name="mchId" msgId="mchIdMsg" :value="wxPay.mchId">
+                                                                <label id="mchIdMsg"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" v-if="wxPay.opened == '1'">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="payKey" class="col-sm-2 control-label">
+                                                                支付密钥<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-8">
+                                                                <input type="text" class="form-control" id="payKey" name="payKey" msgId="payKeyMsg" :value="wxPay.payKey">
+                                                                <label id="payKeyMsg"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" id="certDiv">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="cert" class="col-sm-2 control-label">
+                                                                证书(退款)<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-10">
+                                                                <input id="cert" type="file" data-preview-file-type="text" msgId="certMsg" name="cert">
+                                                                <span style="color: red; ">apiclient_cert.p12</span><br/>
+                                                                <label id="certMsg"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-offset-4 col-sm-10">
+                                                            <button id="wxPaySubmit" type="submit" class="btn btn-success" style="width:150px;"
+                                                                :disabled="!wxPay.submitAble" :style="{background: wxPay.submitAble ? '' : '#ccc'}">提交</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 微信支付编辑模态框结束 -->
+
+                        <!-- 支付宝支付编辑模态框开始 -->
+                        <div class="modal fade" id="editZfbPay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                            <span class="sr-only">Close</span>
+                                        </button>
+                                        <h4 class="modal-title">支付宝支付</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                    <span>支付宝支付的接口说明如下：<br/>
+                                                        JS API网页支付参数<br/>
+                                                        支付授权目录: http://brand.turing.asia/brand/mb/pay/
+                                                    </span>
+                                                <form class="form-horizontal" id="zfbPayForm" action="zfbInfo/" method="POST">
+                                                    <input type="hidden" name="uid" v-model="uid">
+                                                    支付功能：<input type="radio" name="paySwitch" value="0" v-model="zfbPay.opened">关闭
+                                                    <input type="radio" name="paySwitch" value="1" v-model="zfbPay.opened">开启
+                                                    <div class="form-group" v-if="zfbPay.opened == '1'">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="appId" class="col-sm-2 control-label">
+                                                                AppID<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-4">
+                                                                <input type="text" class="form-control"
+                                                                       id="appId" name="appId"  msgId="appIdMsg" :value="zfbPay.appId">
+                                                                <label id="appIdMsg"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" v-if="zfbPay.opened == '1'">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="appPrivKey" class="col-sm-2 control-label">
+                                                                应用私钥<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-8">
+                                                                <textarea  rows="4" class="form-control"
+                                                                           id="appPrivKey" name="appPrivKey" msgId="appPrivKeyMsg" :value="zfbPay.appPrivKey"></textarea>
+                                                                <label id="appPrivKeyMsg"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" v-if="zfbPay.opened == '1'">
+                                                        <div style="height: 61px; display: inline">
+                                                            <label for="zfbPubKey" class="col-sm-2 control-label">
+                                                                支付宝公钥<span class="required">*</span>
+                                                            </label>
+                                                            <div class="col-sm-8">
+                                                                <textarea rows="4" class="form-control"
+                                                                          id="zfbPubKey" name="zfbPubKey" msgId="zfbPubKeyMsg" :value="zfbPay.zfbPubKey"></textarea>
+                                                                <label id="zfbPubKeyMsg"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-offset-4 col-sm-10">
+                                                            <button id="zfbPaySubmit" type="submit" class="btn btn-success" style="width:150px;"
+                                                                    :disabled="!zfbPay.submitAble" :style="{background: zfbPay.submitAble ? '' : '#ccc'}">提交</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 支付宝支付编辑模态框结束 -->
+                    </div>
+                </div>
+            </div>
+            <!-- End Panel -->
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- END CONTAINER -->
+</div>
+<!-- End Content -->
+<script>
+    curSelectedUid = '[[${userId}]]';
+</script>
+
+<script type="text/javascript" src="../../../js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" src="../../../js/jquery-form.min.js" th:src="@{/js/jquery-form.min.js}"></script>
+<script type="text/javascript" src="../../../js/vue.min.js" th:src="@{/js/vue.min.js}"></script>
+<script type="text/javascript" src="../../../js/plugins.js" th:src="@{/js/plugins.js}"></script>
+<script type="text/javascript" src="../../../js/jquery.validate.js" th:src="@{/js/jquery.validate.js}"></script>
+<script type="text/javascript" src="../../../js/bootstrap/bootstrap.min.js"
+        th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+<script type="text/javascript" src="../../../js/sweet-alert/sweet-alert.min.js"
+        th:src="@{/js/sweet-alert/sweet-alert.min.js}"></script>
+<script type="text/javascript" src="../../../js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+<script type="text/javascript" src="../../../js/fileinput/fileinput.js" th:src="@{/js/fileinput/fileinput.js}"></script>
+<script type="text/javascript" src="../../../js/fileinput/zh.js" th:src="@{/js/fileinput/zh.js}"></script>
+<script type="text/javascript" src="../../../turing/shopping/bms_pay.js" th:src="@{/turing/shopping/bms_pay.js}"></script>
+
+<div th:replace="footer::foot"></div>
+</body>
+</html>
