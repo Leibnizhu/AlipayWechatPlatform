@@ -116,14 +116,15 @@ public class WechatOauthSubRouter implements SubRouter {
                         String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
                         if (visitUrl.length() > 0) {
                             visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
-                            response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + openId).end();
+                            log.info("授权成功，OpenID={}，准备跳转到{}", openId, visitUrl);
+                            response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") +  TuringBase64Util.encode(openIdJson.toString())).end();
                         } else {
                             log.error("没有找到授权后回调地址" + request.absoluteURI());
                             response.end("未设置授权后回调地址");
                         }
                     } else if (openIdJson.containsKey(WECHAT_JSON_ERRCODE_KEY)) {
                         //有错误
-                        response.setStatusCode(302).putHeader("Location", constants.PROJ_URL + "templates/error.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
+                        response.setStatusCode(302).putHeader("Location", constants.PROJ_URL + "static/pageerror.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
                     }
                 });
             } catch (IOException e) {
