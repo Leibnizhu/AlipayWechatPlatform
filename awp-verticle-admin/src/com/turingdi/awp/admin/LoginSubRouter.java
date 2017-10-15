@@ -20,30 +20,16 @@ import org.slf4j.LoggerFactory;
  */
 public class LoginSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
+    private static final JWTOptions JWT_OPTIONS = new JWTOptions().setExpiresInMinutes(60 * 4L);//4小时有效
     private AccountService wxAccServ;
     private Constants constants;
     private Vertx vertx;
     private JWTAuth provider;
 
-    public LoginSubRouter(AccountService wxAccServ, Constants constants) {
+    public LoginSubRouter(AccountService wxAccServ, Constants constants, JWTAuth jwtProvider) {
         this.wxAccServ = wxAccServ;
         this.constants = constants;
-        if(this.vertx != null){
-            this.initJWTProvider();
-        }
-    }
-
-    private void initJWTProvider() {
-        //TODO 从配置文件读取
-        JsonObject config = new JsonObject().put("keyStore", new JsonObject()
-                .put("path", "keystore.jceks") //此处要与生成keystore的时候用的type、keypass一致
-                .put("type", "jceks")
-                .put("password", "secret"));
-        this.provider = JWTAuth.create(vertx, config);
-    }
-
-    public JWTAuth getJWTProvider() {
-        return provider;
+        this.provider = jwtProvider;
     }
 
     @Override
@@ -51,7 +37,6 @@ public class LoginSubRouter implements SubRouter {
         if (vertx == null) {
             throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
         }
-        this.initJWTProvider();
         Router loginRouter = Router.router(vertx);
         loginRouter.post("/").handler(this::login);
         return loginRouter;
@@ -75,7 +60,7 @@ public class LoginSubRouter implements SubRouter {
                 resp.end(result.toString());
             } else {
                 //jwt保存
-                String token = provider.generateToken(new JsonObject().put("id", acc.getInteger("id")), new JWTOptions());
+                String token = provider.generateToken(new JsonObject().put("id", acc.getInteger("id")), JWT_OPTIONS);
                 result.put("result", "success").put("token", token);
                 resp.end(result.toString());
             }
