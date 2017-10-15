@@ -42,7 +42,7 @@ $(document).ready(function(){
         if($('.sidebar').hasClass('hidden')){
             $('.sidebar').removeClass('hidden');
             $('.content').css({
-                'marginLeft' : 250
+                'marginLeft' : 200
             });  
         }else{
             $('.sidebar').addClass('hidden');

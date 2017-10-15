@@ -71,7 +71,7 @@
   color: #33577b;
 }
 .color7 {
-  color: #26a65b;
+  color: #03A9F4;
 }
 .color8 {
   color: #51b7a3;
@@ -120,7 +120,7 @@
   background: #33577b;
 }
 .color7-bg {
-  background: #26a65b;
+  background: #03A9F4;
 }
 .color8-bg {
   background: #51b7a3;
@@ -148,7 +148,7 @@
 }
 /* Up - Down */
 .color-up {
-  color: #26a65b;
+  color: #03A9F4;
 }
 .color-down {
   color: #ef4836;
@@ -176,7 +176,7 @@ body {
   background: #D5EAFF;
 }
 a {
-  color: #ff790c;
+  color: #00BCD4;
   text-decoration: none;
 }
 a:hover,
@@ -331,7 +331,7 @@ Top
 ================================================================================= */
 #top {
   height: 60px;
-  background: #FF790c;
+  background: #00BCD4;
   color: #fff;
   width: 100%;
   position: fixed;
@@ -342,7 +342,7 @@ Top
 App Logo
 ================================================================================= */
 .applogo {
-  width: 250px;
+  width: 200px;
   height: 60px;
   background: rgba(0, 0, 0, 0.14);
   color: #fff;
@@ -547,7 +547,7 @@ Top Right
 Sidebar
 ================================================================================= */
 .sidebar {
-  width: 250px;
+  width: 200px;
   position: absolute;
   top: 60px;
   left: 0;
@@ -934,7 +934,7 @@ Content
   padding-left: 30px;
   padding-right: 30px;
   padding-top: 80px;
-  margin-left: 250px;
+  margin-left: 200px;
   background: #fff;
 }
 .content1 {
@@ -1077,7 +1077,7 @@ Presentation
 }
 .presentation .list .fa {
   margin-right: 10px;
-  color: #26a65b;
+  color: #03A9F4;
 }
 /* Icons Preview */
 .fa-item {
@@ -1244,7 +1244,7 @@ Presentation
   background: #33577b;
 }
 .alert3 {
-  background: #26a65b;
+  background: #03A9F4;
 }
 .alert4 {
   background: #51b7a3;
@@ -2079,8 +2079,8 @@ Awesome Bootstrap Checkbox Rewrite
   color: #fff;
 }
 .checkbox-success input[type="checkbox"]:checked + label::before {
-  background-color: #26a65b;
-  border-color: #26a65b;
+  background-color: #03A9F4;
+  border-color: #03A9F4;
 }
 .checkbox-success input[type="checkbox"]:checked + label::after {
   color: #fff;
@@ -2122,13 +2122,13 @@ Awesome Bootstrap Checkbox Rewrite
   background-color: #f39c12;
 }
 .radio-success input[type="radio"] + label::after {
-  background-color: #26a65b;
+  background-color: #03A9F4;
 }
 .radio-success input[type="radio"]:checked + label::before {
-  border-color: #26a65b;
+  border-color: #03A9F4;
 }
 .radio-success input[type="radio"]:checked + label::after {
-  background-color: #26a65b;
+  background-color: #03A9F4;
 }
 /* =================================================================================
 Bootstrap Rewrite
@@ -2148,7 +2148,7 @@ input[type="checkbox"]:focus,
 }
 /* Typography */
 mark {
-  background: #ff790c;
+  background: #00BCD4;
   padding: 2px 4px;
   border-radius: 3px;
   color:#fff;
@@ -2465,7 +2465,7 @@ fieldset[disabled] .btn {
 }
 /* Button Success */
 .btn-success {
-  background-color: #26a65b;
+  background-color: #03A9F4;
   color: #fff;
 }
 .btn-success:hover,
@@ -2474,7 +2474,7 @@ fieldset[disabled] .btn {
 .btn-success:active,
 .btn-success.active,
 .open > .dropdown-toggle.btn-success {
-  background-color: #2ab764;
+  background-color: #00BCD4;
   color: #fff;
 }
 .btn-success:active,
@@ -2485,7 +2485,7 @@ fieldset[disabled] .btn {
   color: #fff;
 }
 .btn-success .badge {
-  color: #26a65b;
+  color: #03A9F4;
   background-color: #fff;
 }
 /* Button Info */
@@ -2702,7 +2702,7 @@ fieldset[disabled] .btn {
   background: #33577b;
 }
 .label-success {
-  background: #26a65b;
+  background: #03A9F4;
 }
 .label-info {
   background: #51b7a3;
@@ -2724,23 +2724,23 @@ fieldset[disabled] .btn {
 .has-success.checkbox label,
 .has-success.radio-inline label,
 .has-success.checkbox-inline label {
-  color: #26a65b;
+  color: #03A9F4;
 }
 .has-success .form-control {
-  border-color: #26a65b;
+  border-color: #03A9F4;
   box-shadow: none;
 }
 .has-success .form-control:focus {
-  border-color: #26a65b;
+  border-color: #03A9F4;
   box-shadow: none;
 }
 .has-success .input-group-addon {
-  color: #26a65b;
-  background-color: #26a65b;
-  border-color: #26a65b;
+  color: #03A9F4;
+  background-color: #03A9F4;
+  border-color: #03A9F4;
 }
 .has-success .form-control-feedback {
-  color: #26a65b;
+  color: #03A9F4;
 }
 .has-warning .help-block,
 .has-warning .control-label,
@@ -2895,7 +2895,7 @@ select {
   border-right:0;
 }
 .add-on{
-  background: #FF790c;
+  background: #00BCD4;
   color:#fff;
 }
 /* Input Control Sizing */
@@ -3149,7 +3149,7 @@ div[data-role="editor-toolbar"] {
   background: #33577b;
 }
 .tabcolor7-bg {
-  background: #26a65b;
+  background: #03A9F4;
 }
 .tabcolor8-bg {
   background: #51b7a3;
@@ -3325,8 +3325,8 @@ div[data-role="editor-toolbar"] {
 }
 /* Panel Success */
 .panel-success {
-  border-color: #26a65b;
-  background: #26a65b;
+  border-color: #03A9F4;
+  background: #03A9F4;
   color: #fff;
 }
 .panel-success > .panel-heading {
@@ -3335,11 +3335,11 @@ div[data-role="editor-toolbar"] {
   border-bottom: transparent;
 }
 .panel-success > .panel-heading + .panel-collapse > .panel-body {
-  border-top-color: #26a65b;
+  border-top-color: #03A9F4;
 }
 .panel-success .panel-title {
   color: #fff;
-  background: #26a65b;
+  background: #03A9F4;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .panel-success .panel-footer {
@@ -3347,7 +3347,7 @@ div[data-role="editor-toolbar"] {
   background: rgba(255, 255, 255, 0.04);
 }
 .panel-success > .panel-footer + .panel-collapse > .panel-body {
-  border-bottom-color: #26a65b;
+  border-bottom-color: #03A9F4;
 }
 /* Panel Info */
 .panel-info {
@@ -3663,7 +3663,7 @@ div[data-role="editor-toolbar"] {
   line-height: normal;
 }
 .progress-bar-success {
-  background: #26a65b;
+  background: #03A9F4;
 }
 .progress-bar-info {
   background: #51b7a3;
@@ -4472,7 +4472,7 @@ Widgets
   border-left:4px solid #fc7f2c;
 }
 .voucher-title3{
-  border-left:4px solid #26a65b;
+  border-left:4px solid #03A9F4;
 }
 .voucher-url{
   width:300px;
@@ -4676,17 +4676,17 @@ body{
 }
 .bro h3,h4{
   margin:0;
-  color: #a54b0a;
+  color: #212121;
   font-weight: bold;
   text-align: center;
 }
 .bro p{
   text-align: left;
-  color: #a54b0a;
+  color: #212121;
 }
 .bro-bottom{
   padding: 0 2em;
-  color: #a54b0a;
+  color: #212121;
 }
 .bro-img{
   box-shadow: 0 0 10px rgba(0,0,0,.4);
@@ -4845,13 +4845,13 @@ label{
   background: #ffd147;
   border: none;
   border-radius: .4em;
-  color: #a54b0a;
+  color: #212121;
   position: absolute;
   left: 25%;
   bottom: 0;
 }
 .p4{
-  color: #a54b0a;
+  color: #212121;
   font-size: 20px;
   text-align: center;
   margin-top: 5px;
