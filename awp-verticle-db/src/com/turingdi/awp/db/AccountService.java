@@ -48,4 +48,9 @@ public class AccountService {
 	public void delete(Account entity){
 		wxAccountDao.delete(entity);
 	}
+
+    public void login(String username, String password, Handler<JsonObject> callback) {
+		Account account = new Account().setName(username).setPassword(password);
+		wxAccountDao.login(account, callback);
+    }
 }

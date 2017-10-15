@@ -5,6 +5,7 @@ import java.util.Date;
 public class Account {
     private Long id;
     private String name;
+    private String password;
     private String account;
     private String appid;
     private String appsecret;
@@ -19,6 +20,15 @@ public class Account {
     private String zfbAppId;
     private String zfbPrivKey;
     private String zfbPubKey;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Account setPassword(String password) {
+        this.password = password;
+        return this;
+    }
 
     public String getZfbAppId() {
         return zfbAppId;

@@ -77,4 +77,12 @@ public class AccountDao extends BaseVertXDao {
     int updateZfbPay(Account tWxcmsAccount) {
         return 0;
     }
+
+    public void login(Account account, Handler<JsonObject> callback) {
+        query("SELECT * FROM t_wxcms_account WHERE email = ? and password = ?",
+                new JsonArray().add(account.getName()).add(account.getPassword()),
+                result -> {
+                    callback.handle(result.size() > 0 ? result.get(0) : null);
+                });
+    }
 }

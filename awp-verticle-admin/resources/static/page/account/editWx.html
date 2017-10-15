@@ -135,20 +135,12 @@
                         <form id="wechatInfo" class="form-horizontal" role="form" method="POST"
                               enctype="multipart/form-data">
                             <div class="col-md-10">
-                                <div class="form-group" style="display: none">
-                                    <label for="type" class="col-sm-4 control-label">公众号类型
-                                        <span class="required" aria-required="true">*</span></label>
-                                    <div class="col-sm-6">
-                                        <input readonly="readonly" type="text" class="form-control"
-                                               name="type" id="type" value="服务已认证（不可修改）">
-                                    </div>
-                                </div>
                                 <div class="form-group">
                                     <label for="name" class="col-sm-4 control-label">公众号名称
                                         <span class="required" aria-required="true">*</span></label>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control" placeholder="请输入公众号名称"
-                                               name="name" id="name" value="${tWxcmsAccount.name}">
+                                               name="name" id="name" :value="name">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -156,7 +148,7 @@
                                         <span class="required" aria-required="true">*</span></label>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control" placeholder="请输入应用ID"
-                                               name="appid" id="appid">
+                                               name="appid" id="appid" :value="appid">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -164,7 +156,7 @@
                                         <span class="required" aria-required="true">*</span></label>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control" placeholder="请输入应用密钥"
-                                               name="appsecret" id="appsecret">
+                                               name="appsecret" id="appsecret" :value="appsecret">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -172,7 +164,7 @@
                                         <span class="required" aria-required="true">*</span></label>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control" placeholder="MP_vertify_******"
-                                               name="verify" id="verify">
+                                               name="verify" id="verify" :value="verify">
                                     </div>
                                 </div>
                                 <!-- FIXME 其他字段，留用，勿删
@@ -242,6 +234,7 @@
 <script type="text/javascript" src="../../js/sweet-alert/sweet-alert.min.js"></script>
 <script type="text/javascript" src="../../turing/common/menu.js"></script>
 <script type="text/javascript" src="../../turing/common/browserVersion.js"></script>
+<script type="text/javascript" src="../../turing/common/common.js"></script>
 <script type="text/javascript" src="../../turing/account/editWx.js"></script>
 </body>
 </html>

@@ -1,5 +1,29 @@
 var vm = new Vue({
-
+    el: "div.content",
+    data: {
+        name: undefined,
+        appid: undefined,
+        appsecret: undefined,
+        verify: undefined
+    },
+    mounted: function () {
+        this.initData();
+    },
+    computed: {},
+    methods: {
+        initData: function () {
+            authAjax({
+                url: "/bms/offAcc/",
+                type:'GET',
+                success:function(data) {
+                    vm.name = data.name;
+                    vm.appid = data.appid;
+                    vm.appsecret = data.appsecret;
+                    vm.verify = data.verify === null ? null : ("MP_vertify_"+ data.verify);
+                }
+            });
+        }
+    }
 });
 //重构的代码
 (function($w) {
@@ -212,9 +236,6 @@ var vm = new Vue({
         };
     }
 })(window);
-$(document).ready(function(){
-    $AdminWechat.init();
-});
 $.validator.setDefaults({
     submitHandler: function() {
         // console.log(flag);

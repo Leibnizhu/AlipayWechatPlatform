@@ -21,6 +21,11 @@
             <artifactId>awp-verticle-base</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.turingdi.awp</groupId>
+            <artifactId>awp-verticle-db</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

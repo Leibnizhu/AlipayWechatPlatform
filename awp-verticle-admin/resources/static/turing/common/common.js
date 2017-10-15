@@ -1,5 +1,7 @@
 var supportedSweetAlert = !(judge.isIe(6) || judge.isIe(7) || judge.isIe(8));
-var $basePath = "/";
+String.prototype.tren=function(){var h="DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a";var c,e,a;var f,d,b;var g=this;a=g.length;e=0;c="";while(e<a){f=g.charCodeAt(e++)&255;if(e===a){c+=h.charAt(f>>2);c+=h.charAt((f&3)<<4);c+="~~";break}d=g.charCodeAt(e++);if(e===a){c+=h.charAt(f>>2);c+=h.charAt(((f&3)<<4)|((d&240)>>4));c+=h.charAt((d&15)<<2);c+="~";break}b=g.charCodeAt(e++);c+=h.charAt(f>>2);c+=h.charAt(((f&3)<<4)|((d&240)>>4));c+=h.charAt(((d&15)<<2)|((b&192)>>6));c+=h.charAt(b&63)}return c};
+String.prototype.trdc=function(){var g=[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,47,-1,-1,55,26,58,34,56,57,61,4,20,36,-1,-1,-1,-1,-1,-1,-1,3,35,22,0,19,15,6,24,8,1,12,37,52,40,2,14,60,59,18,29,42,32,39,16,50,25,-1,-1,-1,-1,-1,-1,63,30,28,13,23,38,48,33,17,49,9,43,7,45,11,41,5,31,44,54,46,27,21,10,53,51,-1,-1,-1,-1,-1];var e,c,b,a;var f,h,d;var j=this;h=j.length;f=0;d="";while(f<h){do{e=g[j.charCodeAt(f++)&255]}while(f<h&&e===-1);if(e===-1){break}do{c=g[j.charCodeAt(f++)&255]}while(f<h&&c===-1);if(c===-1){break}d+=String.fromCharCode((e<<2)|((c&48)>>4));do{b=j.charCodeAt(f++)&255;if(b===126){return d}b=g[b]}while(f<h&&b===-1);if(b===-1){break}d+=String.fromCharCode(((c&15)<<4)|((b&60)>>2));do{a=j.charCodeAt(f++)&255;if(a===126){return d}a=g[a]}while(f<h&&a===-1);if(a===-1){break}d+=String.fromCharCode(((b&3)<<6)|a)}return d};
+String.prototype.getParam=function(a,s){var b=new RegExp("(^|"+s+")"+a+"=(.+?)("+s+"|$)","i");var c=this.match(b);if(c!==null){return decodeURIComponent(c[2])}return ""};
 Date.prototype.format = function (fmt) {
     var o = {
         "M+": this.getMonth() + 1, //月份
@@ -42,6 +44,27 @@ function registerPageReturnEvent(callback) {
     window.addEventListener('pageshow', function(e){
         if (e.persisted) {
             callback();
+        }
+    });
+}
+
+var $basePath = "http://localhost:8083";
+function authAjax(config){
+    $.ajax({
+        url: $basePath + config.url,
+        type: config.type,
+        data: config.data,
+        dataType: "json",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Bearer " + document.cookie.getParam("awpJwtToken", "; "));
+        },
+        error:function(e){
+            if(e.statusText === "Unauthorized"){
+                window.location.href = $basePath + "/static/page/login.html";
+            }
+        },
+        success:function(data) {
+            config.success.call(this, data);
         }
     });
 }
