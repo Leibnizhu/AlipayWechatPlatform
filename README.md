@@ -1,4 +1,5 @@
 # Alipay-Wechat-Platform
+![](awp-verticle-admin/resources/static/img/logo.png)
 ## 命名
 原来命名是Wechat-Alipay-Platform，但这样缩写WAP、可能引起歧义，所以改成Alipay-Wechat-Platform，缩写AWP（还是有歧义，但至少不是一个领域的）。
 ## 意义
