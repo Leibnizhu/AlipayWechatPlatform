@@ -39,10 +39,9 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 例如（请修改域名后，在微信打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是你的OpenID）: http://localhost:8083/wxOauth/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
 ```json
 {
-    "eid":web项目使用的公众号在本项目中的用户ID
-    "type":0=静默授权，只能获取OpenID，1=正常授权，会弹出授权确认页面，可以获取到用户信息
-    "callback":授权成功后调用的web项目回调接口地址,请使用完整地址,
-                 回调时会使用GET方法，加上rs参数，rs参数值是turingBase64加密的授权结果(JSON)
+    "eid":"web项目使用的公众号在本项目中的用户ID"
+    "type":"0=静默授权，只能获取OpenID，1=正常授权，会弹出授权确认页面，可以获取到用户信息"
+    "callback":"授权成功后调用的web项目回调接口地址,请使用完整地址,回调时会使用GET方法，加上rs参数，rs参数值是turingBase64加密的授权结果(JSON)"
 }
 ```
 
