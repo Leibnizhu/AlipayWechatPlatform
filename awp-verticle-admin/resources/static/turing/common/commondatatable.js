@@ -8,7 +8,7 @@
                     destroy:true,
                     bProcessing: false, // 是否显示取数据时的那个等待提示
                     bServerSide: true,//这个用来指明是通过服务端来取数据
-                    sAjaxSource: $basePath + url, //这个是请求的地址
+                    sAjaxSource: BASE_PATH + url, //这个是请求的地址
                     fnServerData: $Commontable.retrieveFunc, // 获取数据的处理函数
                     paging: true,
                     ordering: false,//是否启用排序
@@ -43,7 +43,7 @@
                     destroy: true,
                     bProcessing: false, // 是否显示取数据时的那个等待提示
                     bServerSide: true,//这个用来指明是通过服务端来取数据
-                    sAjaxSource: $basePath+url,//这个是请求的地址
+                    sAjaxSource: BASE_PATH+url,//这个是请求的地址
                     fnServerData: $Commontable.retrieveFunc, // 获取数据的处理函数
                     paging: true,//分页
                     ordering: true,//是否启用排序
@@ -89,7 +89,7 @@
                     destroy: true,
                     bProcessing: false, // 是否显示取数据时的那个等待提示
                     bServerSide: true,//这个用来指明是通过服务端来取数据
-                    sAjaxSource: $basePath+url,//这个是请求的地址
+                    sAjaxSource: BASE_PATH+url,//这个是请求的地址
                     fnServerData: $Commontable.retrieveFunc, // 获取数据的处理函数
                     paging: false,//分页
                     ordering: false,//是否启用排序

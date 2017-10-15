@@ -16,7 +16,8 @@
 <div class="login-form">
     <form id="signUpForm" method="POST" action="/bms/login/" >
         <div class="top">
-            <h1 class="padding-t-15">支付宝-微信管理平台</h1>
+            <img src="../img/logo.png" style="margin-bottom: 0px;">
+            <h4 style="margin-top: 0px;margin-bottom: 0px;">支付宝-微信管理平台</h4>
         </div>
         <div class="form-area">
             <div class="group">
@@ -43,64 +44,9 @@
 <script type="text/javascript" src="../js/jquery-form.min.js"></script>
 <script type="text/javascript" src="../js/jquery.validate.js"></script>
 <script type="text/javascript" src="../js/bootstrap/bootstrap.min.js"></script>
-<script type="text/javascript" src="../js/jquery.cookie.js"></script>
 <script type="text/javascript" src="../js/jquery.md5.js"></script>
 <script type="text/javascript" src="../turing/common/common.js"></script>
-<script type="text/javascript">
-    $().ready(function() {
-        // 在键盘按下并释放及提交后验证提交表单
-        $("#signUpForm").validate({
-            rules: {
-                username: {
-                    required: true,
-                    minlength: 2
-                },
-                password: {
-                    required: true,
-                    minlength: 5
-                }
-            },
-            messages: {
-                username: {
-                    required: "请输入用户名",
-                    minlength: "用户名必需由两个字母组成"
-                },
-                password: {
-                    required: "请输入密码",
-                    minlength: "密码长度不能小于 5 个字母"
-                }
-            },
-            submitHandler: function() {
-                $.ajax({
-                    type : "post",  //提交方式
-                    url : $basePath + "/bms/login/",
-                    data :{
-                        username : $('#username').val(),
-                        password : $.md5($('#password').val())
-                    },
-                    dataType :"json",
-                    success : function(result) {//返回数据根据结果进行相应的处理
-                        if(result.result === "success") {
-                            $.cookie("awpJwtToken", result.token, {
-                                expires: 1,
-                                path: '/',
-                            });
-                            window.location.href = "/static/";
-                        } else {
-                            var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";
-                            $('#tips').html(tips);
-                        }
-                    }
-                });
-                return false;
-            }
-        });
-    });
-    function keyLogin(){
-        if (event.keyCode==13){ //回车键的键值为13
-            $("#signUpForm").submit(); //调用登录按钮的登录事件
-        }
-    }
+<script type="text/javascript" src="../turing/login.js">
 </script>
 </body>
 </html>

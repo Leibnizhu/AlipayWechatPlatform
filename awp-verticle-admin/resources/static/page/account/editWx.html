@@ -20,6 +20,7 @@
 </head>
 <body>
 <div class="loading"><img src="../../img/loading.gif" alt="loading-img"></div>
+<div id="all">
 <!-- START TOP -->
 <div id="top" class="clearfix">
     <div class="applogo">
@@ -31,7 +32,7 @@
     <a href="#" class="sidebar-open-button-mobile">
         <i class="fa fa-bars"></i>
     </a>
-    <a class="sidepanel-open-button dropdown-toggle profilebox" href="login.html">
+    <a class="sidepanel-open-button dropdown-toggle profilebox" onclick="jwtLogout()">
         <i class="fa fa-sign-out"></i>
     </a>
 
@@ -132,8 +133,7 @@
                         <input type="hidden" id="userOperate" value="-1">
                         <!-- 如果是超级管理员或主账号操作，并且无子账号，标识被激活 -->
                         <input type="hidden" id="isExistChild" value="-1">
-                        <form id="wechatInfo" class="form-horizontal" role="form" method="POST"
-                              enctype="multipart/form-data">
+                        <form id="offAccInfo" class="form-horizontal" role="form" method="POST" action="/bms/offAcc">
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-4 control-label">公众号名称
@@ -224,10 +224,11 @@
     </div>
     <!-- END CONTAINER -->
 </div>
+</div>
 <!-- END CONTENT -->
 <script type="text/javascript" src="../../js/jquery.min.js"></script>
 <script type="text/javascript" src="../../js/jquery.validate.js"></script>
-<script type="text/javascript" src="../../js/jquery.cookie.js"></script>
+<script type="text/javascript" src="../../js/jquery-form.min.js"></script>
 <script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
 <script type="text/javascript" src="../../js/vue.min.js"></script>
 <script type="text/javascript" src="../../js/plugins.js"></script>
