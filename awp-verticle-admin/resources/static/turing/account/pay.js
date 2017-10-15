@@ -7,7 +7,7 @@
 var vm = new Vue({
     el: "#content",
     data: {
-        uid: $.cookie('TURING_ENTERPRISE_ID') || $("#enterpriseName").val() || curSelectedUid,
+        uid: Cookies.get('TURING_ENTERPRISE_ID') || $("#enterpriseName").val() || curSelectedUid,
         wxPay: {
             appId: "",
             appSecret: "",
@@ -36,7 +36,7 @@ var vm = new Vue({
         },
         'uid': function(){
             this.updatePayProp();
-            $.cookie('TURING_ENTERPRISE_ID', $('#enterpriseName').val(), {path:'/'});
+            Cookies.get('TURING_ENTERPRISE_ID', $('#enterpriseName').val(), {path:'/'});
         }
     },
     computed: {

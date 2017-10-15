@@ -1,4 +1,3 @@
-var supportedSweetAlert = !(judge.isIe(6) || judge.isIe(7) || judge.isIe(8));
 String.prototype.tren=function(){var h="DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a";var c,e,a;var f,d,b;var g=this;a=g.length;e=0;c="";while(e<a){f=g.charCodeAt(e++)&255;if(e===a){c+=h.charAt(f>>2);c+=h.charAt((f&3)<<4);c+="~~";break}d=g.charCodeAt(e++);if(e===a){c+=h.charAt(f>>2);c+=h.charAt(((f&3)<<4)|((d&240)>>4));c+=h.charAt((d&15)<<2);c+="~";break}b=g.charCodeAt(e++);c+=h.charAt(f>>2);c+=h.charAt(((f&3)<<4)|((d&240)>>4));c+=h.charAt(((d&15)<<2)|((b&192)>>6));c+=h.charAt(b&63)}return c};
 String.prototype.trdc=function(){var g=[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,47,-1,-1,55,26,58,34,56,57,61,4,20,36,-1,-1,-1,-1,-1,-1,-1,3,35,22,0,19,15,6,24,8,1,12,37,52,40,2,14,60,59,18,29,42,32,39,16,50,25,-1,-1,-1,-1,-1,-1,63,30,28,13,23,38,48,33,17,49,9,43,7,45,11,41,5,31,44,54,46,27,21,10,53,51,-1,-1,-1,-1,-1];var e,c,b,a;var f,h,d;var j=this;h=j.length;f=0;d="";while(f<h){do{e=g[j.charCodeAt(f++)&255]}while(f<h&&e===-1);if(e===-1){break}do{c=g[j.charCodeAt(f++)&255]}while(f<h&&c===-1);if(c===-1){break}d+=String.fromCharCode((e<<2)|((c&48)>>4));do{b=j.charCodeAt(f++)&255;if(b===126){return d}b=g[b]}while(f<h&&b===-1);if(b===-1){break}d+=String.fromCharCode(((c&15)<<4)|((b&60)>>2));do{a=j.charCodeAt(f++)&255;if(a===126){return d}a=g[a]}while(f<h&&a===-1);if(a===-1){break}d+=String.fromCharCode(((b&3)<<6)|a)}return d};
 String.prototype.getParam=function(a,s){var b=new RegExp("(^|"+s+")"+a+"=(.+?)("+s+"|$)","i");var c=this.match(b);if(c!==null){return decodeURIComponent(c[2])}return ""};
@@ -18,6 +17,9 @@ Date.prototype.format = function (fmt) {
     return fmt;
 };
 
+/*! js-cookie v2.1.4 | MIT */
+!function(a){var b=!1;if("function"==typeof define&&define.amd&&(define(a),b=!0),"object"==typeof exports&&(module.exports=a(),b=!0),!b){var c=window.Cookies,d=window.Cookies=a();d.noConflict=function(){return window.Cookies=c,d}}}(function(){function a(){for(var a=0,b={};a<arguments.length;a++){var c=arguments[a];for(var d in c)b[d]=c[d]}return b}function b(c){function d(b,e,f){var g;if("undefined"!=typeof document){if(arguments.length>1){if(f=a({path:"/"},d.defaults,f),"number"==typeof f.expires){var h=new Date;h.setMilliseconds(h.getMilliseconds()+864e5*f.expires),f.expires=h}f.expires=f.expires?f.expires.toUTCString():"";try{g=JSON.stringify(e),/^[\{\[]/.test(g)&&(e=g)}catch(p){}e=c.write?c.write(e,b):encodeURIComponent(e+"").replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),b=encodeURIComponent(b+""),b=b.replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent),b=b.replace(/[\(\)]/g,escape);var i="";for(var j in f)f[j]&&(i+="; "+j,!0!==f[j]&&(i+="="+f[j]));return document.cookie=b+"="+e+i}b||(g={});for(var k=document.cookie?document.cookie.split("; "):[],l=0;l<k.length;l++){var m=k[l].split("="),n=m.slice(1).join("=");'"'===n.charAt(0)&&(n=n.slice(1,-1));try{var o=m[0].replace(/(%[0-9A-Z]{2})+/g,decodeURIComponent);if(n=c.read?c.read(n,o):c(n,o)||n.replace(/(%[0-9A-Z]{2})+/g,decodeURIComponent),this.json)try{n=JSON.parse(n)}catch(p){}if(b===o){g=n;break}b||(g[o]=n)}catch(p){}}return g}}return d.set=d,d.get=function(a){return d.call(d,a)},d.getJSON=function(){return d.apply({json:!0},[].slice.call(arguments))},d.defaults={},d.remove=function(b,c){d(b,"",a(c,{expires:-1}))},d.withConverter=b,d}return b(function(){})});
+
 /**
  * 检测当前浏览器型号版本
  * Created by leibniz on 17-1-10.
@@ -27,33 +29,18 @@ var check = function (r) {
 };
 
 var judge = {
-    /**
-     * 是否为webkit内核的浏览器
-     */
     isWebkit: function () {
         return check(/webkit/);
     },
-    /**
-     * 是否为火狐浏览器
-     */
     isFirefox: function () {
         return check(/firefox/);
     },
-    /**
-     * 是否为谷歌浏览器
-     */
     isChrome: function () {
         return !judge.isOpera() && check(/chrome/);
     },
-    /**
-     * 是否为Opera浏览器
-     */
     isOpera: function () {
         return check(/opr/);
     },
-    /**
-     * 检测是否为Safari浏览器
-     */
     isSafari: function () {
         // google chrome浏览器中也包含了safari
         return !judge.isChrome() && !judge.isOpera() && check(/safari/)
@@ -64,6 +51,7 @@ var judge = {
         return b.getElementsByTagName('i').length === 1;
     }
 };
+var supportedSweetAlert = !(judge.isIe(6) || judge.isIe(7) || judge.isIe(8));
 
 /**
  * 页面上需要引用本文件，并在body中加入：
@@ -95,23 +83,29 @@ function registerPageReturnEvent(callback) {
     });
 }
 
-var $basePath = "http://localhost:8083";
+var BASE_PATH = "http://localhost:8083";
+var TOKEN_COOKIE_KEY = "awpJwtToken";
 function authAjax(config){
     $.ajax({
-        url: $basePath + config.url,
+        url: BASE_PATH + config.url,
         type: config.type,
         data: config.data,
         dataType: "json",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", "Bearer " + document.cookie.getParam("awpJwtToken", "; "));
+            xhr.setRequestHeader("Authorization", "Bearer " + Cookies.get(TOKEN_COOKIE_KEY));
         },
         error:function(e){
             if(e.status === 401){
-                window.location.href = $basePath + "/static/page/login.html";
+                window.location.href = BASE_PATH + "/static/page/login.html";
             }
         },
         success:function(data) {
             config.success.call(this, data);
         }
     });
+}
+
+function jwtLogout(){
+    Cookies.remove(TOKEN_COOKIE_KEY);
+    window.location.href = BASE_PATH + "/static/page/login.html";
 }
