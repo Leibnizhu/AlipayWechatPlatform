@@ -10,6 +10,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
@@ -26,6 +27,7 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
         mainRouter.route("/static/*").handler(StaticHandler.create().setWebRoot("static"));
+        mainRouter.route("/favicon.ico").handler(this::getLogo);
         AccountService accountSrv = new AccountService(vertx);
         Constants constants = new Constants();
         //微信授权的子路由
@@ -41,5 +43,9 @@ public class MainVerticle extends AbstractVerticle{
         //TODO 其他子路由
         //如 mainRouter.mountSubRouter("/……"， ……);
         server.requestHandler(mainRouter::accept).listen(8083);
+    }
+
+    private void getLogo(RoutingContext rc) {
+        rc.response().sendFile("static/img/favicon.ico").close();
     }
 }
