@@ -59,7 +59,7 @@ function authAjax(config){
             xhr.setRequestHeader("Authorization", "Bearer " + document.cookie.getParam("awpJwtToken", "; "));
         },
         error:function(e){
-            if(e.statusText === "Unauthorized"){
+            if(e.status === 401){
                 window.location.href = $basePath + "/static/page/login.html";
             }
         },

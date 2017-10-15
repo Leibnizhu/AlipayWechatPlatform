@@ -35,7 +35,7 @@ public class OfficialAccountSubRouter implements SubRouter {
             throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
         }
         Router offAccRouter = Router.router(vertx);
-        offAccRouter.route("/*").handler(JWTAuthHandler.create(provider));
+        offAccRouter.route().handler(JWTAuthHandler.create(provider));
         offAccRouter.get("/").handler(this::getOfficialAccount);
         return offAccRouter;
     }

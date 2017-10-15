@@ -41,6 +41,7 @@ class BaseVertXDao {
                         } else {
                             LOG.error("读取数据库失败");
                         }
+                        conn.close();
                     });
         });
     }
