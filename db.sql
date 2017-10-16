@@ -1,9 +1,10 @@
-create table t_wxcms_account
+create table awp_account
 (
 	id int not null primary key,
 	name varchar(100) not null comment '中文名',
   email varchar(255) not null comment '登录邮箱',
   password varchar(32) not null comment '密码MD5',
+  role int default '1' not null comment '0=管理员 1=普通',
 	appid varchar(100) null,
 	appsecret varchar(100) null,
   verify varchar(31) null comment '微信公众号MP_verify域名验证',

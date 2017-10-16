@@ -9,6 +9,7 @@ public class Account {
     private String account;
     private String appid;
     private String appsecret;
+    private String verify;
     private String url;
     private String token;
     private Date createTime;
@@ -20,6 +21,15 @@ public class Account {
     private String zfbAppId;
     private String zfbPrivKey;
     private String zfbPubKey;
+
+    public String getVerify() {
+        return verify;
+    }
+
+    public Account setVerify(String verify) {
+        this.verify = verify;
+        return this;
+    }
 
     public String getPassword() {
         return password;
