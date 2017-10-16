@@ -18,16 +18,44 @@ public class AccountDao extends BaseVertXDao {
         hikariCPM = HikariCPManager.getInstance(vertx);
     }
 
-    List<Account> selectByUserId(int userID) {
-        return null;
-    }
-
-    int insert(Account tWxcmsAccount) {
-        return 0;
-    }
-
-    int update(Account tWxcmsAccount) {
-        return 0;
+    /**
+     * 更新账户基本公众号配置
+     * @param acc
+     * @param callback
+     */
+    void updateBase(Account acc, Handler<Integer> callback) {
+        if(acc.getId() == null){
+            throw new IllegalArgumentException("Account ID cannot be null!!!");
+        }
+        StringBuilder sql = new StringBuilder("update awp_account set ");
+        JsonArray params = new JsonArray();
+        int paramCnt = 0;
+        if (acc.getName() != null && !acc.getName().equals("")) {
+            sql.append("name=?");
+            params.add(acc.getName());
+            paramCnt++;
+        }
+        if (acc.getAppid() != null && !acc.getAppid().equals("")) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("appid=?");
+            params.add(acc.getAppid());
+            paramCnt++;
+        }
+        if (acc.getAppsecret() != null && !acc.getAppsecret().equals("")) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("appsecret=?");
+            params.add(acc.getAppsecret());
+            paramCnt++;
+        }
+        if (acc.getVerify() != null && !acc.getVerify().equals("")) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("verify=?");
+            params.add(acc.getVerify());
+            paramCnt++;
+        }
+        sql.append(" where id=?");
+        params.add(acc.getId());
+        update(sql.toString(), params, callback);
     }
 
     /**
@@ -37,11 +65,31 @@ public class AccountDao extends BaseVertXDao {
      * @param callback 获取到数据后回调方法
      */
     void getById(int id, Handler<JsonObject> callback) {
-        query("SELECT * FROM t_wxcms_account WHERE ID = ?",
+        query("SELECT * FROM awp_account WHERE ID = ?",
                 new JsonArray().add(id),
                 result -> {
                     callback.handle(result.size() > 0 ? result.get(0) : null);
                 });
+    }
+
+    public void login(Account account, Handler<JsonObject> callback) {
+        query("SELECT * FROM awp_account WHERE email = ? and password = ?",
+                new JsonArray().add(account.getName()).add(account.getPassword()),
+                result -> {
+                    callback.handle(result.size() > 0 ? result.get(0) : null);
+                });
+    }
+
+    public void getAccountList(Handler<List<JsonObject>> callback){
+        query("SELECT id,name FROM awp_account", callback);
+    }
+
+    List<Account> selectByUserId(int userID) {
+        return null;
+    }
+
+    int insert(Account tWxcmsAccount) {
+        return 0;
     }
 
     Account getByAccount(String account) {
@@ -76,13 +124,5 @@ public class AccountDao extends BaseVertXDao {
 
     int updateZfbPay(Account tWxcmsAccount) {
         return 0;
-    }
-
-    public void login(Account account, Handler<JsonObject> callback) {
-        query("SELECT * FROM t_wxcms_account WHERE email = ? and password = ?",
-                new JsonArray().add(account.getName()).add(account.getPassword()),
-                result -> {
-                    callback.handle(result.size() > 0 ? result.get(0) : null);
-                });
     }
 }

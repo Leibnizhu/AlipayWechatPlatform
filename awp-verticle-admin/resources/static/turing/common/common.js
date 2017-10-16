@@ -90,7 +90,7 @@ function authAjax(config){
         url: BASE_PATH + config.url,
         type: config.type,
         data: config.data,
-        dataType: "json",
+        dataType: config.dataType || "json",
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", "Bearer " + Cookies.get(TOKEN_COOKIE_KEY));
         },

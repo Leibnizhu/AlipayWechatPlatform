@@ -46,7 +46,7 @@
         </li>
     </ul>
     <ul class="top-right">
-        <li class="dropdown link" onclick="window.location.href='../user/display'" title="个人信息">
+        <li class="dropdown link" onclick="window.location.href='#'" title="个人信息">
             <a href="#" class="profilebox">
                 <span id="userNameSpan"></span>
             </a>
@@ -104,12 +104,12 @@
             <li class="active">微信公众号配置</li>
         </ol>
         <!-- 主账号操作公众号配置时显示出来。 -->
-        <div class="right text-r">
+        <div class="right text-r" id="accountList" style="display: none">
             <div class="pull-right padding-r-15">
-                <span id="accountTitle" style="display: inline-block;padding-top: 6px;">子帐号：</span>
+                <span id="accountTitle" style="display: inline-block;padding-top: 6px;">帐号：</span>
                 <div class="pull-right padding-r-50">
-                    <select class="form-control" style="width: 200px;" id="enterpriseName">
-                        <option value="-1">无用户</option>
+                    <select class="form-control" style="width: 200px;" id="eid" v-model="eid">
+                        <option v-for="acc in accList" :value="acc.id">{{acc.name}}</option>
                     </select>
                 </div>
             </div>
@@ -127,13 +127,8 @@
                     <div class="pull-right"></div>
                     <div class="panel-title"><h4>公众号配置</h4></div>
                     <div class="panel-body">
-                        <!-- 隐藏域 账号类型 -->
-                        <input type="hidden" id="roleOperate" value="-1">
-                        <!-- 如果是主账号操作，那么填充数据的主账号是  如果是管理员则填充管理员账号 -->
-                        <input type="hidden" id="userOperate" value="-1">
-                        <!-- 如果是超级管理员或主账号操作，并且无子账号，标识被激活 -->
-                        <input type="hidden" id="isExistChild" value="-1">
                         <form id="offAccInfo" class="form-horizontal" role="form" method="POST" action="/bms/offAcc">
+                            <input type="hidden" name="id" id="id" :value="id">
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-4 control-label">公众号名称
@@ -160,8 +155,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="verify" class="col-sm-4 control-label">安全域名验证文件名
-                                        <span class="required" aria-required="true">*</span></label>
+                                    <label for="verify" class="col-sm-4 control-label">安全域名验证文件名</label>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control" placeholder="MP_vertify_******"
                                                name="verify" id="verify" :value="verify">
@@ -228,7 +222,6 @@
 <!-- END CONTENT -->
 <script type="text/javascript" src="../../js/jquery.min.js"></script>
 <script type="text/javascript" src="../../js/jquery.validate.js"></script>
-<script type="text/javascript" src="../../js/jquery-form.min.js"></script>
 <script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
 <script type="text/javascript" src="../../js/vue.min.js"></script>
 <script type="text/javascript" src="../../js/plugins.js"></script>

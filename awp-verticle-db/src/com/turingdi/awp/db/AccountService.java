@@ -22,8 +22,8 @@ public class AccountService {
 		return wxAccountDao.insert(WxAccount);
 	}
 
-	public int update(Account WxAccount) {
-		return wxAccountDao.update(WxAccount);
+	public void update(Account WxAccount, Handler<Integer> callback) {
+		wxAccountDao.updateBase(WxAccount, callback);
 	}
 
 	/**
@@ -53,4 +53,8 @@ public class AccountService {
 		Account account = new Account().setName(username).setPassword(password);
 		wxAccountDao.login(account, callback);
     }
+
+	public void getAccountList(Handler<List<JsonObject>> callback){
+		wxAccountDao.getAccountList(callback);
+	}
 }

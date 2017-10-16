@@ -1,10 +1,14 @@
+var curEid = -1;
 var vm = new Vue({
     el: "#all",
     data: {
+        eid: -1,
+        id: undefined,
         name: undefined,
         appid: undefined,
         appsecret: undefined,
-        verify: undefined
+        verify: undefined,
+        accList: []
     },
     mounted: function () {
         this.initMenu();
@@ -12,16 +16,31 @@ var vm = new Vue({
         this.initFormValidate();
     },
     computed: {},
+    watch: {
+        "eid": function (newVal, oldVal) {
+            if(oldVal === -1){
+                return;
+            }
+            authAjax({
+                url: "/bms/offAcc/" + newVal,
+                type: 'GET',
+                success: function (data) {
+                    vm.resumeDataFromAjax(data);
+                }
+            });
+        }
+    },
     methods: {
         initData: function () {
             authAjax({
                 url: "/bms/offAcc/",
-                type:'GET',
-                success:function(data) {
-                    vm.name = data.name;
-                    vm.appid = data.appid;
-                    vm.appsecret = data.appsecret;
-                    vm.verify = data.verify === null ? null : ("MP_verify_"+ data.verify);
+                type: 'GET',
+                success: function (data) {
+                    vm.resumeDataFromAjax(data);
+                    if (data.role === 0) {
+                        curEid = data.id;
+                        vm.processAdmin();
+                    }
                 }
             });
         },
@@ -47,7 +66,6 @@ var vm = new Vue({
                         required: true
                     },
                     verify: {
-                        required: true,
                         wechatVerify: true
                     }
                 },
@@ -62,32 +80,45 @@ var vm = new Vue({
                         required: "请输入微信公众号AppSecret"
                     },
                     verify: {
-                        required: "请输入微信公众号安全域名认证文件名",
                         wechatVerify: "请输入正确的安全域名认证文件名"
                     }
                 },
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     authAjax({
-                        type : "PUT",  //提交方式
-                        url : BASE_PATH + "/bms/offAcc/",
-                        data :{
-                            username : $('#username').val(),
-                            password : $.md5($('#password').val())
-                        },
-                        dataType :"json",
-                        success : function(result) {//返回数据根据结果进行相应的处理
-                            if(result.result === "success") {
-                                Cookies.set(TOKEN_COOKIE_KEY, result.token, {expires: 1, path: '/'});
-                                window.location.href = "/static/";
+                        type: "PUT",  //提交方式
+                        url: "/bms/offAcc/",
+                        data: $(form).serialize(),
+                        dataType: "text",
+                        success: function (result) {//返回数据根据结果进行相应的处理
+                            if (result === "success") {
+                                swal("成功", "更新公众号配置成功", "success");
                             } else {
-                                var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";
-                                $('#tips').html(tips);
+                                swal("错误", "未能更新配置，数据库处理出错", "error");
                             }
                         }
                     });
                     return false;
                 }
             });
+        },
+        processAdmin: function () {
+            authAjax({
+                type: "GET",  //提交方式
+                url: "/bms/offAcc/all",
+                dataType: "json",
+                success: function (result) {//返回数据根据结果进行相应的处理
+                    vm.accList = result;
+                    vm.eid = curEid;
+                    $("#accountList").css("display", "block");
+                }
+            });
+        },
+        resumeDataFromAjax: function (data) {
+            vm.id = data.id;
+            vm.name = data.name;
+            vm.appid = data.appid;
+            vm.appsecret = data.appsecret;
+            vm.verify = data.verify;
         }
     }
 });

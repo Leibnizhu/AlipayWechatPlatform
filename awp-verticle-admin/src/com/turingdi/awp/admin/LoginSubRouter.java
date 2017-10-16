@@ -57,7 +57,7 @@ public class LoginSubRouter implements SubRouter {
                 resp.end(result.toString());
             } else {
                 //jwt保存
-                String token = provider.generateToken(new JsonObject().put("id", acc.getInteger("id")), JWT_OPTIONS);
+                String token = provider.generateToken(new JsonObject().put("id", acc.getInteger("id")).put("role", acc.getInteger("role")), JWT_OPTIONS);
                 result.put("result", "success").put("token", token);
                 resp.end(result.toString());
             }
