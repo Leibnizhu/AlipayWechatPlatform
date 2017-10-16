@@ -9,6 +9,8 @@ import io.vertx.ext.sql.SQLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.turingdi.awp.util.common.Constants.*;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-10-12 12:28.
@@ -22,10 +24,10 @@ public class HikariCPManager implements ConnectionPoolManager{
         JsonObject vertxConfig = vertx.getOrCreateContext().config();
         JsonObject config = new JsonObject()
                 .put("provider_class", vertxConfig.getString("provider_class", "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider"))
-                .put("jdbcUrl", vertxConfig.getString("jdbcUrl", "jdbc:mysql://192.168.1.235:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"))
-                .put("driverClassName", vertxConfig.getString("driverClassName", "com.mysql.jdbc.Driver"))
-                .put("username", vertxConfig.getString("username", "root"))
-                .put("password", vertxConfig.getString("password", "turingdi"))
+                .put("jdbcUrl", JDBC_URL)
+                .put("driverClassName", JDBC_DRIVER)
+                .put("username", JDBC_USER)
+                .put("password", JDBC_PSWD)
                 .put("minimumIdle", vertxConfig.getInteger("minimumIdle", 2))
                 .put("maximumPoolSize", vertxConfig.getInteger("maximumPoolSize", 10));
         this.client = JDBCClient.createShared(vertx, config, "HikariCP");

@@ -2,7 +2,6 @@ package com.turingdi.awp.admin;
 
 import com.turingdi.awp.base.SubRouter;
 import com.turingdi.awp.db.AccountService;
-import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -22,13 +21,11 @@ public class LoginSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private static final JWTOptions JWT_OPTIONS = new JWTOptions().setExpiresInMinutes(60 * 4L);//4小时有效
     private AccountService wxAccServ;
-    private Constants constants;
     private Vertx vertx;
     private JWTAuth provider;
 
-    public LoginSubRouter(AccountService wxAccServ, Constants constants, JWTAuth jwtProvider) {
+    public LoginSubRouter(AccountService wxAccServ, JWTAuth jwtProvider) {
         this.wxAccServ = wxAccServ;
-        this.constants = constants;
         this.provider = jwtProvider;
     }
 

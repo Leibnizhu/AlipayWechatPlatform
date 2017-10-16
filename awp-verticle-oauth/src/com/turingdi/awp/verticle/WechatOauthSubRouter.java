@@ -2,7 +2,6 @@ package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.base.SubRouter;
 import com.turingdi.awp.db.AccountService;
-import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
 import io.vertx.core.Vertx;
@@ -27,11 +26,9 @@ import static com.turingdi.awp.util.common.Constants.*;
 public class WechatOauthSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private AccountService wxAccServ;
-    private Constants constants;
     private Vertx vertx;
-    public WechatOauthSubRouter(AccountService wxAccServ, Constants constants) {
+    public WechatOauthSubRouter(AccountService wxAccServ) {
         this.wxAccServ = wxAccServ;
-        this.constants = constants;
     }
 
 
@@ -84,7 +81,7 @@ public class WechatOauthSubRouter implements SubRouter {
         int type = reqJson.getInteger("type");
         String callback = TuringBase64Util.encode(reqJson.getString("callback"));//授权后回调方法
         wxAccServ.getById(eid, account -> {
-            String redirectAfterUrl = constants.PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
+            String redirectAfterUrl = PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
             String returnUrl = null;
             try {
                 returnUrl = String.format((type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)
@@ -124,7 +121,7 @@ public class WechatOauthSubRouter implements SubRouter {
                         }
                     } else if (openIdJson.containsKey(WECHAT_JSON_ERRCODE_KEY)) {
                         //有错误
-                        response.setStatusCode(302).putHeader("Location", constants.PROJ_URL + "static/pageerror.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
+                        response.setStatusCode(302).putHeader("Location", PROJ_URL + "static/pageerror.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
                     }
                 });
             } catch (IOException e) {

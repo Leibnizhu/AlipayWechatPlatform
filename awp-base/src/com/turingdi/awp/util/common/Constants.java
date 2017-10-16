@@ -1,14 +1,30 @@
 package com.turingdi.awp.util.common;
 
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-09-26 16:56.
  */
 public class Constants {
 
-    public final static String PROJ_URL = "http://itq46u.natappfree.cc/";
+    public static String PROJ_URL;
+    public static String CERT_DIR;
+    public static String JDBC_URL;
+    public static String JDBC_USER;
+    public static String JDBC_PSWD;
+    public static String JDBC_DRIVER;
 
-    public final static String CERT_DIR = "/home/leibniz/";
+    public static void init(Vertx vertx) {
+        JsonObject config = vertx.getOrCreateContext().config();
+        PROJ_URL = config.getString("projectUrl", "http://itq46u.natappfree.cc/");
+        CERT_DIR = config.getString("certDir", "/home/leibniz/");
+        JDBC_URL = config.getString("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false");
+        JDBC_USER = config.getString("jdbcUser", "root");
+        JDBC_PSWD = config.getString("jdbcPassword", "turingdi");
+        JDBC_DRIVER = config.getString("jdbcDriver", "com.mysql.jdbc.Driver");
+    }
 
     /**
      * 微信公众号授权URL，scope=snsapi_userinfo，可用于获取用户信息

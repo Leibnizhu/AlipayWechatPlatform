@@ -2,7 +2,6 @@ package com.turingdi.awp.admin;
 
 import com.turingdi.awp.base.SubRouter;
 import com.turingdi.awp.db.AccountService;
-import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
@@ -19,13 +18,11 @@ import org.slf4j.LoggerFactory;
 public class OfficialAccountSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private AccountService wxAccServ;
-    private Constants constants;
     private JWTAuth provider;
     private Vertx vertx;
 
-    public OfficialAccountSubRouter(AccountService wxAccServ, Constants constants, JWTAuth provider) {
+    public OfficialAccountSubRouter(AccountService wxAccServ, JWTAuth provider) {
         this.wxAccServ = wxAccServ;
-        this.constants = constants;
         this.provider = provider;
     }
 

@@ -27,9 +27,9 @@ public class MainVerticle extends AbstractVerticle{
         super.start();
         HttpServer server = vertx.createHttpServer();
         //公用资源初始化
-        AccountService accountSrv = new AccountService(vertx);
-        Constants constants = new Constants();
+        Constants.init(vertx);
         JWTAuth jwtProvider = initJWTProvider();
+        AccountService accountSrv = new AccountService(vertx);
         Router mainRouter = Router.router(vertx);
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
@@ -38,11 +38,11 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.route("/favicon.ico").handler(this::getLogo);
         mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
         //微信授权的子路由
-        mainRouter.mountSubRouter("/wxOauth", new WechatOauthSubRouter(accountSrv, constants).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/wxOauth", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
         //登录BMS的子路由
-        mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, constants, jwtProvider).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由
-        mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(accountSrv, constants, jwtProvider).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //TODO 其他子路由
         //如 mainRouter.mountSubRouter("/……"， ……);
         server.requestHandler(mainRouter::accept).listen(8083);
