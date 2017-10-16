@@ -33,7 +33,7 @@
 
         <vertx.version>3.4.2</vertx.version>
         <hikaricp.version>2.7.2</hikaricp.version>
-        <mysql.version>5.1.30</mysql.version>
+        <mysql.version>6.0.6</mysql.version>
         <slf4j.version>1.7.24</slf4j.version>
         <logback.version>1.1.11</logback.version>
     </properties>
