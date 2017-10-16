@@ -3,6 +3,7 @@ package com.turingdi.awp.admin;
 import com.turingdi.awp.base.SubRouter;
 import com.turingdi.awp.db.AccountService;
 import com.turingdi.awp.entity.db.Account;
+import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
@@ -76,7 +77,8 @@ public class OfficialAccountSubRouter implements SubRouter {
                 .put("appid", offAcc.getString("appid"))
                 .put("appsecret", offAcc.getString("appsecret"))
                 .put("verify", offAcc.getString("verify"))
-                .put("role", offAcc.getInteger("role"));
+                .put("role", offAcc.getInteger("role"))
+                .put("projUrl", Constants.PROJ_URL);
         rc.response().putHeader("content-type", "application/json; charset=utf-8").end(result.toString());
     }
 

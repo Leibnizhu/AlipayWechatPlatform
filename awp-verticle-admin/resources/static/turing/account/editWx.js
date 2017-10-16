@@ -8,6 +8,7 @@ var vm = new Vue({
         appid: undefined,
         appsecret: undefined,
         verify: undefined,
+        projUrl: undefined,
         accList: []
     },
     mounted: function () {
@@ -119,6 +120,7 @@ var vm = new Vue({
             vm.appid = data.appid;
             vm.appsecret = data.appsecret;
             vm.verify = data.verify;
+            vm.projUrl = data.projUrl;
             localStorage.setItem("id", data.id);
             localStorage.setItem("name", data.name);
         }
