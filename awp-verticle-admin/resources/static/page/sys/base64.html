@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>系统管理</title>
+    <link rel="stylesheet" type="text/css" href="../../css/root.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/fileinput.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/responsive.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/plugin/sweet-alert/sweet-alert.css">
+    <style type="text/css">
+        label.error {
+            color: #ef4836; /*错误信息的颜色*/
+        }
+
+        span.required {
+            color: #ef4836; /*必填字段星号的颜色*/
+        }
+
+        textarea {
+            width: 95%
+        }
+
+        #content {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="loading"><img src="../../img/loading.gif" alt="loading-img"></div>
+<div id="all">
+    <!-- START TOP -->
+    <div id="top" class="clearfix">
+        <div class="applogo">
+            <img src="../../img/logo.png" height="50" style="margin-top:-13px;">
+        </div>
+        <a href="#" class="sidebar-open-button">
+            <i class="fa fa-bars"></i>
+        </a>
+        <a href="#" class="sidebar-open-button-mobile">
+            <i class="fa fa-bars"></i>
+        </a>
+        <a class="sidepanel-open-button dropdown-toggle profilebox" onclick="jwtLogout()">
+            <i class="fa fa-sign-out"></i>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-list dropdown-menu-right">
+            <li role="presentation" class="dropdown-header">设置</li>
+            <li>
+                <a href="userManager/personalUser.html">
+                    <i class="fa falist fa-lock"></i>
+                    个人信息
+                </a>
+            </li>
+        </ul>
+        <ul class="top-right">
+            <li class="dropdown link" onclick="window.location.href='#'" title="个人信息">
+                <a href="#" class="profilebox">
+                    <span id="userNameSpan"></span>
+                </a>
+                <span id="topIdsteName"></span>
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
+                    <img src="../../img/profileimg.png" alt="img"><b id="userName">{{name}}</b><span
+                        class="caret"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- END TOP -->
+
+    <!-- START SIDEBAR -->
+    <div class="sidebar clearfix">
+        <div class="sidebar-colorful">
+            <ul class="sidebar-panel nav" id="leftmenu">
+                <li id="publicAccountLi">
+                    <a href="#"><span class="icon color3"><i class="fa fa-weixin"
+                                                             aria-hidden="true"></i></span>公众号管理<span
+                            class="caret"></span></a>
+                    <ul id="publicAccount">
+                        <li id="wechatNumberId">
+                            <a href="../account/editWx.html">微信公众号配置</a>
+                        </li>
+                        <li id="wxpayListLi">
+                            <a id="wxpayList" href="../account/pay.html">支付中心</a>
+                        </li>
+                    </ul>
+                </li>
+                <li id="systemManagerLi">
+                    <a href="#"><span class="icon color7"><i class="fa fa-cogs" aria-hidden="true"></i></span>系统管理<span
+                            class="caret"></span></a>
+                    <ul id="systemManager">
+                        <li id="enterpriseListMenuLi">
+                            <a id="enterpriseListMenu" href="userManager/enterpriseUserList.html">帐号管理中心</a>
+                        </li>
+                        <li id="base64MenuLi">
+                            <a id="base64Menu" href="../sys/base64.html">Base64工具</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END SIDEBAR -->
+
+    <!-- START CONTENT -->
+    <div class="content">
+        <!-- Start Page Header -->
+        <div class="page-header">
+            <h1 class="title">系统管理</h1>
+            <ol class="breadcrumb">
+                <li class="active">Base64工具</li>
+            </ol>
+        </div>
+        <!-- End Page Header -->
+
+        <!-- START CONTAINER -->
+        <div class="container-padding">
+            <!-- Start Row -->
+            <div class="row">
+                <!-- Start Panel -->
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="pull-right"></div>
+                        <div class="panel-title"><h4>Base64工具</h4></div>
+                        <div class="panel-body">
+                            <div id="content">
+                                <textarea rows="4" :value="decoded" v-model="decoded"></textarea>
+                                <br/>
+                                <button @click="encode">加密↓</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button @click="decode">解密↑</button>
+                                <br/>
+                                <textarea rows="4" :value="encoded" v-model="encoded"></textarea>
+                                <hr/>
+                                账户ID：<input type="text" style="width: 40px" v-model="eid">
+                                授权类型：<select v-model="type">
+                                <option value="0">静默授权</option>
+                                <option value="1">普通授权</option>
+                            </select>
+                                回调地址：<input type="text" style="width: 250px" v-model="callback">
+                                <input type="button" value="生成授权接口参数">
+                                <textarea rows="4" :value="oauth" v-model="oauth"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Panel -->
+            </div>
+            <!-- End Row -->
+        </div>
+        <!-- END CONTAINER -->
+    </div>
+</div>
+<!-- END CONTENT -->
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/vue.min.js"></script>
+<script type="text/javascript" src="../../js/plugins.js"></script>
+<script type="text/javascript" src="../../turing/common/common.js"></script>
+<script type="text/javascript">
+    $("#systemManager").addClass("active");
+    $("#systemManager").show();
+    $("#base64MenuLi a").addClass("active");
+    var vm = new Vue({
+        el: "#all",
+        data: {
+            decoded: "",
+            encoded: "",
+            name: localStorage.getItem("name") || "",
+            eid: localStorage.getItem("id") || 0,
+            type: 1,
+            callback: "http://www.baidu.com",
+            oauth: undefined
+        },
+        mounted: function () {
+            var json = "{\"eid\":" + this.eid + ",\"type\":" + this.type + ",\"callback\":\"" + this.callback + "\"}";
+            this.oauth = json.tren();
+        },
+        methods: {
+            encode: function () {
+                this.encoded = this.decoded.tren();
+            },
+            decode: function () {
+                this.decoded = this.encoded.trdc();
+            }
+        }
+    });
+</script>
+</body>
+</html>
