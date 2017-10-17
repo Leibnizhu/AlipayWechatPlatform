@@ -2,6 +2,7 @@ package com.turingdi.awp;
 
 import com.turingdi.awp.admin.LoginSubRouter;
 import com.turingdi.awp.admin.OfficialAccountSubRouter;
+import com.turingdi.awp.admin.PaySettingSubRouter;
 import com.turingdi.awp.db.AccountService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.verticle.WechatOauthSubRouter;
@@ -43,6 +44,8 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由
         mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
+        //支付配置子路由
+        mainRouter.mountSubRouter("/bms/pay", new PaySettingSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //TODO 其他子路由
         //如 mainRouter.mountSubRouter("/……"， ……);
         server.requestHandler(mainRouter::accept).listen(8083);

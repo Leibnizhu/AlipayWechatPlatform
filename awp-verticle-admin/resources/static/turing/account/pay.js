@@ -31,17 +31,18 @@ var vm = new Vue({
         this.initWxPayValidator();
         this.initZfbPayValidator();
         this.initUploadPlugin();
-        this.updatePayProp();
+        this.updatePayProp(localStorage.id);
+        if(localStorage.role === "0"){
+            this.processAdmin();
+        }
     },
     watch: {
         'wxPay.opened': function () {
             $("#certDiv").css("display", this.wxPay.opened === '1' ? "" : "none");
         },
-        'uid': function(){
+        'selectedEid': function(){
             this.updatePayProp();
         }
-    },
-    computed: {
     },
     methods: {
         /**
@@ -81,9 +82,9 @@ var vm = new Vue({
         /**
          * 更新微信和支付宝支付配置回显
          */
-        updatePayProp: function () {
-            $.ajax({
-                url: "info/" + vm.selectedEid,
+        updatePayProp: function (id) {
+            authAjax({
+                url: "/bms/pay/" + (id || (typeof(vm) === "undefined" ? 1 : vm.selectedEid)),
                 type: "GET",
                 dataType: "JSON",
                 success: function (data) {
@@ -183,6 +184,17 @@ var vm = new Vue({
                         }
                     });
                     return false;
+                }
+            });
+        },
+        processAdmin: function () {
+            authAjax({
+                type: "GET",  //提交方式
+                url: "/bms/offAcc/all",
+                dataType: "json",
+                success: function (result) {//返回数据根据结果进行相应的处理
+                    vm.accList = result;
+                    $("#accountList").css("display", "block");
                 }
             });
         }
