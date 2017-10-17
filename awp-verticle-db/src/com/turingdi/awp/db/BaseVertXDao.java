@@ -34,7 +34,7 @@ class BaseVertXDao {
      * @param callback
      */
     static void query(String sql, JsonArray params, Handler<List<JsonObject>> callback) {
-        LOG.debug("excuting SELECT SQL: {}, params:{}", sql, params);
+        LOG.debug("excuting SELECT SQL: \"{}\", params:{}", sql, params);
         hikariCPM.getConnection(conn -> {
             conn.queryWithParams(sql, params, ar -> {
                         if (ar.succeeded()) {
@@ -51,7 +51,7 @@ class BaseVertXDao {
     }
 
     static void update(String sql, JsonArray params, Handler<Integer> callback) {
-        LOG.debug("excuting INSERT/UPDATE/DELETE SQL: {}, params:{}", sql, params);
+        LOG.debug("excuting INSERT/UPDATE/DELETE SQL: \"{}\", params:{}", sql, params);
         hikariCPM.getConnection(conn -> {
             conn.updateWithParams(sql, params, ar -> {
                 if (ar.succeeded()) {

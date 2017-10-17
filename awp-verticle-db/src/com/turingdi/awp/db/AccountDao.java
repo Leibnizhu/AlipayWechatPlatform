@@ -102,10 +102,45 @@ public class AccountDao extends BaseVertXDao {
             params.add(acc.getMchKey());
             paramCnt++;
         }
-        if (acc.getWxPayOn() != null) {
+        if (acc.getZfbPayOn() != null) {
             if (paramCnt > 0) sql.append(",");
             sql.append("wxPayOn=?");
-            params.add(acc.getWxPayOn());
+            params.add(acc.getZfbPayOn());
+            paramCnt++;
+        }
+        sql.append(" where id=?");
+        params.add(acc.getId());
+        update(sql.toString(), params, callback);
+    }
+
+    void updateZfbPay(Account acc, Handler<Integer> callback) {
+        if(acc.getId() == null){
+            throw new IllegalArgumentException("Account ID cannot be null!!!");
+        }
+        StringBuilder sql = new StringBuilder("update awp_account set ");
+        JsonArray params = new JsonArray();
+        int paramCnt = 0;
+        if (acc.getZfbAppId() != null && !acc.getZfbAppId().equals("")) {
+            sql.append("zfbAppId=?");
+            params.add(acc.getZfbAppId());
+            paramCnt++;
+        }
+        if (acc.getZfbPrivKey() != null && !acc.getZfbPrivKey().equals("")) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("zfbPrivKey=?");
+            params.add(acc.getZfbPrivKey());
+            paramCnt++;
+        }
+        if (acc.getZfbPubKey() != null && !acc.getZfbPubKey().equals("")) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("zfbPubKey=?");
+            params.add(acc.getZfbPubKey());
+            paramCnt++;
+        }
+        if (acc.getZfbPayOn() != null) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("zfbPayOn=?");
+            params.add(acc.getZfbPayOn());
             paramCnt++;
         }
         sql.append(" where id=?");

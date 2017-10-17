@@ -146,7 +146,7 @@
                                             支付授权目录: http://brand.turing.asia/brand/mb/pay/
                                         </span>
                                     </td>
-                                    <td>{{this.zfbPay.opened==='1'?'开启':'关闭'}}</td>
+                                    <td :style="{color: zfbPay.opened==1 ? '#4CAF50' : '#E91E63'}">{{zfbPay.opened==1?'开启':'关闭'}}</td>
                                     <td class="text-center">
                                         <input type="button" @click="showEditZfbPay" value="修改">
                                     </td>
@@ -159,7 +159,7 @@
                                             支付授权目录: http://brand.turing.asia/brand/mb/pay/
                                         </span>
                                     </td>
-                                    <td class="">{{this.wxPay.opened==='1'?'开启':'关闭'}}</td>
+                                    <td :style="{color: wxPay.opened==1 ? '#4CAF50' : '#E91E63'}">{{wxPay.opened==1?'开启':'关闭'}}</td>
                                     <td class="text-center">
                                         <input type="button" @click="showEditWxPay" value="修改">
                                     </td>
@@ -222,7 +222,7 @@
                                                                 <div class="col-sm-6">
                                                                     <input type="text" class="form-control" id="mchId"
                                                                            name="mchId" msgId="mchIdMsg"
-                                                                           :value="wxPay.mchId">
+                                                                           v-model="wxPay.mchId">
                                                                     <label id="mchIdMsg"></label>
                                                                 </div>
                                                             </div>
@@ -235,7 +235,7 @@
                                                                 <div class="col-sm-8">
                                                                     <input type="text" class="form-control" id="payKey"
                                                                            name="payKey" msgId="payKeyMsg"
-                                                                           :value="wxPay.payKey">
+                                                                           v-model="wxPay.payKey">
                                                                     <label id="payKeyMsg"></label>
                                                                 </div>
                                                             </div>
@@ -288,8 +288,7 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-12 col-sm-12">
-                                                    <form class="form-horizontal" id="zfbPayForm" action="zfbInfo/"
-                                                          method="POST">
+                                                    <form class="form-horizontal" id="zfbPayForm" method="POST">
                                                         <input type="hidden" name="uid" v-model="uid">
                                                         支付功能：<input type="radio" name="paySwitch" value="0"
                                                                     v-model="zfbPay.opened">关闭
@@ -303,7 +302,7 @@
                                                                 <div class="col-sm-4">
                                                                     <input type="text" class="form-control"
                                                                            id="appId" name="appId" msgId="appIdMsg"
-                                                                           :value="zfbPay.appId">
+                                                                           v-model="zfbPay.appId">
                                                                     <label id="appIdMsg"></label>
                                                                 </div>
                                                             </div>
@@ -317,7 +316,7 @@
                                                                 <textarea rows="4" class="form-control"
                                                                           id="appPrivKey" name="appPrivKey"
                                                                           msgId="appPrivKeyMsg"
-                                                                          :value="zfbPay.appPrivKey"></textarea>
+                                                                          v-model="zfbPay.appPrivKey"></textarea>
                                                                     <label id="appPrivKeyMsg"></label>
                                                                 </div>
                                                             </div>
@@ -331,7 +330,7 @@
                                                                 <textarea rows="4" class="form-control"
                                                                           id="zfbPubKey" name="zfbPubKey"
                                                                           msgId="zfbPubKeyMsg"
-                                                                          :value="zfbPay.zfbPubKey"></textarea>
+                                                                          v-model="zfbPay.zfbPubKey"></textarea>
                                                                     <label id="zfbPubKeyMsg"></label>
                                                                 </div>
                                                             </div>

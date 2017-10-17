@@ -121,15 +121,25 @@ public class PaySettingSubRouter implements SubRouter {
     }
 
     private void updateAlipayPaySetting(RoutingContext rc) {
-        /*Map<String, String> json = new HashMap<>();
+        HttpServerRequest req = rc.request();
+        HttpServerResponse resp = rc.response().putHeader("content-type", "application/json; charset=utf-8");
+        //解析参数
+        Long uid = Long.parseLong(req.getParam("uid"));
+        Integer paySwitch = Integer.parseInt(req.getParam("paySwitch"));
+        String appId = req.getParam("appId");
+        String appPrivKey = req.getParam("appPrivKey");
+        String zfbPubKey = req.getParam("zfbPubKey");
+
+        //参数检查
         if (paySwitch == 1 && !CommonUtils.notEmptyString(appId, appPrivKey, zfbPubKey)) {
-            json.put("status", "invalid");
-            return json;
+            resp.end(new JsonObject().put("status", "invalid").toString());
+            return;
         }
+
         //保存支付参数
-        TWxcmsAccount wxAccount = new TWxcmsAccount().setId((long) uid).setZfbAppId(appId).setZfbPrivKey(appPrivKey).setZfbPubKey(zfbPubKey).setZfbPayOn(paySwitch);
-        int affRows = payService.updateZfbPay(wxAccount);
-        json.put("status", affRows == 1 ? "success" : "failure");
-        return json;*/
+        Account acc = new Account().setId(uid).setZfbAppId(appId).setZfbPrivKey(appPrivKey).setZfbPubKey(zfbPubKey).setZfbPayOn(paySwitch);
+        accServ.updateZfbPay(acc, rows -> {
+            rc.response().end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
+        });
     }
 }

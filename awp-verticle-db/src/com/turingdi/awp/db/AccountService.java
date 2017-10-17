@@ -61,4 +61,8 @@ public class AccountService {
 	public void updateWxPay(Account acc, Handler<Integer> callback){
 		accDao.updateWxPay(acc, callback);
 	}
+
+	public void updateZfbPay(Account acc, Handler<Integer> callback){
+		accDao.updateZfbPay(acc, callback);
+	}
 }

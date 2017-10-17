@@ -30,7 +30,6 @@ var vm = new Vue({
         this.initMenu();
         this.initWxPayValidator();
         this.initZfbPayValidator();
-        // this.initUploadPlugin();
         this.updatePayProp(localStorage.id);
         if(localStorage.role === "0"){
             this.processAdmin();
@@ -38,7 +37,7 @@ var vm = new Vue({
     },
     watch: {
         'wxPay.opened': function () {
-            $("#certDiv").css("display", this.wxPay.opened === 1 ? "" : "none");
+            $("#certDiv").css("display", this.wxPay.opened == 1 ? "" : "none");
         },
         'selectedEid': function(){
             this.updatePayProp();
@@ -51,21 +50,6 @@ var vm = new Vue({
         initMenu: function () {
             $("#publicAccount").addClass("active").show();
             $("#wxpayListLi").find("a").addClass("active");
-        },
-        /**
-         * 初始化文件上传插件
-         */
-        initUploadPlugin: function () {
-            $("#cert").fileinput({
-                allowedFileExtensions: ['p12'],
-                browseClass: "btn btn-success",
-                maxFileSize: 4,//kb
-                language: 'zh',
-                showPreview: false,
-                showUpload: false
-            }).on("fileloaded", function () {
-                $("#certMsg").html(""); //清除警告
-            });
         },
         /**
          * 显示微信支付配置模态窗
@@ -120,53 +104,35 @@ var vm = new Vue({
                     $("#" + element.attr("msgId")).html(error);
                 },
                 submitHandler: function (form) {
-                    var dataa = new FormData(form);
-                    dataa.append("file",$("#cert").prop("files"));
                     vm.wxPay.submitAble = false;
                     authAjax({
                         type: "POST",  //提交方式
                         url: "/bms/pay/wx",
                         data: new FormData($("#wxPayForm")[0]),
-                        // dataType: "text",
                         processData: false,
                         contentType: false,
                         cache: false,
                         success: function (data) {//返回数据根据结果进行相应的处理
                             if (data.status === "success") {
-                                swal("成功", "更新公众号配置成功", "success");
-                            } else if (data.status === "invalid") {
-                                swal({title: "输入数据有误！"}, function () {
+                                swal({title: "提交成功！", text:"更新支付配置成功", icon:"success"}, function () {
                                     $("#editWxPay").modal("hide");
+                                    vm.wxPay.submitAble = true;
+                                });
+                            } else if (data.status === "invalid") {
+                                swal({title: "错误", text:"输入数据有误！", icon:"warning"}, function () {
+                                    $("#editWxPay").modal("hide");
+                                    vm.wxPay.submitAble = true;
                                 });
                             } else {
                                 swal("错误", "未能更新配置，数据库处理出错", "error");
+                                vm.wxPay.submitAble = true;
                             }
-                            vm.wxPay.submitAble = true;
                         },
                         error: function () {
                             swal("错误", "服务器异常，请联系管理员", "error");
                             vm.wxPay.submitAble = true;
                         }
                     });
-                    /*$(form).ajaxSubmit({
-                        success: function (data) {
-                            if (data.status === "success") {
-                                swal({title: "提交成功！"}, function () {
-                                    $("#editWxPay").modal("hide");
-                                    vm.wxPay.submitAble = true;
-                                });
-                            } else if (data.status === "invalid") {
-                                swal({title: "输入数据有误！"}, function () {
-                                    $("#editWxPay").modal("hide");
-                                    vm.wxPay.submitAble = true;
-                                });
-                            }
-                        },
-                        error: function () {
-                            swal("服务器异常，请联系管理员");
-                            vm.wxPay.submitAble = true;
-                        }
-                    });*/
                     return false;
                 }
             });
@@ -191,22 +157,29 @@ var vm = new Vue({
                 },
                 submitHandler: function (form) {
                     vm.zfbPay.submitAble = false;
-                    $(form).ajaxSubmit({
-                        success: function (data) {
+                    authAjax({
+                        type: "POST",  //提交方式
+                        url: "/bms/pay/zfb",
+                        data: $(form).serialize(),
+                        cache: false,
+                        success: function (data) {//返回数据根据结果进行相应的处理
                             if (data.status === "success") {
-                                swal({title: "提交成功！"}, function () {
+                                swal({title: "提交成功！", text:"更新支付配置成功", icon:"success"}, function () {
                                     $("#editZfbPay").modal("hide");
                                     vm.zfbPay.submitAble = true;
                                 });
                             } else if (data.status === "invalid") {
-                                swal({title: "输入数据有误！"}, function () {
+                                swal({title: "错误", text:"输入数据有误！", icon:"warning"}, function () {
                                     $("#editZfbPay").modal("hide");
                                     vm.zfbPay.submitAble = true;
                                 });
+                            } else {
+                                swal("错误", "未能更新配置，数据库处理出错", "error");
+                                vm.zfbPay.submitAble = true;
                             }
                         },
                         error: function () {
-                            swal("服务器异常，请联系管理员");
+                            swal("错误", "服务器异常，请联系管理员", "error");
                             vm.zfbPay.submitAble = true;
                         }
                     });
