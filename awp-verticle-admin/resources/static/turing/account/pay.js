@@ -5,9 +5,12 @@
  */
 
 var vm = new Vue({
-    el: "#content",
+    el: "#all",
     data: {
-        uid: Cookies.get('TURING_ENTERPRISE_ID') || $("#enterpriseName").val() || curSelectedUid,
+        uid: localStorage.id,
+        curName: localStorage.name,
+        selectedEid: localStorage.id,
+        accList: [],
         wxPay: {
             appId: "",
             appSecret: "",
@@ -36,7 +39,6 @@ var vm = new Vue({
         },
         'uid': function(){
             this.updatePayProp();
-            Cookies.get('TURING_ENTERPRISE_ID', $('#enterpriseName').val(), {path:'/'});
         }
     },
     computed: {
@@ -46,9 +48,8 @@ var vm = new Vue({
          * 菜单展开、加高亮
          */
         initMenu: function () {
-            $("#leftmenu a").removeClass("active");
-            $("#publicAccount").css("display", "block");
-            $("#wxpayList").addClass("active");
+            $("#publicAccount").addClass("active").show();
+            $("#wxpayListLi").find("a").addClass("active");
         },
         /**
          * 初始化文件上传插件
@@ -82,7 +83,7 @@ var vm = new Vue({
          */
         updatePayProp: function () {
             $.ajax({
-                url: "info/" + ($("#enterpriseName").val() || curSelectedUid),
+                url: "info/" + vm.selectedEid,
                 type: "GET",
                 dataType: "JSON",
                 success: function (data) {
