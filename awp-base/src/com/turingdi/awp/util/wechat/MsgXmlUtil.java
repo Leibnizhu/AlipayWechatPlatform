@@ -45,8 +45,6 @@ public class MsgXmlUtil {
 				msgReq.setMsgType(text);
 			}else if("MsgId".equals(name)){
 				msgReq.setMsgId(text);
-			}else if("MsgId".equals(name)){
-				msgReq.setMsgId(text);
 			}else if("FromUserName".equals(name)){
 				msgReq.setFromUserName(text);
 			}else if("ToUserName".equals(name)){

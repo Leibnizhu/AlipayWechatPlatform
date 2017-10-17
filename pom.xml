@@ -162,7 +162,7 @@
                     http://192.168.1.235:9000
                 </sonar.host.url>
                 <sonar.exclusions>
-                    **/js//**/*
+                    **/js/**/*
                 </sonar.exclusions>
             </properties>
         </profile>

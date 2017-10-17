@@ -71,13 +71,22 @@ public class NetworkUtils {
      * @param file 用于保存的文件
      */
     private static void writeImageToDisk(byte[] img, File file) {
+        FileOutputStream fops = null;
         try {
-            FileOutputStream fops = new FileOutputStream(file);
+            fops = new FileOutputStream(file);
             fops.write(img);
             fops.flush();
             fops.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(fops != null){
+                try {
+                    fops.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
