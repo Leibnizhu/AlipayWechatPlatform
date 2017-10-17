@@ -61,7 +61,7 @@
                 </a>
                 <span id="topIdsteName"></span>
                 <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
-                    <img src="../../img/profileimg.png" alt="img"><b id="userName">{{name}}</b><span
+                    <img src="../../img/profileimg.png" alt="img"><b id="userName">{{curName}}</b><span
                         class="caret"></span>
                 </a>
             </li>
@@ -133,13 +133,13 @@
                                 <br/>
                                 <textarea rows="4" :value="encoded" v-model="encoded"></textarea>
                                 <hr/>
-                                账户ID：<input type="text" style="width: 40px" v-model="eid">
-                                授权类型：<select v-model="type">
+                                账户ID：<input type="text" style="width: 40px; height: auto" v-model="eid">
+                                授权类型：<select v-model="type" style="height: auto">
                                 <option value="0">静默授权</option>
                                 <option value="1">普通授权</option>
                             </select>
-                                回调地址：<input type="text" style="width: 250px" v-model="callback">
-                                <input type="button" value="生成授权接口参数">
+                                回调地址：<input type="text" style="width: 250px; height: auto" v-model="callback">
+                                <button>生成授权接口参数</button>
                                 <textarea rows="4" :value="oauth" v-model="oauth"></textarea>
                             </div>
                         </div>
@@ -167,7 +167,7 @@
         data: {
             decoded: "",
             encoded: "",
-            name: localStorage.getItem("name") || "",
+            curName: localStorage.getItem("name") || "",
             eid: localStorage.getItem("id") || 0,
             type: 1,
             callback: "http://www.baidu.com",

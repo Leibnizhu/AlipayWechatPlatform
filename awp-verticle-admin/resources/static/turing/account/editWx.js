@@ -2,9 +2,11 @@ var curEid = -1;
 var vm = new Vue({
     el: "#all",
     data: {
-        eid: -1,
-        id: undefined,
+        eid: localStorage.id,
+        selectedEid: localStorage.id, //下拉框选择的id
         name: undefined,
+        role: localStorage.id,
+        curName: localStorage.name,
         appid: undefined,
         appsecret: undefined,
         verify: undefined,
@@ -13,42 +15,41 @@ var vm = new Vue({
     },
     mounted: function () {
         this.initMenu();
-        this.initData();
+        this.initAll();
         this.initFormValidate();
     },
     computed: {},
     watch: {
-        "eid": function (newVal, oldVal) {
+        "selectedEid": function (newVal, oldVal) {
             if(oldVal === -1){
                 return;
             }
-            authAjax({
-                url: "/bms/offAcc/" + newVal,
-                type: 'GET',
-                success: function (data) {
-                    vm.resumeDataFromAjax(data);
-                }
-            });
+            vm.loadData(newVal);
         }
     },
     methods: {
-        initData: function () {
-            authAjax({
-                url: "/bms/offAcc/",
-                type: 'GET',
-                success: function (data) {
-                    vm.resumeDataFromAjax(data);
-                    if (data.role === 0) {
-                        curEid = data.id;
-                        vm.processAdmin();
-                    }
+        initMenu: function () {
+            $("#publicAccount").addClass("active").show();
+            $("#wechatNumberId").find("a").addClass("active");
+        },
+        initAll: function () {
+            this.loadData(localStorage.id, function(data){
+                vm.curName = data.name;
+                if (data.role === 0) {
+                    curEid = data.id;
+                    vm.processAdmin();
                 }
             });
         },
-        initMenu: function () {
-            $("#publicAccount").addClass("active");
-            $("#wechatNumberId a").addClass("active");
-            $("#publicAccount").show();
+        loadData: function (eid, cb) {
+            authAjax({
+                url: "/bms/offAcc/" + eid,
+                type: 'GET',
+                success: function (data) {
+                    vm.resumeDataFromAjax(data);
+                    if(cb)  cb.call(this, data);
+                }
+            });
         },
         initFormValidate: function () {
             $.validator.addMethod('wechatVerify', function (value, element) {
@@ -109,20 +110,17 @@ var vm = new Vue({
                 dataType: "json",
                 success: function (result) {//返回数据根据结果进行相应的处理
                     vm.accList = result;
-                    vm.eid = curEid;
                     $("#accountList").css("display", "block");
                 }
             });
         },
         resumeDataFromAjax: function (data) {
-            vm.id = data.id;
+            vm.eid = data.id;
             vm.name = data.name;
             vm.appid = data.appid;
             vm.appsecret = data.appsecret;
             vm.verify = data.verify;
             vm.projUrl = data.projUrl;
-            localStorage.setItem("id", data.id);
-            localStorage.setItem("name", data.name);
         }
     }
 });

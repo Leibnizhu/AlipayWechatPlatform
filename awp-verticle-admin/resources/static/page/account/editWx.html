@@ -52,7 +52,7 @@
             </a>
             <span id="topIdsteName"></span>
             <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
-                <img src="../../img/profileimg.png" alt="img"><b id="userName">{{name}}</b><span class="caret"></span>
+                <img src="../../img/profileimg.png" alt="img"><b>{{curName}}</b><span class="caret"></span>
             </a>
         </li>
     </ul>
@@ -80,7 +80,7 @@
                         class="caret"></span></a>
                 <ul id="systemManager">
                     <li id="enterpriseListMenuLi">
-                        <a id="enterpriseListMenu" href="userManager/enterpriseUserList.html">帐号管理中心</a>
+                        <a id="enterpriseListMenu" href="../sys/accList.html">帐号管理中心</a>
                     </li>
                     <li id="base64MenuLi">
                         <a id="base64Menu" href="../sys/base64.html">Base64工具</a>
@@ -105,7 +105,7 @@
             <div class="pull-right padding-r-15">
                 <span id="accountTitle" style="display: inline-block;padding-top: 6px;">帐号：</span>
                 <div class="pull-right padding-r-50">
-                    <select class="form-control" style="width: 200px;" id="eid" v-model="eid">
+                    <select class="form-control" style="width: 200px;" v-model="selectedEid">
                         <option v-for="acc in accList" :value="acc.id">{{acc.name}}</option>
                     </select>
                 </div>
@@ -126,7 +126,7 @@
                     <div class="panel-body">
                         <form id="offAccInfo" class="form-horizontal" role="form" method="POST" action="/bms/offAcc">
                             <label style="text-align: center; width: 100%">请在微信公众号后台的"公众号设置"-"功能设置"的"网页授权域名"中填写：{{projUrl}}</label>
-                            <input type="hidden" name="id" id="id" :value="id">
+                            <input type="hidden" name="id" id="id" :value="eid">
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-4 control-label">公众号名称

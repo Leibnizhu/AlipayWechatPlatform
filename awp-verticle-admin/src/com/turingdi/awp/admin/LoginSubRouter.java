@@ -52,13 +52,16 @@ public class LoginSubRouter implements SubRouter {
         String password = req.getParam("password");
         wxAccServ.login(username, password, acc -> {
             JsonObject result = new JsonObject();
-            if(acc == null){//密码错误或用户不存在
+            if (acc == null) {//密码错误或用户不存在
                 result.put("result", "fail");
                 resp.end(result.toString());
             } else {
                 //jwt保存
-                String token = provider.generateToken(new JsonObject().put("id", acc.getInteger("id")).put("role", acc.getInteger("role")), JWT_OPTIONS);
-                result.put("result", "success").put("token", token);
+                Integer id = acc.getInteger("id");
+                Integer role = acc.getInteger("role");
+                String name = acc.getString("name");
+                String token = provider.generateToken(new JsonObject().put("id", id).put("role", role), JWT_OPTIONS);
+                result.put("result", "success").put("token", token).put("name", name).put("role", role).put("id", id);
                 resp.end(result.toString());
             }
         });

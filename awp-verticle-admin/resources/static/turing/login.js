@@ -33,6 +33,9 @@ $().ready(function() {
                 success : function(result) {//返回数据根据结果进行相应的处理
                     if(result.result === "success") {
                         Cookies.set(TOKEN_COOKIE_KEY, result.token, {expires: 1, path: '/'});
+                        localStorage.setItem("role", result.role);
+                        localStorage.setItem("name", result.name);
+                        localStorage.setItem("id", result.id);
                         window.location.href = "/static/";
                     } else {
                         var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";

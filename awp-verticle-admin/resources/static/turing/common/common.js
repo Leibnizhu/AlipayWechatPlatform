@@ -107,5 +107,6 @@ function authAjax(config){
 
 function jwtLogout(){
     Cookies.remove(TOKEN_COOKIE_KEY);
+    localStorage.clear();
     window.location.href = BASE_PATH + "/static/page/login.html";
 }
