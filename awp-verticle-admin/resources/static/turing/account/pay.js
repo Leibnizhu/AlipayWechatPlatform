@@ -30,7 +30,7 @@ var vm = new Vue({
         this.initMenu();
         this.initWxPayValidator();
         this.initZfbPayValidator();
-        this.initUploadPlugin();
+        // this.initUploadPlugin();
         this.updatePayProp(localStorage.id);
         if(localStorage.role === "0"){
             this.processAdmin();
@@ -38,7 +38,7 @@ var vm = new Vue({
     },
     watch: {
         'wxPay.opened': function () {
-            $("#certDiv").css("display", this.wxPay.opened === '1' ? "" : "none");
+            $("#certDiv").css("display", this.wxPay.opened === 1 ? "" : "none");
         },
         'selectedEid': function(){
             this.updatePayProp();
@@ -120,8 +120,35 @@ var vm = new Vue({
                     $("#" + element.attr("msgId")).html(error);
                 },
                 submitHandler: function (form) {
+                    var dataa = new FormData(form);
+                    dataa.append("file",$("#cert").prop("files"));
                     vm.wxPay.submitAble = false;
-                    $(form).ajaxSubmit({
+                    authAjax({
+                        type: "POST",  //提交方式
+                        url: "/bms/pay/wx",
+                        data: new FormData($("#wxPayForm")[0]),
+                        // dataType: "text",
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        success: function (data) {//返回数据根据结果进行相应的处理
+                            if (data.status === "success") {
+                                swal("成功", "更新公众号配置成功", "success");
+                            } else if (data.status === "invalid") {
+                                swal({title: "输入数据有误！"}, function () {
+                                    $("#editWxPay").modal("hide");
+                                });
+                            } else {
+                                swal("错误", "未能更新配置，数据库处理出错", "error");
+                            }
+                            vm.wxPay.submitAble = true;
+                        },
+                        error: function () {
+                            swal("错误", "服务器异常，请联系管理员", "error");
+                            vm.wxPay.submitAble = true;
+                        }
+                    });
+                    /*$(form).ajaxSubmit({
                         success: function (data) {
                             if (data.status === "success") {
                                 swal({title: "提交成功！"}, function () {
@@ -139,7 +166,7 @@ var vm = new Vue({
                             swal("服务器异常，请联系管理员");
                             vm.wxPay.submitAble = true;
                         }
-                    });
+                    });*/
                     return false;
                 }
             });

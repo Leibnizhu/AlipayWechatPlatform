@@ -13,11 +13,11 @@ public class Account {
     private String url;
     private String token;
     private Date createTime;
-    private int wxPayOn;
+    private Integer wxPayOn;
     private String mchUrl;
     private String mchKey;
     private String mchId;
-    private int zfbPayOn;
+    private Integer zfbPayOn;
     private String zfbAppId;
     private String zfbPrivKey;
     private String zfbPubKey;
@@ -166,20 +166,20 @@ public class Account {
         return this;
     }
 
-    public int getWxPayOn() {
+    public Integer getWxPayOn() {
         return wxPayOn;
     }
 
-    public Account setWxPayOn(int wxPayOn) {
+    public Account setWxPayOn(Integer wxPayOn) {
         this.wxPayOn = wxPayOn;
         return this;
     }
 
-    public int getZfbPayOn() {
+    public Integer getZfbPayOn() {
         return zfbPayOn;
     }
 
-    public Account setZfbPayOn(int zfbPayOn) {
+    public Account setZfbPayOn(Integer zfbPayOn) {
         this.zfbPayOn = zfbPayOn;
         return this;
     }

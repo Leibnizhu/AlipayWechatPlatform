@@ -130,31 +130,38 @@
                         </div>
 
                         <div>
-                            <div th:if="${userId == null}">
-                                <span>没有子帐号</span>
-                            </div>
-                            <table th:if="${userId != null}" border="1">
+                            <table border="1" class="table table-hover">
                                 <tbody>
                                 <tr>
-                                    <th colspan="4">支付参数</th>
+                                    <th style="width: 15%;min-width:60px;">支付平台</th>
+                                    <th>备注</th>
+                                    <th style="width: 10%;min-width:30px;">状态</th>
+                                    <th style="width: 10%;min-width:30px;">操作</th>
                                 </tr>
                                 <tr>
                                     <td>支付宝</td>
                                     <td>
-                                        <div>备注</div>
+                                        <span>支付宝支付的接口说明如下：<br/>
+                                            JS API网页支付参数<br/>
+                                            支付授权目录: http://brand.turing.asia/brand/mb/pay/
+                                        </span>
                                     </td>
                                     <td>{{this.zfbPay.opened==='1'?'开启':'关闭'}}</td>
                                     <td class="text-center">
-                                        <div @click="showEditZfbPay">修改</div>
+                                        <input type="button" @click="showEditZfbPay" value="修改">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>微信支付</td>
                                     <td>
-                                        <div>备注</div>
+                                        <span>微信支付的接口说明如下：<br/>
+                                            JS API网页支付参数<br/>
+                                            支付授权目录: http://brand.turing.asia/brand/mb/pay/
+                                        </span>
                                     </td>
                                     <td class="">{{this.wxPay.opened==='1'?'开启':'关闭'}}</td>
                                     <td class="text-center">
-                                        <div @click="showEditWxPay">修改</div>
+                                        <input type="button" @click="showEditWxPay" value="修改">
                                     </td>
                                 </tr>
                                 </tbody>
@@ -176,12 +183,8 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-12 col-sm-12">
-                                                    <span>微信支付的接口说明如下：<br/>
-                                                        JS API网页支付参数<br/>
-                                                        支付授权目录: http://brand.turing.asia/brand/mb/pay/
-                                                    </span>
-                                                    <form class="form-horizontal" id="wxPayForm" action="wxInfo/"
-                                                          method="POST" enctype="multipart/form-data">
+                                                    <form class="form-horizontal" id="wxPayForm"
+                                                          enctype="multipart/form-data">
                                                         <input type="hidden" name="uid" v-model="uid">
                                                         支付功能：<input type="radio" name="paySwitch" value="0"
                                                                     v-model="wxPay.opened">关闭
@@ -245,7 +248,7 @@
                                                                 <div class="col-sm-10">
                                                                     <input id="cert" type="file"
                                                                            data-preview-file-type="text" msgId="certMsg"
-                                                                           name="cert">
+                                                                           name="cert" style="height: auto">
                                                                     <span style="color: red; ">apiclient_cert.p12</span><br/>
                                                                     <label id="certMsg"></label>
                                                                 </div>
@@ -253,12 +256,11 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <div class="col-sm-offset-4 col-sm-10">
-                                                                <button id="wxPaySubmit" type="submit"
-                                                                        class="btn btn-success" style="width:150px;"
-                                                                        :disabled="!wxPay.submitAble"
-                                                                        :style="{background: wxPay.submitAble ? '' : '#ccc'}">
-                                                                    提交
-                                                                </button>
+                                                                <input id="wxPaySubmit" type="submit"
+                                                                       class="btn btn-success" style="width:150px;"
+                                                                       :disabled="!wxPay.submitAble"
+                                                                       :style="{background: wxPay.submitAble ? '' : '#ccc'}"
+                                                                       value="提交">
                                                             </div>
                                                         </div>
                                                     </form>
@@ -286,10 +288,6 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-12 col-sm-12">
-                                                    <span>支付宝支付的接口说明如下：<br/>
-                                                        JS API网页支付参数<br/>
-                                                        支付授权目录: http://brand.turing.asia/brand/mb/pay/
-                                                    </span>
                                                     <form class="form-horizontal" id="zfbPayForm" action="zfbInfo/"
                                                           method="POST">
                                                         <input type="hidden" name="uid" v-model="uid">
@@ -371,8 +369,7 @@
 <script type="text/javascript" src="../../js/jquery.validate.js"></script>
 <script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
 <script type="text/javascript" src="../../js/vue.min.js"></script>
-<script type="text/javascript" src="../../js/plugins.js"></script>
-<script type="text/javascript" src="../../js/fileinput.js"></script>
+<!--<script type="text/javascript" src="../../js/fileinput.js"></script>-->
 <script type="text/javascript" src="../../js/sweet-alert.min.js"></script>
 <script type="text/javascript" src="../../turing/common/common.js"></script>
 <script type="text/javascript" src="../../turing/account/pay.js"></script>

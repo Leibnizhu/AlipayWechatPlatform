@@ -1,6 +1,7 @@
 target/
 **/target/
 **/.vertx/
+**/file-uploads/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

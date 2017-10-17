@@ -14,7 +14,7 @@ import java.util.List;
 public class AccountDao extends BaseVertXDao {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public AccountDao(Vertx vertx) {
+    AccountDao(Vertx vertx) {
         hikariCPM = HikariCPManager.getInstance(vertx);
     }
 
@@ -72,7 +72,7 @@ public class AccountDao extends BaseVertXDao {
                 });
     }
 
-    public void login(Account account, Handler<JsonObject> callback) {
+    void login(Account account, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE email = ? and password = ?",
                 new JsonArray().add(account.getName()).add(account.getPassword()),
                 result -> {
@@ -80,8 +80,41 @@ public class AccountDao extends BaseVertXDao {
                 });
     }
 
-    public void getAccountList(Handler<List<JsonObject>> callback){
+    void getAccountList(Handler<List<JsonObject>> callback){
         query("SELECT id,name FROM awp_account", callback);
+    }
+
+    void updateWxPay(Account acc, Handler<Integer> callback) {
+        if(acc.getId() == null){
+            throw new IllegalArgumentException("Account ID cannot be null!!!");
+        }
+        StringBuilder sql = new StringBuilder("update awp_account set ");
+        JsonArray params = new JsonArray();
+        int paramCnt = 0;
+        if (acc.getMchId() != null && !acc.getMchId().equals("")) {
+            sql.append("mchId=?");
+            params.add(acc.getMchId());
+            paramCnt++;
+        }
+        if (acc.getMchKey() != null && !acc.getMchKey().equals("")) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("mchKey=?");
+            params.add(acc.getMchKey());
+            paramCnt++;
+        }
+        if (acc.getWxPayOn() != null) {
+            if (paramCnt > 0) sql.append(",");
+            sql.append("wxPayOn=?");
+            params.add(acc.getWxPayOn());
+            paramCnt++;
+        }
+        sql.append(" where id=?");
+        params.add(acc.getId());
+        update(sql.toString(), params, callback);
+    }
+
+    int updateZfbPay(Account tWxcmsAccount) {
+        return 0;
     }
 
     List<Account> selectByUserId(int userID) {
@@ -116,13 +149,5 @@ public class AccountDao extends BaseVertXDao {
 
     Account getByAppId(String appId) {
         return null;
-    }
-
-    int updateWxPay(Account tWxcmsAccount) {
-        return 0;
-    }
-
-    int updateZfbPay(Account tWxcmsAccount) {
-        return 0;
     }
 }

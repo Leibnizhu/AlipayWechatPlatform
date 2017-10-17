@@ -8,22 +8,22 @@ import io.vertx.core.json.JsonObject;
 import java.util.List;
 
 public class AccountService {
-	private AccountDao wxAccountDao;
+	private AccountDao accDao;
 
 	public AccountService(Vertx vertx){
-		this.wxAccountDao = new AccountDao(vertx);
+		this.accDao = new AccountDao(vertx);
 	}
 
 	public List<Account> selectByUserId(int userId) {
-		return wxAccountDao.selectByUserId(userId);
+		return accDao.selectByUserId(userId);
 	}
 
 	public int insert(Account WxAccount) {
-		return wxAccountDao.insert(WxAccount);
+		return accDao.insert(WxAccount);
 	}
 
 	public void update(Account WxAccount, Handler<Integer> callback) {
-		wxAccountDao.updateBase(WxAccount, callback);
+		accDao.updateBase(WxAccount, callback);
 	}
 
 	/**
@@ -34,27 +34,31 @@ public class AccountService {
 	 * Create by quandong
 	 */
 	public void getById(int id, Handler<JsonObject> callback) {
-		wxAccountDao.getById(id, callback); // 调用dao层方法
+		accDao.getById(id, callback); // 调用dao层方法
 	}
 
 	public List<Account> listForPage(Account searchEntity){
-		return wxAccountDao.listForPage(searchEntity);
+		return accDao.listForPage(searchEntity);
 	}
 
 	public void add(Account entity){
-		wxAccountDao.add(entity);
+		accDao.add(entity);
 	}
 
 	public void delete(Account entity){
-		wxAccountDao.delete(entity);
+		accDao.delete(entity);
 	}
 
     public void login(String username, String password, Handler<JsonObject> callback) {
 		Account account = new Account().setName(username).setPassword(password);
-		wxAccountDao.login(account, callback);
+		accDao.login(account, callback);
     }
 
 	public void getAccountList(Handler<List<JsonObject>> callback){
-		wxAccountDao.getAccountList(callback);
+		accDao.getAccountList(callback);
+	}
+
+	public void updateWxPay(Account acc, Handler<Integer> callback){
+		accDao.updateWxPay(acc, callback);
 	}
 }
