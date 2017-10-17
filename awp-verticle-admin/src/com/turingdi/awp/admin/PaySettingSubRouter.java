@@ -96,10 +96,10 @@ public class PaySettingSubRouter implements SubRouter {
                 if (paySwitch == 1 && "cert".equals(next.name()) && next.size() > 0) {
                     String filePath = Constants.CERT_DIR + uid + "_wxPay.p12";
                     FileSystem fs = this.vertx.fileSystem();
-                    Future<Void> delFuture = Future.future();
-                    Future<Void> copyFuture = Future.future();
                     fs.exists(filePath, ex -> {
                         if(ex.succeeded()){
+                            Future<Void> delFuture = Future.future();
+                            Future<Void> copyFuture = Future.future();
                             fs.delete(filePath, delFuture.completer());
                             fs.copy(next.uploadedFileName(), filePath, copyFuture.completer());
                             if(ex.result()){
