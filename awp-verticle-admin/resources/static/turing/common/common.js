@@ -100,7 +100,7 @@ function authAjax(config){
         },
         error:function(e,b){
             if(e.status === 401){
-                window.location.href = BASE_PATH + "/static/page/login.html";
+                jwtLogout();
             } else {
                 if(config.error)
                     config.error.call(document,e,b);

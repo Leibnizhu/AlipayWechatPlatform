@@ -102,10 +102,10 @@ public class AccountDao extends BaseVertXDao {
             params.add(acc.getMchKey());
             paramCnt++;
         }
-        if (acc.getZfbPayOn() != null) {
+        if (acc.getWxPayOn() != null) {
             if (paramCnt > 0) sql.append(",");
             sql.append("wxPayOn=?");
-            params.add(acc.getZfbPayOn());
+            params.add(acc.getWxPayOn());
             paramCnt++;
         }
         sql.append(" where id=?");
