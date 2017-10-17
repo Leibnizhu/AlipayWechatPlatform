@@ -93,19 +93,27 @@ public class PaySettingSubRouter implements SubRouter {
         // 异步保存证书文件
         if (uploads != null && !uploads.isEmpty()) {
             for (FileUpload next : uploads) {
-                if ("cert".equals(next.name())) {
+                if (paySwitch == 1 && "cert".equals(next.name()) && next.size() > 0) {
                     String filePath = Constants.CERT_DIR + uid + "_wxPay.p12";
                     FileSystem fs = this.vertx.fileSystem();
                     Future<Void> delFuture = Future.future();
                     Future<Void> copyFuture = Future.future();
-                    fs.delete(filePath, delFuture.completer());
-                    fs.copy(next.uploadedFileName(), filePath, copyFuture.completer());
-                    delFuture.compose(res -> {}, copyFuture);
-                    copyFuture.setHandler(res -> {
-                        if (res.succeeded()) {
-                            log.info("复制文件{}到{}成功！", next.uploadedFileName(), filePath);
+                    fs.exists(filePath, ex -> {
+                        if(ex.succeeded()){
+                            fs.delete(filePath, delFuture.completer());
+                            fs.copy(next.uploadedFileName(), filePath, copyFuture.completer());
+                            if(ex.result()){
+                                delFuture.compose(res -> {}, copyFuture);
+                            }
+                            copyFuture.setHandler(res -> {
+                                if (res.succeeded()) {
+                                    log.info("复制文件{}到{}成功！", next.uploadedFileName(), filePath);
+                                } else {
+                                    log.error("复制文件" + next.uploadedFileName() + "到" + filePath + "失败！", res.cause());
+                                }
+                            });
                         } else {
-                            log.error("复制文件" + next.uploadedFileName() + "到" + filePath + "失败！", res.cause());
+                            log.error("判断文件" + filePath + "是否存在时抛出异常！", ex.cause());
                         }
                     });
                     break;
