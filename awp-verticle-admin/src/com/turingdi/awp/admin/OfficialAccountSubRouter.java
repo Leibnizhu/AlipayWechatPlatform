@@ -60,12 +60,13 @@ public class OfficialAccountSubRouter implements SubRouter {
     private void getAccountById(RoutingContext rc) {
         JsonObject jwtJson = rc.user().principal();
         int role = jwtJson.getInteger("role");
-        if(role != 0){
+        int queryId = Integer.parseInt(rc.request().getParam("id"));
+        int jwtId = jwtJson.getInteger("id");
+        if(role != 0 && queryId != jwtId){
             rc.response().setStatusCode(403).end();
             return;
         }
-        int queryEid = Integer.parseInt(rc.request().getParam("id"));
-        wxAccServ.getById(queryEid, offAcc -> {
+        wxAccServ.getById(queryId, offAcc -> {
             responseOneAccount(rc, offAcc);
         });
     }
