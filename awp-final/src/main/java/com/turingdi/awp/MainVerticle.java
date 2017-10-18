@@ -7,6 +7,7 @@ import com.turingdi.awp.db.AccountDao;
 import com.turingdi.awp.db.AccountService;
 import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.util.common.Constants;
+import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.verticle.AlipayPaySubRouter;
 import com.turingdi.awp.verticle.WechatOauthSubRouter;
 import io.vertx.core.AbstractVerticle;
@@ -26,17 +27,20 @@ import java.util.regex.Pattern;
  * Created on 2017-10-11 20:37.
  */
 public class MainVerticle extends AbstractVerticle{
+
     @Override
     public void start() throws Exception {
         super.start();
         HttpServer server = vertx.createHttpServer();
         //公用资源初始化
-        Constants.init(vertx);
+        Constants.init(config());
+        NetworkUtils.init(vertx);
         JWTAuth jwtProvider = initJWTProvider();
         AccountDao accDao = new AccountDao(vertx);
         AccountService accountSrv = new AccountService(accDao);
         AlipayPayService alipayServ = new AlipayPayService(accDao);
         Router mainRouter = Router.router(vertx);
+
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
@@ -45,9 +49,9 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
         //微信授权的子路由
         mainRouter.mountSubRouter("/oauth/wx", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
-//        mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+// TODO  支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
         //支付宝支付服务子路由
-//        mainRouter.mountSubRouter("/pay/wx", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
+// TODO  微信支付     mainRouter.mountSubRouter("/pay/wx", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
         mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(accountSrv, alipayServ).setVertx(vertx).getSubRouter());
         //登录BMS的子路由
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
@@ -89,11 +93,10 @@ public class MainVerticle extends AbstractVerticle{
      * @return
      */
     private JWTAuth initJWTProvider() {
-        //TODO 从配置文件读取
-        JsonObject config = new JsonObject().put("keyStore", new JsonObject()
-                .put("path", "keystore.jceks") //此处要与生成keystore的时候用的type、keypass一致
+        JsonObject jwtConfig = new JsonObject().put("keyStore", new JsonObject()
+                .put("path", config().getString("keyPath","keystore.jceks")) //此处要与生成keystore的时候用的type、keypass一致
                 .put("type", "jceks")
-                .put("password", "secret"));
-        return JWTAuth.create(vertx, config);
+                .put("password", config().getString("keyPswd","secret")));
+        return JWTAuth.create(vertx, jwtConfig);
     }
 }

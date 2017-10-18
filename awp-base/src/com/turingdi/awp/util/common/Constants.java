@@ -1,6 +1,5 @@
 package com.turingdi.awp.util.common;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -16,14 +15,13 @@ public class Constants {
     public static String JDBC_PSWD;
     public static String JDBC_DRIVER;
 
-    public static void init(Vertx vertx) {
-        JsonObject config = vertx.getOrCreateContext().config();
+    public static void init(JsonObject config) {
         PROJ_URL = config.getString("projectUrl", "http://itq46u.natappfree.cc/");
         CERT_DIR = config.getString("certDir", "/home/leibniz/");
         JDBC_URL = config.getString("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false");
         JDBC_USER = config.getString("jdbcUser", "root");
         JDBC_PSWD = config.getString("jdbcPassword", "turingdi");
-        JDBC_DRIVER = config.getString("jdbcDriver", "com.mysql.jdbc.Driver");
+        JDBC_DRIVER = config.getString("jdbcDriver", "com.mysql.cj.jdbc.Driver");
     }
 
     /**
