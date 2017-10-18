@@ -81,7 +81,7 @@ public class WechatOauthSubRouter implements SubRouter {
         int type = reqJson.getInteger("type");
         String callback = TuringBase64Util.encode(reqJson.getString("callback"));//授权后回调方法
         wxAccServ.getById(eid, account -> {
-            String redirectAfterUrl = PROJ_URL + "wxOauth/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
+            String redirectAfterUrl = PROJ_URL + "oauth/wx/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
             String returnUrl = null;
             try {
                 returnUrl = String.format((type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)

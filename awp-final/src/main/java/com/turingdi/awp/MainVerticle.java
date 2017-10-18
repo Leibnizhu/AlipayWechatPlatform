@@ -3,8 +3,11 @@ package com.turingdi.awp;
 import com.turingdi.awp.admin.LoginSubRouter;
 import com.turingdi.awp.admin.OfficialAccountSubRouter;
 import com.turingdi.awp.admin.PaySettingSubRouter;
+import com.turingdi.awp.db.AccountDao;
 import com.turingdi.awp.db.AccountService;
+import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.util.common.Constants;
+import com.turingdi.awp.verticle.AlipayPaySubRouter;
 import com.turingdi.awp.verticle.WechatOauthSubRouter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
@@ -30,7 +33,9 @@ public class MainVerticle extends AbstractVerticle{
         //公用资源初始化
         Constants.init(vertx);
         JWTAuth jwtProvider = initJWTProvider();
-        AccountService accountSrv = new AccountService(vertx);
+        AccountDao accDao = new AccountDao(vertx);
+        AccountService accountSrv = new AccountService(accDao);
+        AlipayPayService alipayServ = new AlipayPayService(accDao);
         Router mainRouter = Router.router(vertx);
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
@@ -39,7 +44,11 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.route("/favicon.ico").handler(this::getLogo);
         mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
         //微信授权的子路由
-        mainRouter.mountSubRouter("/wxOauth", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/oauth/wx", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+//        mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        //支付宝支付服务子路由
+//        mainRouter.mountSubRouter("/pay/wx", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
+        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
         //登录BMS的子路由
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由
