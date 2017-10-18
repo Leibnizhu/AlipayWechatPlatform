@@ -1,41 +1,7 @@
 package com.turingdi.awp.service;
 
-import com.turingdi.awp.dao.AccountDao;
-import com.turingdi.awp.entity.db.Account;
-import com.turingdi.awp.entity.wechat.WechatPay;
-import com.turingdi.awp.util.CommonUtils;
-import com.turingdi.awp.util.Constants;
-import com.turingdi.awp.util.NetworkUtils;
-import com.turingdi.awp.util.XmlUtils;
-import net.sf.json.JSONObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.xml.sax.InputSource;
-
-import javax.net.ssl.SSLContext;
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.security.KeyStore;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Consumer;
 
 /**
  * 支付服务类接口实现类
@@ -43,7 +9,6 @@ import java.util.function.Consumer;
  * @author Leibniz.Hu
  * Created on 2017-09-07 11:33.
  */
-@Service
 public class WechatPayService {
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -57,7 +22,7 @@ public class WechatPayService {
     private final static String WECHAT_REFUND = "https://api.mch.weixin.qq.com/secapi/pay/wechatRefund";
 
 
-    private final AccountDao wxDao;
+/*    private final AccountDao wxDao;
 
     @Autowired
     public WechatPayService(Constants constants, AccountDao wxDao) {
@@ -67,7 +32,7 @@ public class WechatPayService {
         this.wxPayNotifyUrl = projectUrl + "mb/pay/wxNotify";
     }
 
-    /**
+    *//**
      * 调用微信统一下单接口
      *
      * @param product      产品名（会显示在微信支付推送的消息里面）
@@ -79,7 +44,7 @@ public class WechatPayService {
      * @return "当前微信版本号过低"、"下单失败"、成功的返回成功的JSON
      *
      * @author Leibniz
-     */
+     *//*
     public String wechatOrder(String product, int price, String openId, String orderId, int enterpriseId, HttpServletRequest request, Consumer<Map<String, String>> payCallback) throws IOException {
         if (!testSupportPay(request)) {
             return "当前微信版本号过低";
@@ -134,7 +99,7 @@ public class WechatPayService {
         return true;
     }
 
-    /**
+    *//**
      * 微信退款
      *
      * @param openId         退款订单对应用户的OpenID
@@ -146,7 +111,7 @@ public class WechatPayService {
      * @return "success" "fail" "订单不存在"
      *
      * @author Leibniz
-     */
+     *//*
     public String wechatRefund(String openId, int refund, int totalFee, String localOrderId, int enterpriseId, Consumer<Map<String, String>> refundCallback) {
         Account wxAccount = wxDao.getById(enterpriseId);
 
@@ -201,14 +166,14 @@ public class WechatPayService {
         }
     }
 
-    /**
+    *//**
      * 支付成功后，微信会返回数据，解析微信返回的数据
      *
      * @param request http请求
      * @return 解析后的数据
      *
      * @author Leibniz
-     */
+     *//*
     public String readPayParam(HttpServletRequest request) throws IOException {
         StringBuilder payResultXml = new StringBuilder();
         InputStream inStream = request.getInputStream();
@@ -222,14 +187,14 @@ public class WechatPayService {
         return payResultXml.toString();
     }
 
-    /**
+    *//**
      * 解析xml数据，并将解析后的数据传入map里面
      *
      * @param xmlData xml数据
      * @return 解析后的数据
      *
      * @author Leibniz
-     */
+     *//*
     public Map<String, String> xmlAnalysis(String xmlData) throws JDOMException {
         StringReader read = new StringReader(xmlData);
         // 创建新的输入源SAX 解析器将使用 InputSource 对象来确定如何读取 XML 输入
@@ -256,7 +221,7 @@ public class WechatPayService {
         return retMap;
     }
 
-    /**
+    *//**
      * 调用微信统一下单接口
      *
      * @param product 充值设备描述
@@ -266,7 +231,7 @@ public class WechatPayService {
      * @return 微信统一下单接口返回的xml数据（String）
      *
      * @author Leibniz
-     */
+     *//*
     private String unifyPay(String orderId, String product, int price, String ip, String openId, String attach, String notUrl, Account wxAccount) throws IOException {
         Map<String, Object> map = new TreeMap<>();
         map.put("appid", wxAccount.getAppid());
@@ -287,7 +252,7 @@ public class WechatPayService {
         return NetworkUtils.postRequestWithData(WECHAT_UNIFY_PAY, XmlUtils.simpleMapToXml(map, "ISO8859-1"), "xml");
     }
 
-    /**
+    *//**
      * 读取退款需要用到的证书
      *
      * @param wxAccount    微信账号信息
@@ -295,7 +260,7 @@ public class WechatPayService {
      * @return SSLConnectionSocketFactory
      *
      * @author Leibniz
-     */
+     *//*
     private SSLConnectionSocketFactory readCert(Account wxAccount, int enterpriseId) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         try (FileInputStream instream = new FileInputStream(new File(certDir + enterpriseId + "_wxPay.p12"))) {
@@ -306,7 +271,7 @@ public class WechatPayService {
                 SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
     }
 
-    /**
+    *//**
      * 调用微信退款接口
      *
      * @param sslsf
@@ -314,7 +279,7 @@ public class WechatPayService {
      * @return
      *
      * @author Leibniz
-     */
+     *//*
     private String wechatRefund(SSLConnectionSocketFactory sslsf, Map<String, Object> map) throws IOException {
         log.info("退款参数： " + XmlUtils.simpleMapToXml(map));
         StringBuilder result = new StringBuilder();
@@ -338,5 +303,5 @@ public class WechatPayService {
         } finally {
             return result.toString();
         }
-    }
+    }*/
 }

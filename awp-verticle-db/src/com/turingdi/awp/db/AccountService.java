@@ -2,7 +2,6 @@ package com.turingdi.awp.db;
 
 import com.turingdi.awp.entity.db.Account;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 import java.util.List;
@@ -10,8 +9,8 @@ import java.util.List;
 public class AccountService {
 	private AccountDao accDao;
 
-	public AccountService(Vertx vertx){
-		this.accDao = new AccountDao(vertx);
+	public AccountService(AccountDao accDao){
+		this.accDao = accDao;
 	}
 
 	public List<Account> selectByUserId(int userId) {

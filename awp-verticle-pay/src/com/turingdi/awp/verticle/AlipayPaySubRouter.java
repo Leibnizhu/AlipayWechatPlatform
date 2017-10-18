@@ -2,49 +2,71 @@ package com.turingdi.awp.verticle;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayConstants;
-import com.turingdi.awp.entity.alipay.AliPayApi;
+import com.turingdi.awp.base.SubRouter;
+import com.turingdi.awp.db.AccountService;
 import com.turingdi.awp.service.AlipayPayService;
+import com.turingdi.awp.util.alipay.AliPayApi;
+import com.turingdi.awp.util.common.TuringBase64Util;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author Leibniz.Hu
  * Created on 2017-09-27 14:36.
  */
-@Controller
-@RequestMapping("zfbPay")
-public class AlipayPayController {
+public class AlipayPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
+    private AlipayPayService payServ;
+    private AccountService accServ;
+    private Vertx vertx;
 
-    private final AlipayPayService payServ;
 
-    @Autowired
-    public AlipayPayController(AlipayPayService payServ) {
+    public AlipayPaySubRouter(AccountService wxAccServ, AlipayPayService payServ) {
+        this.accServ = wxAccServ;
         this.payServ = payServ;
+    }
+
+    @Override
+    public Router getSubRouter() {
+        if (vertx == null) {
+            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
+        }
+        Router payRouter = Router.router(vertx);
+        payRouter.get("order/:body").handler(this::alipayOrder);
+        payRouter.get("noti").handler(this::alipayNotify);
+        return payRouter;
+    }
+
+    @Override
+    public SubRouter setVertx(Vertx vertx) {
+        this.vertx = vertx;
+        return this;
     }
 
     /**
      * 支付宝支付，直接向响应写入支付宝返回的内容
      *
-     * @param orderId  本地订单ID
-     * @param response HTTP响应对象
      * @author Leibniz
      */
-    @RequestMapping(value = "order/{eid}/{orderId}/{price}/{name}/{callback}", method = GET)
-    @ResponseBody
-    public void alipayOrder(@PathVariable int eid, @PathVariable String orderId, @PathVariable int price, @PathVariable String name, @PathVariable String callback, HttpServletResponse response) {
+    public void alipayOrder(RoutingContext rc) {
+        //请求json解码，获取订单参数
+        JsonObject reqJson = new JsonObject(TuringBase64Util.decode(rc.request().getParam("body")));
+        int eid = reqJson.getInteger("eid");
+        String orderId = reqJson.getString("orderId");//orderId  本地订单ID
+        int price = reqJson.getInteger("price");
+        String name = reqJson.getString("name");
+        String callback = reqJson.getString("callback");
+        HttpServerResponse response = rc.response();
         //TODO 记录eid和orderId、callback关系
         payServ.alipayOrder(name, price, orderId, eid, response);
     }
@@ -53,12 +75,11 @@ public class AlipayPayController {
      * 支付宝支付成功的回调方法
      * 结果直接写到响应里面
      *
-     * @param request  HTTP请求对象
-     * @param response HTTP响应对象
      * @author Leibniz
      */
-    @RequestMapping("noti")
-    public void alipayNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void alipayNotify(RoutingContext rc) {
+        HttpServerRequest request=rc.request();
+        HttpServletResponse response=null;
         Map<String, String> params = AliPayApi.getRequestParams(request); // 解析请求参数
         String isSuccess = "success"; // 响应给支付宝的消息，默认是fail
         log.info("支付宝请求串", params.toString()); // 打印本次请求日志，开发者自行决定是否需要
@@ -79,9 +100,13 @@ public class AlipayPayController {
             e.printStackTrace(); // 输出异常
         } finally {
             response.setContentType("text/html;charset=" + AlipayConstants.CHARSET_UTF8); // 设置文本类型及编码
-            response.getWriter().write(isSuccess); // 直接将响应消息输出到页面
-            response.getWriter().flush(); // 刷新
-            response.getWriter().close(); // 关闭
+            try {
+                response.getWriter().write(isSuccess); // 直接将响应消息输出到页面
+                response.getWriter().flush(); // 刷新
+                response.getWriter().close(); // 关闭
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

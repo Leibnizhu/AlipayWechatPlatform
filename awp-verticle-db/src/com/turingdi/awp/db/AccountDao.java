@@ -14,7 +14,7 @@ import java.util.List;
 public class AccountDao extends BaseVertXDao {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    AccountDao(Vertx vertx) {
+    public AccountDao(Vertx vertx) {
         hikariCPM = HikariCPManager.getInstance(vertx);
     }
 
@@ -64,7 +64,7 @@ public class AccountDao extends BaseVertXDao {
      * @param id       企业ID
      * @param callback 获取到数据后回调方法
      */
-    void getById(int id, Handler<JsonObject> callback) {
+    public void getById(int id, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE ID = ?",
                 new JsonArray().add(id),
                 result -> {

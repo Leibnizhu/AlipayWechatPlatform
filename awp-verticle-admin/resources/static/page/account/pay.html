@@ -139,19 +139,6 @@
                                     <th style="width: 10%;min-width:30px;">操作</th>
                                 </tr>
                                 <tr>
-                                    <td>支付宝</td>
-                                    <td>
-                                        <span>支付宝支付的接口说明如下：<br/>
-                                            JS API网页支付参数<br/>
-                                            支付授权目录: http://brand.turing.asia/brand/mb/pay/
-                                        </span>
-                                    </td>
-                                    <td :style="{color: zfbPay.opened==1 ? '#4CAF50' : '#E91E63'}">{{zfbPay.opened==1?'开启':'关闭'}}</td>
-                                    <td class="text-center">
-                                        <input type="button" @click="showEditZfbPay" value="修改">
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>微信支付</td>
                                     <td>
                                         <span>微信支付的接口说明如下：<br/>
@@ -162,6 +149,19 @@
                                     <td :style="{color: wxPay.opened==1 ? '#4CAF50' : '#E91E63'}">{{wxPay.opened==1?'开启':'关闭'}}</td>
                                     <td class="text-center">
                                         <input type="button" @click="showEditWxPay" value="修改">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>支付宝</td>
+                                    <td>
+                                        <span>支付宝支付的接口说明如下：<br/>
+                                            JS API网页支付参数<br/>
+                                            支付授权目录: http://brand.turing.asia/brand/mb/pay/
+                                        </span>
+                                    </td>
+                                    <td :style="{color: zfbPay.opened==1 ? '#4CAF50' : '#E91E63'}">{{zfbPay.opened==1?'开启':'关闭'}}</td>
+                                    <td class="text-center">
+                                        <input type="button" @click="showEditZfbPay" value="修改">
                                     </td>
                                 </tr>
                                 </tbody>

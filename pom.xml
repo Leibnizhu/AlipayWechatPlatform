@@ -17,8 +17,8 @@
         <module>awp-verticle-base</module>
         <module>awp-verticle-db</module>
         <module>awp-verticle-oauth</module>
+        <module>awp-verticle-pay</module>
         <!--<module>awp-verticle-message</module>-->
-        <!--<module>awp-verticle-pay</module>-->
     </modules>
 
     <properties>
