@@ -7,8 +7,19 @@
 未来还可以托管Access Token。
 本项目部署后，将公众号安全域名配置到本项目的域名，此后多个web项目（不同域名）可以使用同一个公众号 ~~（理论上）~~ 。  
 ## 技术栈
+### 变迁
 原来：`Vue.js + Spring Boot + Druid + MySQL`  
-现在：`Vue.js + Vert.X(Core+Web+JDBC) + HikariCP + MySQL(可能换成PostgreSQL)`
+现在：`Vue.js + Vert.X(Core+Web+JDBC) + HikariCP + MySQL(可能换成PostgreSQL)`  
+### Benchmark
+针对支付配置获取的API进行测试。  
+- 测试工具：`Jemeter3.2 r1790748`
+- 测试环境：`Manjaro 17.0.5 x86_64 Linux 4.9.53-1-MANJARO`,`OpenJDK 1.8.0_144`
+- 硬件配置：Intel Core i7-6560U @ 4x 3.2GHz, 8G DDR3, 256G SSD  
+
+`Spring`(无Shiro过滤)测试结果：
+![](img/spring.png)
+`Vert.X`(JWT授权)测试结果：
+![](img/vertx.png)
 
 ## Maven子模块
 - `awp-base`: PoJo类，工具类（通用工具、微信工具、支付宝工具）
