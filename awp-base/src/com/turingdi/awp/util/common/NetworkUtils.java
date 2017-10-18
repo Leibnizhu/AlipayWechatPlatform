@@ -21,32 +21,49 @@ public class NetworkUtils {
     private static final Logger LOG = LoggerFactory.getLogger(NetworkUtils.class);
     private static HttpClient client;
 
-    public static void asyncPostJson(Vertx vertx, String url, Handler<JsonObject> callback) throws IOException {
-        checkHttpClient(vertx);
-        client.requestAbs(HttpMethod.POST, url, resp -> {
+    public static void init(Vertx vertx){
+        client = vertx.createHttpClient(new HttpClientOptions().setLogActivity(false));
+    }
+
+    public static void asyncPostJson(String url, Handler<JsonObject> callback) throws IOException {
+        asyncRequestJson(HttpMethod.POST, url, callback);
+    }
+
+    public static void asyncPostString(String url, Handler<String> callback) throws IOException {
+        asyncRequestString(HttpMethod.POST, url, callback);
+    }
+
+    public static void asyncGetJson(String url, Handler<JsonObject> callback) throws IOException {
+        asyncRequestJson(HttpMethod.GET, url, callback);
+    }
+
+    public static void asyncGetString(String url, Handler<String> callback) throws IOException {
+        asyncRequestString(HttpMethod.GET, url, callback);
+    }
+
+    private static void asyncRequestString(HttpMethod method, String url, Handler<String> callback){
+        checkInitialized();
+        client.requestAbs(method, url, resp -> {
             resp.bodyHandler(buf -> {
-               callback.handle(buf.toJsonObject());
+                callback.handle(buf.toString());
             });
         }).end();
     }
 
-    public static void asyncPostString(Vertx vertx, String url, Handler<String> callback) throws IOException {
-        checkHttpClient(vertx);
-        client.requestAbs(HttpMethod.POST, url, resp -> {
+    private static void asyncRequestJson(HttpMethod method, String url, Handler<JsonObject> callback){
+        checkInitialized();
+        client.requestAbs(method, url, resp -> {
             resp.bodyHandler(buf -> {
-               callback.handle(buf.toString());
+                callback.handle(buf.toJsonObject());
             });
         }).end();
     }
 
-    private static void checkHttpClient(Vertx vertx) {
+    private static void checkInitialized() {
         if(client == null){
-            client = vertx.createHttpClient(new HttpClientOptions().setLogActivity(false));
+            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
         }
     }
-
-
-    //TODO GET方法请求两个方法的改成异步
 
     /**
      * 下载网络文件到指定文件

@@ -100,7 +100,7 @@ public class WechatOauthSubRouter implements SubRouter {
         wxAccServ.getById(eid, account -> {
             String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
             try {
-                NetworkUtils.asyncPostJson(vertx, openIdUrl, openIdJson -> {
+                NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
                     log.debug("授权返回的json数据：{}", openIdJson);
                     //重定向到原访问URL
                     if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
@@ -138,13 +138,13 @@ public class WechatOauthSubRouter implements SubRouter {
         wxAccServ.getById(eid, account -> {
             String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
             try {
-                NetworkUtils.asyncPostJson(vertx, openIdUrl, openIdJson -> {
+                NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
                     log.debug("授权返回的json数据：{}", openIdJson);
                     if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
                         String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
                         String userinfo_url = String.format(USERINFO_API, openIdJson.getString(WECHAT_JSON_ACCESSTOKEN_KEY), openId);
                         try {
-                            NetworkUtils.asyncPostJson(vertx, userinfo_url, userInfoJson -> {
+                            NetworkUtils.asyncPostJson(userinfo_url, userInfoJson -> {
                                 //重定向到原访问URL
                                 String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
                                 if (visitUrl.length() > 0) {

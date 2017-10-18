@@ -17,7 +17,7 @@ public class NetworkUtilTest {
     public void asyncPostTest() throws IOException {
         Vertx vertx = Vertx.vertx();
         System.out.println("===================Test start===================");
-        NetworkUtils.asyncPostString(vertx, "http://breo.turing.asia/gzwx/smartBox/poll", System.out::println);
+        NetworkUtils.asyncPostString("http://breo.turing.asia/gzwx/smartBox/poll", System.out::println);
     }
 
     @Test
@@ -33,11 +33,12 @@ public class NetworkUtilTest {
 
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
+        NetworkUtils.init(vertx);
         System.out.println("===================Test start===================");
         vertx.deployVerticle(new AbstractVerticle() {
             @Override
             public void start() throws Exception {
-                NetworkUtils.asyncPostString(vertx, "http://breo.turing.asia/gzwx/smartBox/poll", System.out::println);
+                NetworkUtils.asyncPostString("http://breo.turing.asia/gzwx/smartBox/poll", System.out::println);
             }
         });
 
