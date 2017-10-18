@@ -48,7 +48,7 @@ public class MainVerticle extends AbstractVerticle{
 //        mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
         //支付宝支付服务子路由
 //        mainRouter.mountSubRouter("/pay/wx", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
-        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
+        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(accountSrv, alipayServ).setVertx(vertx).getSubRouter());
         //登录BMS的子路由
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由

@@ -42,8 +42,8 @@ public class AlipayPaySubRouter implements SubRouter {
             throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
         }
         Router payRouter = Router.router(vertx);
-        payRouter.get("order/:body").handler(this::alipayOrder);
-        payRouter.get("noti").handler(this::alipayNotify);
+        payRouter.get("/order/:body").handler(this::alipayOrder);
+        payRouter.get("/noti").handler(this::alipayNotify);
         return payRouter;
     }
 
