@@ -31,11 +31,6 @@ public class WechatOauthSubRouter implements SubRouter {
         this.wxAccServ = wxAccServ;
     }
 
-
-    /**
-     * 授权完成后，跳转到原访问地址时，需要去掉的请求参数（无需填写"code"，"state"，"visitUrl"
-     */
-    private static final String[] REMOVE_PARAMS = {"appid", "appsecret", "eid"};
     private static final String WECHAT_JSON_OPENID_KEY = "openid";
     private static final String WECHAT_JSON_ERRCODE_KEY = "errcode";
     private static final String WECHAT_JSON_ACCESSTOKEN_KEY = "access_token";
