@@ -46,9 +46,9 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 ## API
 ### 微信授权
 申请微信授权。web服务需要授权时，向用户发送重定向到该接口。
-请求地址：http://localhost:8083/oauth/wx/apply/{body}
-参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html进行编码。  
-例如（请修改域名后，在微信打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是你的OpenID）: http://localhost:8083/oauth/wx/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
+请求地址：http://localhost:8083/oauth/wx/apply/{body}  
+参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
+例如（请修改域名后，在微信打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是图灵Base64加密后的结果）: http://localhost:8083/oauth/wx/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
 ```json
 {
     "eid":1, /*web项目使用的公众号在本项目中的用户ID*/
@@ -63,7 +63,7 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 ### 支付宝支付
 需要使用支付宝支付时，由由用户调用此接口（可以是web服务返回重定向到本接口，或后台计算出接口地址，让js跳转）。  
 请求地址：http://localhost:8083/pay/zfb/order/{body}  
-参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html进行编码。  
+参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
 例如(如: http://localhost:8083/oauth/wx/apply/bYkL1CX3PB7sIf6YZGwYSCX3P3IjKBKjKBKMdEH0POIsIWJY1CdLIBNjoOkuHCyLIBN32Iu55p2cI3g3HtqsvGkhHts3P3kNTmigP3Q-ZGLBTO53HCL9TS5BvtM3oOkzTCdBZedzIBN31miMcAN-otj-Htqs1G6zTAN4KAVzo0dMHeipHY6gHCTLo0d5cY63HedLdBXu1minvOk6  
 ```json
 {
