@@ -241,4 +241,12 @@ public class CommonUtils {
             return "";
         }
     }
+
+    public static String mapToQueryString(Map<String, String> map) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+        }
+        return sb.substring(0, sb.length() - 1);
+    }
 }

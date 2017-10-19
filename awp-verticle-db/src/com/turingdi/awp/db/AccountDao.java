@@ -3,7 +3,6 @@ package com.turingdi.awp.db;
 
 import com.turingdi.awp.entity.db.Account;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
@@ -14,8 +13,7 @@ import java.util.List;
 public class AccountDao extends BaseVertXDao {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    public AccountDao(Vertx vertx) {
-        hikariCPM = HikariCPManager.getInstance(vertx);
+    public AccountDao() {
     }
 
     /**
@@ -29,29 +27,29 @@ public class AccountDao extends BaseVertXDao {
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
-        int paramCnt = 0;
+        boolean moreThanOne = false;
         if (acc.getName() != null && !acc.getName().equals("")) {
             sql.append("name=?");
             params.add(acc.getName());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getAppid() != null && !acc.getAppid().equals("")) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("appid=?");
             params.add(acc.getAppid());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getAppsecret() != null && !acc.getAppsecret().equals("")) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("appsecret=?");
             params.add(acc.getAppsecret());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getVerify() != null && !acc.getVerify().equals("")) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("verify=?");
             params.add(acc.getVerify());
-            paramCnt++;
+            moreThanOne = true;
         }
         sql.append(" where id=?");
         params.add(acc.getId());
@@ -90,23 +88,23 @@ public class AccountDao extends BaseVertXDao {
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
-        int paramCnt = 0;
+        boolean moreThanOne = false;
         if (acc.getMchId() != null && !acc.getMchId().equals("")) {
             sql.append("mchId=?");
             params.add(acc.getMchId());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getMchKey() != null && !acc.getMchKey().equals("")) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("mchKey=?");
             params.add(acc.getMchKey());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getWxPayOn() != null) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("wxPayOn=?");
             params.add(acc.getWxPayOn());
-            paramCnt++;
+            moreThanOne = true;
         }
         sql.append(" where id=?");
         params.add(acc.getId());
@@ -119,56 +117,36 @@ public class AccountDao extends BaseVertXDao {
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
-        int paramCnt = 0;
+        boolean moreThanOne = false;
         if (acc.getZfbAppId() != null && !acc.getZfbAppId().equals("")) {
             sql.append("zfbAppId=?");
             params.add(acc.getZfbAppId());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getZfbPrivKey() != null && !acc.getZfbPrivKey().equals("")) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("zfbPrivKey=?");
             params.add(acc.getZfbPrivKey());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getZfbPubKey() != null && !acc.getZfbPubKey().equals("")) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("zfbPubKey=?");
             params.add(acc.getZfbPubKey());
-            paramCnt++;
+            moreThanOne = true;
         }
         if (acc.getZfbPayOn() != null) {
-            if (paramCnt > 0) sql.append(",");
+            if (moreThanOne) sql.append(",");
             sql.append("zfbPayOn=?");
             params.add(acc.getZfbPayOn());
-            paramCnt++;
+            moreThanOne = true;
         }
         sql.append(" where id=?");
         params.add(acc.getId());
         update(sql.toString(), params, callback);
     }
 
-    int updateZfbPay(Account tWxcmsAccount) {
-        return 0;
-    }
-
     List<Account> selectByUserId(int userID) {
-        return null;
-    }
-
-    int insert(Account tWxcmsAccount) {
-        return 0;
-    }
-
-    Account getByAccount(String account) {
-        return null;
-    }
-
-    Account getSingleAccount() {
-        return null;
-    }
-
-    List<Account> getAllAccount() {
         return null;
     }
 
@@ -176,13 +154,4 @@ public class AccountDao extends BaseVertXDao {
         return null;
     }
 
-    void add(Account entity) {
-    }
-
-    void delete(Account entity) {
-    }
-
-    Account getByAppId(String appId) {
-        return null;
-    }
 }

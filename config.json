@@ -1,0 +1,8 @@
+{
+  "jdbcUrl": "jdbc:mysql://127.0.0.1:3306/shop?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false",
+  "jdbcUser": "root",
+  "jdbcPassword": "turingdi",
+  /*"jdbcDriver": "***.***",*/
+  "projectUrl": "http://leibnizhu.wicp.net/",
+  "certDir": "/home/leibniz/"
+}

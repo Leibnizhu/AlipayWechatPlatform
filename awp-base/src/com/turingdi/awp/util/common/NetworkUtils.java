@@ -25,19 +25,19 @@ public class NetworkUtils {
         client = vertx.createHttpClient(new HttpClientOptions().setLogActivity(false));
     }
 
-    public static void asyncPostJson(String url, Handler<JsonObject> callback) throws IOException {
+    public static void asyncPostJson(String url, Handler<JsonObject> callback) {
         asyncRequestJson(HttpMethod.POST, url, callback);
     }
 
-    public static void asyncPostString(String url, Handler<String> callback) throws IOException {
+    public static void asyncPostString(String url, Handler<String> callback) {
         asyncRequestString(HttpMethod.POST, url, callback);
     }
 
-    public static void asyncGetJson(String url, Handler<JsonObject> callback) throws IOException {
+    public static void asyncGetJson(String url, Handler<JsonObject> callback) {
         asyncRequestJson(HttpMethod.GET, url, callback);
     }
 
-    public static void asyncGetString(String url, Handler<String> callback) throws IOException {
+    public static void asyncGetString(String url, Handler<String> callback) {
         asyncRequestString(HttpMethod.GET, url, callback);
     }
 

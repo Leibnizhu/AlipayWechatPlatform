@@ -29,15 +29,13 @@ public class AlipayPayService {
 
     private String projectUrl;
     private String zfbPayNotifyUrl;
-    private String zfbPayReturnUrl;
 
     private final AccountDao wxDao;
 
     public AlipayPayService(AccountDao wxDao) {
         this.wxDao = wxDao;
         this.projectUrl = Constants.PROJ_URL;
-        this.zfbPayNotifyUrl = projectUrl + "mb/pay/zfbNotify";
-        this.zfbPayReturnUrl = projectUrl + "mb/pay/success";
+        this.zfbPayNotifyUrl = projectUrl + "pay/zfb/noti";
     }
 
     /**
@@ -50,17 +48,15 @@ public class AlipayPayService {
      * @param response     HTTP响应
      * @author Leibniz
      */
-    public void alipayOrder(String product, int price, String orderId, int enterpriseId, HttpServerResponse response) {
+    public void alipayOrder(String product, int price, String orderId, int enterpriseId, String successUrl, HttpServerResponse response) {
         wxDao.getById(enterpriseId, acc -> {
             try {
-                String returnUrl = zfbPayReturnUrl; // 前端回调Url，即支付完成后要跳到的页面链接
                 String notifyUrl = zfbPayNotifyUrl; // 服务器后台回调通知的url
-                AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbAppId"), acc.getString("zfbPrivKey"), acc.getString("zfbPubKey"), returnUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
+                AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbAppId"), acc.getString("zfbPrivKey"), acc.getString("zfbPubKey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
                 PayBizContent payBizContent = new PayBizContent(orderId, price + "", product, null); // 订单的信息
                 AliPayApi.wapPay(aliAccountInfo, payBizContent, response); // 调用支付宝API的方法请求支付宝支付接口
             } catch (IOException e) {
-                e.printStackTrace();
-                log.error(orderId + "下单失败，请查看微信支持开发配置是否正确");
+                log.error(orderId + "下单失败，请查看微信支持开发配置是否正确", e);
             }
         });
     }
@@ -74,7 +70,7 @@ public class AlipayPayService {
      *
      * @author Leibniz
      */
-    public void alipayRefund(RefundBizContent bizContent, int enterpriseId, Handler<Boolean> callback) {
+    public void alipayRefund(RefundBizContent bizContent, int enterpriseId, String successUrl, Handler<Boolean> callback) {
         String bizContentStr = bizContent.toString(); // 将参数bizContent转成字符串
 
         // 检查bizContent是否合法
@@ -83,9 +79,8 @@ public class AlipayPayService {
         }
 
         wxDao.getById(enterpriseId, acc -> {
-            String returnUrl = zfbPayReturnUrl; // 前端回调Url，即支付完成后要跳到的页面链接
             String notifyUrl = zfbPayNotifyUrl; // 服务器后台回调通知的url
-            AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbAppId"), acc.getString("zfbPrivKey"), acc.getString("zfbPubKey"), returnUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
+            AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbAppId"), acc.getString("zfbPrivKey"), acc.getString("zfbPubKey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
             AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
             AlipayTradeRefundRequest request = new AlipayTradeRefundRequest(); // 创建退款请求
             request.setBizContent(bizContentStr); // 设置请求的bizContent

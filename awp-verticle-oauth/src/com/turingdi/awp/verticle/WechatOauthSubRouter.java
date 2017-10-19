@@ -13,7 +13,6 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -27,6 +26,7 @@ public class WechatOauthSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private AccountService wxAccServ;
     private Vertx vertx;
+
     public WechatOauthSubRouter(AccountService wxAccServ) {
         this.wxAccServ = wxAccServ;
     }
@@ -99,29 +99,25 @@ public class WechatOauthSubRouter implements SubRouter {
         assert code != null;
         wxAccServ.getById(eid, account -> {
             String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
-            try {
-                NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
-                    log.debug("授权返回的json数据：{}", openIdJson);
-                    //重定向到原访问URL
-                    if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
-                        String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
-                        String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
-                        if (visitUrl.length() > 0) {
-                            visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
-                            log.info("授权成功，OpenID={}，准备跳转到{}", openId, visitUrl);
-                            response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") +  TuringBase64Util.encode(openIdJson.toString())).end();
-                        } else {
-                            log.error("没有找到授权后回调地址" + request.absoluteURI());
-                            response.end("未设置授权后回调地址");
-                        }
-                    } else if (openIdJson.containsKey(WECHAT_JSON_ERRCODE_KEY)) {
-                        //有错误
-                        response.setStatusCode(302).putHeader("Location", PROJ_URL + "static/pageerror.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
+            NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
+                log.debug("授权返回的json数据：{}", openIdJson);
+                //重定向到原访问URL
+                if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
+                    String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
+                    String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
+                    if (visitUrl.length() > 0) {
+                        visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
+                        log.info("授权成功，OpenID={}，准备跳转到{}", openId, visitUrl);
+                        response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(openIdJson.toString())).end();
+                    } else {
+                        log.error("没有找到授权后回调地址" + request.absoluteURI());
+                        response.end("未设置授权后回调地址");
                     }
-                });
-            } catch (IOException e) {
-                log.error("静默授权回调方法处理时发生错误！", e);
-            }
+                } else if (openIdJson.containsKey(WECHAT_JSON_ERRCODE_KEY)) {
+                    //有错误
+                    response.setStatusCode(302).putHeader("Location", PROJ_URL + "static/pageerror.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
+                }
+            });
         });
     }
 
@@ -137,37 +133,29 @@ public class WechatOauthSubRouter implements SubRouter {
         assert code != null;
         wxAccServ.getById(eid, account -> {
             String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
-            try {
-                NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
-                    log.debug("授权返回的json数据：{}", openIdJson);
-                    if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
-                        String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
-                        String userinfo_url = String.format(USERINFO_API, openIdJson.getString(WECHAT_JSON_ACCESSTOKEN_KEY), openId);
-                        try {
-                            NetworkUtils.asyncPostJson(userinfo_url, userInfoJson -> {
-                                //重定向到原访问URL
-                                String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
-                                if (visitUrl.length() > 0) {
-                                    if (userInfoJson.size() > 0) {
-                                        visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
-                                        log.debug("当前授权的用户信息:{}", userInfoJson.toString());
-                                        response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(userInfoJson.toString())).end();
-                                    } else {
-                                        response.setStatusCode(302).putHeader("Location", visitUrl).end();
-                                    }
-                                } else {
-                                    log.error("没有找到授权后回调地址" + request.absoluteURI());
-                                    response.end("未设置授权后回调地址");
-                                }
-                            });
-                        } catch (IOException e) {
-                            log.error("调用微信用户信息接口时抛出异常！", e);
+            NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
+                log.debug("授权返回的json数据：{}", openIdJson);
+                if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
+                    String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
+                    String userinfo_url = String.format(USERINFO_API, openIdJson.getString(WECHAT_JSON_ACCESSTOKEN_KEY), openId);
+                    NetworkUtils.asyncPostJson(userinfo_url, userInfoJson -> {
+                        //重定向到原访问URL
+                        String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
+                        if (visitUrl.length() > 0) {
+                            if (userInfoJson.size() > 0) {
+                                visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
+                                log.debug("当前授权的用户信息:{}", userInfoJson.toString());
+                                response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(userInfoJson.toString())).end();
+                            } else {
+                                response.setStatusCode(302).putHeader("Location", visitUrl).end();
+                            }
+                        } else {
+                            log.error("没有找到授权后回调地址" + request.absoluteURI());
+                            response.end("未设置授权后回调地址");
                         }
-                    }
-                });
-            } catch (IOException e) {
-                log.error("静默授权回调方法处理时发生错误！", e);
-            }
+                    });
+                }
+            });
         });
     }
 }

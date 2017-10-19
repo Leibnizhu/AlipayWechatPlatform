@@ -17,9 +17,6 @@ public class AccountService {
 		return accDao.selectByUserId(userId);
 	}
 
-	public int insert(Account WxAccount) {
-		return accDao.insert(WxAccount);
-	}
 
 	public void update(Account WxAccount, Handler<Integer> callback) {
 		accDao.updateBase(WxAccount, callback);
@@ -38,14 +35,6 @@ public class AccountService {
 
 	public List<Account> listForPage(Account searchEntity){
 		return accDao.listForPage(searchEntity);
-	}
-
-	public void add(Account entity){
-		accDao.add(entity);
-	}
-
-	public void delete(Account entity){
-		accDao.delete(entity);
 	}
 
     public void login(String username, String password, Handler<JsonObject> callback) {

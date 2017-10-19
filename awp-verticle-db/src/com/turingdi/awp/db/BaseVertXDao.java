@@ -14,7 +14,7 @@ import java.util.List;
  */
 class BaseVertXDao {
     private static Logger LOG = LoggerFactory.getLogger(BaseVertXDao.class);
-    static ConnectionPoolManager hikariCPM;
+    static ConnectionPoolManager hikariCPM = HikariCPManager.getInstance();
 
     /**
      * 无参数查询

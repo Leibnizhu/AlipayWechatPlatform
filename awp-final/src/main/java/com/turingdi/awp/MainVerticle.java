@@ -3,8 +3,7 @@ package com.turingdi.awp;
 import com.turingdi.awp.admin.LoginSubRouter;
 import com.turingdi.awp.admin.OfficialAccountSubRouter;
 import com.turingdi.awp.admin.PaySettingSubRouter;
-import com.turingdi.awp.db.AccountDao;
-import com.turingdi.awp.db.AccountService;
+import com.turingdi.awp.db.*;
 import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
@@ -35,12 +34,14 @@ public class MainVerticle extends AbstractVerticle{
         //公用资源初始化
         Constants.init(config());
         NetworkUtils.init(vertx);
+        HikariCPManager.init(vertx);
         JWTAuth jwtProvider = initJWTProvider();
-        AccountDao accDao = new AccountDao(vertx);
+        AccountDao accDao = new AccountDao();
+        OrderDao orderDao = new OrderDao();
         AccountService accountSrv = new AccountService(accDao);
         AlipayPayService alipayServ = new AlipayPayService(accDao);
+        OrderService orderServ = new OrderService(orderDao);
         Router mainRouter = Router.router(vertx);
-
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
@@ -52,7 +53,7 @@ public class MainVerticle extends AbstractVerticle{
 // TODO  支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
         //支付宝支付服务子路由
 // TODO  微信支付     mainRouter.mountSubRouter("/pay/wx", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
-        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(accountSrv, alipayServ).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ, alipayServ).setVertx(vertx).getSubRouter());
         //登录BMS的子路由
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由

@@ -1,4 +1,4 @@
-create table awp_account
+CREATE TABLE awp_account
 (
 	id int not null primary key,
 	name varchar(100) not null comment '中文名',
@@ -20,3 +20,14 @@ create table awp_account
   zfbPubKey varchar(511) null comment '支付宝公钥'
 )
 ;
+
+CREATE TABLE awp_order
+(
+    eid INT NOT NULL,
+    type INT NOT NULL COMMENT '0=微信支付，1=支付宝支付',
+    orderId VARCHAR(255) NOT NULL COMMENT '本地订单ID',
+    platOrderId VARCHAR(255) NOT NULL COMMENT '支付平台订单ID',
+    callback VARCHAR(2047) NOT NULL COMMENT '回调地址',
+    createTime DATETIME NOT NULL,
+    payTime DATETIME
+);

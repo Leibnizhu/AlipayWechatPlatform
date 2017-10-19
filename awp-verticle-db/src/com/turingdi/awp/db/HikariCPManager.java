@@ -33,15 +33,17 @@ public class HikariCPManager implements ConnectionPoolManager{
         this.client = JDBCClient.createShared(vertx, config, "HikariCP");
     }
 
-    static HikariCPManager getInstance(Vertx vertx){
+    public static HikariCPManager init(Vertx vertx) {
+        if (INSTANCE != null) {
+            throw new RuntimeException("HikariCPManager is already initialized, please do not call init() any more!!!");
+        }
+        INSTANCE = new HikariCPManager(vertx); //创建单例实例
+        return INSTANCE;
+    }
+
+    static HikariCPManager getInstance() {
         if (INSTANCE == null) {
-            //锁定代码块
-            synchronized (HikariCPManager.class) {
-                //第二重判断
-                if (INSTANCE == null) {
-                    INSTANCE = new HikariCPManager(vertx); //创建单例实例
-                }
-            }
+            throw new RuntimeException("HikariCPManager is still not initialized!!!");
         }
         return INSTANCE;
     }
