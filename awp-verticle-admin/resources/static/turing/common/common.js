@@ -1,5 +1,34 @@
-String.prototype.tren=function(){var h="DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a";var c,e,a;var f,d,b;var g=this;a=g.length;e=0;c="";while(e<a){f=g.charCodeAt(e++)&255;if(e===a){c+=h.charAt(f>>2);c+=h.charAt((f&3)<<4);c+="~~";break}d=g.charCodeAt(e++);if(e===a){c+=h.charAt(f>>2);c+=h.charAt(((f&3)<<4)|((d&240)>>4));c+=h.charAt((d&15)<<2);c+="~";break}b=g.charCodeAt(e++);c+=h.charAt(f>>2);c+=h.charAt(((f&3)<<4)|((d&240)>>4));c+=h.charAt(((d&15)<<2)|((b&192)>>6));c+=h.charAt(b&63)}return c};
-String.prototype.trdc=function(){var g=[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,47,-1,-1,55,26,58,34,56,57,61,4,20,36,-1,-1,-1,-1,-1,-1,-1,3,35,22,0,19,15,6,24,8,1,12,37,52,40,2,14,60,59,18,29,42,32,39,16,50,25,-1,-1,-1,-1,-1,-1,63,30,28,13,23,38,48,33,17,49,9,43,7,45,11,41,5,31,44,54,46,27,21,10,53,51,-1,-1,-1,-1,-1];var e,c,b,a;var f,h,d;var j=this;h=j.length;f=0;d="";while(f<h){do{e=g[j.charCodeAt(f++)&255]}while(f<h&&e===-1);if(e===-1){break}do{c=g[j.charCodeAt(f++)&255]}while(f<h&&c===-1);if(c===-1){break}d+=String.fromCharCode((e<<2)|((c&48)>>4));do{b=j.charCodeAt(f++)&255;if(b===126){return d}b=g[b]}while(f<h&&b===-1);if(b===-1){break}d+=String.fromCharCode(((c&15)<<4)|((b&60)>>2));do{a=j.charCodeAt(f++)&255;if(a===126){return d}a=g[a]}while(f<h&&a===-1);if(a===-1){break}d+=String.fromCharCode(((b&3)<<6)|a)}return d};
+(function () {
+    "use strict";
+
+    function a() {
+        this._keyStr = "DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a~"
+    }
+
+    a.prototype.tren = function (a) {
+        var c, d, e, f, g, h, i, b = "", j = 0;
+        for (a = this._utf8_encode(a); j < a.length;) c = a.charCodeAt(j++), d = a.charCodeAt(j++), e = a.charCodeAt(j++), f = c >> 2, g = (3 & c) << 4 | d >> 4, h = (15 & d) << 2 | e >> 6, i = 63 & e, isNaN(d) ? h = i = 64 : isNaN(e) && (i = 64), b = b + this._keyStr.charAt(f) + this._keyStr.charAt(g) + this._keyStr.charAt(h) + this._keyStr.charAt(i);
+        return b
+    }, a.prototype.trdc = function (a) {
+        var c, d, e, f, g, h, i, b = "", j = 0;
+        for (a = a.replace(/[^A-Za-z0-9\-,~]/g, ""); j < a.length;) f = this._keyStr.indexOf(a.charAt(j++)), g = this._keyStr.indexOf(a.charAt(j++)), h = this._keyStr.indexOf(a.charAt(j++)), i = this._keyStr.indexOf(a.charAt(j++)), c = f << 2 | g >> 4, d = (15 & g) << 4 | h >> 2, e = (3 & h) << 6 | i, b += String.fromCharCode(c), 64 != h && (b += String.fromCharCode(d)), 64 != i && (b += String.fromCharCode(e));
+        return b = this._utf8_decode(b)
+    }, a.prototype._utf8_encode = function (a) {
+        var b, c, d;
+        for (a = a.replace(/\r\n/g, "\n"), b = "", c = 0; c < a.length; c++) d = a.charCodeAt(c), 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(192 | d >> 6), b += String.fromCharCode(128 | 63 & d)) : (b += String.fromCharCode(224 | d >> 12), b += String.fromCharCode(128 | 63 & d >> 6), b += String.fromCharCode(128 | 63 & d));
+        return b
+    }, a.prototype._utf8_decode = function (a) {
+        for (var b = "", c = 0, d = 0, f = 0, g = 0; c < a.length;) d = a.charCodeAt(c), 128 > d ? (b += String.fromCharCode(d), c++) : d > 191 && 224 > d ? (f = a.charCodeAt(c + 1), b += String.fromCharCode((31 & d) << 6 | 63 & f), c += 2) : (f = a.charCodeAt(c + 1), g = a.charCodeAt(c + 2), b += String.fromCharCode((15 & d) << 12 | (63 & f) << 6 | 63 & g), c += 3);
+        return b
+    };
+    window.Base = new a;
+})();
+String.prototype.trdc = function () {
+    return Base.trdc(this)
+};
+String.prototype.tren = function () {
+    return Base.tren(this)
+};
 String.prototype.getParam=function(a,s){var b=new RegExp("(^|"+s+")"+a+"=(.+?)("+s+"|$)","i");var c=this.match(b);if(c!==null){return decodeURIComponent(c[2])}return ""};
 $(document).ready(function(){$(".nav > li > a").click(function(){"active"!=$(this).attr("class")&&($(".nav li ul").slideUp(),$(this).next().slideToggle(),$(".nav li a").removeClass("active"),$(this).addClass("active"))})}),$(document).ready(function(){$("#topstats").click(function(){$(".topstats").slideToggle(100)})}),$(document).ready(function(){$(".sidepanel-open-button").click(function(){$(".sidepanel").toggle(100)})}),$(document).ready(function(){$(".sidebar-open-button-mobile").click(function(){$(".sidebar").toggle(150)})}),$(document).ready(function(){$(".sidebar-open-button").on("click",function(){$(".sidebar").hasClass("hidden")?($(".sidebar").removeClass("hidden"),$(".content").css({marginLeft:200})):($(".sidebar").addClass("hidden"),$(".content").css({marginLeft:0}))})}),$(document).ready(function(){$(".panel-tools .minimise-tool").click(function(){return $(this).parents(".panel").find(".panel-body").slideToggle(100),!1})}),$(document).ready(function(){$(".panel-tools .closed-tool").click(function(){return $(this).parents(".panel").fadeToggle(400),!1})}),$(document).ready(function(){$(".panel-tools .search-tool").click(function(){return $(this).parents(".panel").find(".panel-search").toggle(100),!1})}),$(document).ready(function(){$(".panel-tools .expand-tool").on("click",function(){$(this).parents(".panel").hasClass("panel-fullsize")?$(this).parents(".panel").removeClass("panel-fullsize"):$(this).parents(".panel").addClass("panel-fullsize")})}),$(document).ready(function(){$(".widget-tools .closed-tool").click(function(){return $(this).parents(".widget").fadeToggle(400),!1})}),$(document).ready(function(){$(".widget-tools .expand-tool").on("click",function(){$(this).parents(".widget").hasClass("widget-fullsize")?$(this).parents(".widget").removeClass("widget-fullsize"):$(this).parents(".widget").addClass("widget-fullsize")})}),$(document).ready(function(){$(".kode-alert .closed").click(function(){return $(this).parents(".kode-alert").fadeToggle(350),!1})}),$(document).ready(function(){$(".kode-alert-click").click(function(){return $(this).fadeToggle(350),!1})}),$(function(){$('[data-toggle="tooltip"]').tooltip()}),$(function(){$('[data-toggle="popover"]').popover()}),$(window).on("load",function(){$(".loading").fadeOut(750)});
 Date.prototype.format = function (fmt) {
