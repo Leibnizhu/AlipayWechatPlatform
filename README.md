@@ -63,16 +63,23 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 - 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
 - 接口地址：`http://localhost:8083/tk/wx/act/{eid}`  
 - 请求参数：eid路径参数，用户ID  
+
 #### JsTicket
 - 请求方法：POST  
 - 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
 - 接口地址：`http://localhost:8083/tk/wx/jst/{eid}`  
 - 请求参数：eid路径参数，用户ID  
 
-### 微信支付
-待续……
+### 微信支付(TODO)
+#### 预处理(wx.config用)
+(TODO)
+#### 下单
+(TODO)
+#### 退款
+(TODO)
 
 ### 支付宝支付
+#### 下单
 需要使用支付宝支付时，由由用户调用此接口（可以是web服务返回重定向到本接口，或后台计算出接口地址，让js跳转）。  
 请求地址：`http://localhost:8083/pay/zfb/order/{body}`  
 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
@@ -87,3 +94,6 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
     "success":"http://localhost:8083/static/page/sys/base64.html"/*支付后前段立即跳转的地址*/
 }
 ```
+#### 退款(TODO)
+
+### (客服/模板)消息发送(TODO)
