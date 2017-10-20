@@ -4,6 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
@@ -21,8 +22,39 @@ public class NetworkUtils {
     private static final Logger LOG = LoggerFactory.getLogger(NetworkUtils.class);
     private static HttpClient client;
 
+    public enum ContentType {
+        JSON, XML, FORM
+    }
+
     public static void init(Vertx vertx){
         client = vertx.createHttpClient(new HttpClientOptions().setLogActivity(false));
+    }
+
+    public static void asyncPostStringWithData(String url, String body, ContentType type, Handler<String> callback) {
+        asyncPostStringWithData(url, body, type, "UTF-8", callback);
+    }
+
+    public static void asyncPostStringWithData(String url, String body, ContentType type, String encode, Handler<String> callback) {
+        checkInitialized();
+        HttpClientRequest req = client.requestAbs(HttpMethod.POST, url, resp -> {
+            resp.bodyHandler(buf -> {
+                callback.handle(buf.toString());
+            });
+        });
+        switch (type) {
+            case XML:
+                req.putHeader("content-type", "application/xml;charset=" + encode);
+                break;
+            case JSON:
+                req.putHeader("content-type", "application/json;charset=" + encode);
+                break;
+            case FORM:
+                req.putHeader("content-type", "application/x-www-form-urlencoded" + encode);
+                break;
+        }
+        req.putHeader("content-length", String.valueOf(body.length()));
+        req.write(body);
+        req.end();
     }
 
     public static void asyncPostJson(String url, Handler<JsonObject> callback) {

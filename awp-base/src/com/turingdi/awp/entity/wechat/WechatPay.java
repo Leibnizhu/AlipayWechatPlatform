@@ -1,9 +1,9 @@
 package com.turingdi.awp.entity.wechat;
 
 
-import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.MD5Utils;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -15,20 +15,19 @@ import java.util.TreeMap;
 public class WechatPay {
     private Map<String, Object> map = new TreeMap<>();
 
-    public WechatPay(String prepay_id, Account wxAccount) {
-        map.put("appId", wxAccount.getAppid());
+    public WechatPay(String prepay_id, JsonObject wxAccount) {
+        map.put("appId", wxAccount.getString("appid"));
         map.put("timeStamp", String.valueOf(System.currentTimeMillis() / 1000));
         map.put("nonceStr", CommonUtils.getRandomID());
         map.put("package", "prepay_id=" + prepay_id);
         map.put("signType", "MD5");
-        map.put("paysign", getWeixinPaySign(map, wxAccount.getMchKey()));
+        map.put("paysign", getWeixinPaySign(map, wxAccount.getString("mchKey")));
         map.put("packages", prepay_id);
     }
 
     public static String getWeixinPaySign(Map<String, Object> map, String key) {
         StringBuilder entityBuilder = getSignString(map);
         entityBuilder.append("key=").append(key);
-
         return MD5Utils.getMD5(entityBuilder.toString()).toUpperCase();
     }
 

@@ -5,10 +5,13 @@ import com.turingdi.awp.admin.OfficialAccountSubRouter;
 import com.turingdi.awp.admin.PaySettingSubRouter;
 import com.turingdi.awp.db.*;
 import com.turingdi.awp.service.AlipayPayService;
+import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.verticle.AlipayPaySubRouter;
+import com.turingdi.awp.verticle.TokenSubRouter;
 import com.turingdi.awp.verticle.WechatOauthSubRouter;
+import com.turingdi.awp.verticle.WechatPaySubRouter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
@@ -40,6 +43,7 @@ public class MainVerticle extends AbstractVerticle{
         OrderDao orderDao = new OrderDao();
         AccountService accountSrv = new AccountService(accDao);
         AlipayPayService alipayServ = new AlipayPayService(accDao);
+        WechatPayService wxPayServ = new WechatPayService(accDao);
         OrderService orderServ = new OrderService(orderDao);
         Router mainRouter = Router.router(vertx);
         //请求体解析
@@ -48,11 +52,11 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.route("/static/*").handler(StaticHandler.create().setWebRoot("static"));
         mainRouter.route("/favicon.ico").handler(this::getLogo);
         mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
-        //微信授权的子路由
+        //授权服务的子路由
         mainRouter.mountSubRouter("/oauth/wx", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
 // TODO  支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
-        //支付宝支付服务子路由
-// TODO  微信支付     mainRouter.mountSubRouter("/pay/wx", new AlipayPaySubRouter(accountSrv, alipayServ).getSubRouter());
+        //支付服务子路由
+        mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter(orderServ, wxPayServ, accountSrv).setVertx(vertx).getSubRouter());
         mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ, alipayServ).setVertx(vertx).getSubRouter());
         //登录BMS的子路由
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
@@ -60,9 +64,10 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //支付配置子路由
         mainRouter.mountSubRouter("/bms/pay", new PaySettingSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
-        //TODO 其他子路由
-        //如 mainRouter.mountSubRouter("/……"， ……);
-        server.requestHandler(mainRouter::accept).listen(8083);
+        //JsTicket和AccessTOken服务子路由
+        mainRouter.mountSubRouter("/tk/wx", new TokenSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        server.requestHandler(mainRouter::accept)
+                .listen(config().getInteger("serverPort", 8083));
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");

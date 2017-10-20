@@ -4,8 +4,9 @@ import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.SHA1Utils;
 import com.turingdi.awp.util.wechat.WxApiClient;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.DigestException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -16,18 +17,19 @@ import java.util.TreeMap;
  */
 public class WechatJdk {
     private Map<String, String> map = new TreeMap<>();
-    public WechatJdk(HttpServletRequest request, Account account) throws DigestException {
+
+    public WechatJdk(HttpServerRequest request, JsonObject account) {
         this(request, account, null);
     }
 
-    public WechatJdk(HttpServletRequest request, Account account, String url) throws DigestException {
+    public WechatJdk(HttpServerRequest request, JsonObject account, String url) {
         map.put("noncestr", CommonUtils.getRandomID());
-        map.put("jsapi_ticket", WxApiClient.getJSTicket(account));
+        map.put("jsapi_ticket", WxApiClient.getJSTicket(account.mapTo(Account.class)));
         map.put("timestamp", String.valueOf(System.currentTimeMillis()/1000));
         if(null != url) {
             map.put("url", url);
         } else {
-            map.put("url", (null == request.getQueryString() ? request.getRequestURL().toString() : request.getRequestURL() + "?" + request.getQueryString()));
+            map.put("url", request.absoluteURI());
         }
         map.put("signture", getWechatConfigSign(map));
     }
@@ -41,13 +43,17 @@ public class WechatJdk {
      *  规则进行字符串拼接，并对拼完后的字符串进行SHA1签名
      * @param map
      * @return   SHA1签名
-     * @throws DigestException
      */
-    private String getWechatConfigSign(Map<String, String> map) throws DigestException {
+    private String getWechatConfigSign(Map<String, String> map) {
         StringBuilder entityBuilder = getSignString(map);
         String signkey = entityBuilder.toString().substring(0, entityBuilder.toString().length()-1);
         //进行sha1签名
-        return SHA1Utils.SHA1(signkey);
+        try {
+            return SHA1Utils.SHA1(signkey);
+        } catch (DigestException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private StringBuilder getSignString(Map<String, String> map){

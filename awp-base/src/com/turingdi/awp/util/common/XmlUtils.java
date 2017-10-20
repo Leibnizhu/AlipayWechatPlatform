@@ -1,10 +1,19 @@
 package com.turingdi.awp.util.common;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.xml.sax.InputSource;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,5 +52,39 @@ public class XmlUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 解析xml数据，并将解析后的数据传入map里面
+     *
+     * @param xmlData xml数据
+     * @return 解析后的数据
+     *
+     * @author Leibniz
+     */
+    public static Map<String, String> xmltoMap(String xmlData) {
+        StringReader read = new StringReader(xmlData);
+        // 创建新的输入源SAX 解析器将使用 InputSource 对象来确定如何读取 XML 输入
+        InputSource source = new InputSource(read);
+        SAXBuilder sbx = new SAXBuilder();
+        Document doc = null;
+        try {
+            doc = sbx.build(source);
+        } catch (JDOMException | IOException e) {
+            e.printStackTrace();
+        }
+        assert doc != null;
+        Element root = doc.getRootElement();
+        List es = root.getChildren();
+        Map<String, String> retMap = new HashMap<>();
+        if (es != null && es.size() != 0) {
+            for (Object obj : es) {
+                if (obj instanceof Element) {
+                    Element element = (Element) obj;
+                    retMap.put(element.getName(), element.getText());
+                }
+            }
+        }
+        return retMap;
     }
 }

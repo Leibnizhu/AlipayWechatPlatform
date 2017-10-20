@@ -41,12 +41,12 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 从`awp-final`子模块中的`com.turingdi.awp.MainLauncher`类启动项目即可。
 
 ## 后台管理页面
-入口地址：http://localhost:8083/static/
+入口地址：`http://localhost:8083/static/`
 
 ## API
 ### 微信授权
 申请微信授权。web服务需要授权时，向用户发送重定向到该接口。
-请求地址：http://localhost:8083/oauth/wx/apply/{body}  
+请求地址：`http://localhost:8083/oauth/wx/apply/{body}`  
 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
 例如（请修改域名后，在微信打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是图灵Base64加密后的结果）: http://localhost:8083/oauth/wx/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
 ```json
@@ -57,12 +57,24 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 }
 ```
 
+### 微信公众号的AccessToken与JsTicket
+#### AccessToken
+- 请求方法：POST  
+- 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
+- 接口地址：`http://localhost:8083/tk/wx/act/{eid}`  
+- 请求参数：eid路径参数，用户ID  
+#### JsTicket
+- 请求方法：POST  
+- 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
+- 接口地址：`http://localhost:8083/tk/wx/jst/{eid}`  
+- 请求参数：eid路径参数，用户ID  
+
 ### 微信支付
 待续……
 
 ### 支付宝支付
 需要使用支付宝支付时，由由用户调用此接口（可以是web服务返回重定向到本接口，或后台计算出接口地址，让js跳转）。  
-请求地址：http://localhost:8083/pay/zfb/order/{body}  
+请求地址：`http://localhost:8083/pay/zfb/order/{body}`  
 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
 例如(如: http://localhost:8083/oauth/wx/apply/bYkL1CX3PB7sIf6YZGwYSCX3P3IjKBKjKBKMdEH0POIsIWJY1CdLIBNjoOkuHCyLIBN32Iu55p2cI3g3HtqsvGkhHts3P3kNTmigP3Q-ZGLBTO53HCL9TS5BvtM3oOkzTCdBZedzIBN31miMcAN-otj-Htqs1G6zTAN4KAVzo0dMHeipHY6gHCTLo0d5cY63HedLdBXu1minvOk6  
 ```json

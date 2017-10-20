@@ -113,7 +113,7 @@ function registerPageReturnEvent(callback) {
     });
 }
 
-var BASE_PATH = "http://localhost:8083";
+var BASE_PATH = "http://localhost:8084";
 var TOKEN_COOKIE_KEY = "awpJwtToken";
 function authAjax(config){
     $.ajax({

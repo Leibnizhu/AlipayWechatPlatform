@@ -5,7 +5,9 @@ import java.util.Date;
 public class Account {
     private Long id;
     private String name;
+    private String email;
     private String password;
+    private Integer role;
     private String account;
     private String appid;
     private String appsecret;
@@ -21,6 +23,24 @@ public class Account {
     private String zfbAppId;
     private String zfbPrivKey;
     private String zfbPubKey;
+
+    public Integer getRole() {
+        return role;
+    }
+
+    public Account setRole(Integer role) {
+        this.role = role;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Account setEmail(String email) {
+        this.email = email;
+        return this;
+    }
 
     public String getVerify() {
         return verify;
