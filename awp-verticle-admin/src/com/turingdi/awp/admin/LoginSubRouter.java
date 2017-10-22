@@ -61,7 +61,7 @@ public class LoginSubRouter implements SubRouter {
                 Integer role = acc.getInteger("role");
                 String name = acc.getString("name");
                 String token = provider.generateToken(new JsonObject().put("id", id).put("role", role), JWT_OPTIONS);
-                result.put("result", "success").put("token", token).put("name", name).put("role", role).put("id", id);
+                result.put("result", "success").put("token", token).put("name", name).put("role", role).put("id", id).put("email", acc.getString("email"));
                 resp.end(result.toString());
             }
         });

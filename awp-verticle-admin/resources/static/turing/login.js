@@ -36,6 +36,7 @@ $().ready(function() {
                         localStorage.setItem("role", result.role);
                         localStorage.setItem("name", result.name);
                         localStorage.setItem("id", result.id);
+                        localStorage.setItem("email", result.email);
                         window.location.href = "/static/";
                     } else {
                         var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";

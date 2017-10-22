@@ -17,14 +17,6 @@
         span.required {
             color: #ef4836; /*必填字段星号的颜色*/
         }
-
-        textarea {
-            width: 95%
-        }
-
-        #content {
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -61,8 +53,7 @@
                 </a>
                 <span id="topIdsteName"></span>
                 <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
-                    <img src="../../img/profileimg.png" alt="img"><b id="userName">{{curName}}</b><span
-                        class="caret"></span>
+                    <img src="../../img/profileimg.png" alt="img"><b>{{curName}}</b><span class="caret"></span>
                 </a>
             </li>
         </ul>
@@ -109,8 +100,19 @@
         <div class="page-header">
             <h1 class="title">系统管理</h1>
             <ol class="breadcrumb">
-                <li class="active">Base64工具</li>
+                <li class="active">修改密码</li>
             </ol>
+            <!-- 主账号操作公众号配置时显示出来。 -->
+            <div class="right text-r" id="accountList" style="display: none">
+                <div class="pull-right padding-r-15">
+                    <span id="accountTitle" style="display: inline-block;padding-top: 6px;">帐号：</span>
+                    <div class="pull-right padding-r-50">
+                        <select class="form-control" style="width: 200px;" v-model="selectedEid">
+                            <option v-for="acc in accList" :value="acc.id">{{acc.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- End Page Header -->
 
@@ -122,26 +124,51 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="pull-right"></div>
-                        <div class="panel-title"><h4>Base64工具</h4></div>
+                        <div class="panel-title"><h4>修改密码/邮箱</h4></div>
                         <div class="panel-body">
-                            <div id="content">
-                                <textarea rows="4" :value="decoded" v-model="decoded"></textarea>
-                                <br/>
-                                <button @click="encode">加密↓</button>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <button @click="decode">解密↑</button>
-                                <br/>
-                                <textarea rows="4" :value="encoded" v-model="encoded"></textarea>
-                                <hr/>
-                                账户ID：<input type="text" style="width: 40px; height: auto" v-model="eid">
-                                授权类型：<select v-model="type" style="height: auto">
-                                <option value="0">静默授权</option>
-                                <option value="1">普通授权</option>
-                            </select>
-                                回调地址：<input type="text" style="width: 250px; height: auto" v-model="callback">
-                                <button>生成授权接口参数</button>
-                                <textarea rows="2" :value="oauth" v-model="oauth"></textarea>
-                            </div>
+                            <form id="accPswd" class="form-horizontal" role="form" action="#">
+                                <input type="hidden" name="id" id="id" :value="eid">
+                                <div class="col-md-10">
+                                    <div class="form-group">
+                                        <label for="email" class="col-sm-4 control-label">登录邮箱<span
+                                                class="required">*</span></label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="email" name="email"
+                                                   v-model="email">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="oldPassword" class="col-sm-4 control-label">原密码<span
+                                                class="required">*</span></label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="oldPassword" name="password"
+                                                   v-model="password">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPassword" class="col-sm-4 control-label">新密码<span
+                                                class="required"></span></label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="newPassword"
+                                                   name="newPassword" v-model="newPassword">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="rePassword" class="col-sm-4 control-label">重复密码<span
+                                                class="required"></span></label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="rePassword"
+                                                   name="rePassword" v-model="rePassword">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-5 col-sm-10">
+                                            <input class="btn btn btn-success wechatNumber-btn" style="width:150px"
+                                                   id="submits" type="submit" value="提交">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -154,37 +181,12 @@
 </div>
 <!-- END CONTENT -->
 <script type="text/javascript" src="../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.validate.js"></script>
+<script type="text/javascript" src="../../js/jquery.md5.js"></script>
 <script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
 <script type="text/javascript" src="../../js/vue.min.js"></script>
+<script type="text/javascript" src="../../js/sweet-alert.min.js"></script>
 <script type="text/javascript" src="../../turing/common/common.js"></script>
-<script type="text/javascript">
-    $("#systemManager").addClass("active");
-    $("#systemManager").show();
-    $("#base64MenuLi a").addClass("active");
-    var vm = new Vue({
-        el: "#all",
-        data: {
-            decoded: "",
-            encoded: "",
-            curName: localStorage.getItem("name") || "",
-            eid: localStorage.getItem("id") || 0,
-            type: 1,
-            callback: "http://www.baidu.com",
-            oauth: undefined
-        },
-        mounted: function () {
-            var json = "{\"eid\":" + this.eid + ",\"type\":" + this.type + ",\"callback\":\"" + this.callback + "\"}";
-            this.oauth = json.tren();
-        },
-        methods: {
-            encode: function () {
-                this.encoded = this.decoded.tren();
-            },
-            decode: function () {
-                this.decoded = this.encoded.trdc();
-            }
-        }
-    });
-</script>
+<script type="text/javascript" src="../../turing/account/editInfo.js"></script>
 </body>
 </html>

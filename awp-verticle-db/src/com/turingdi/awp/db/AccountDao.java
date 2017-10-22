@@ -51,6 +51,18 @@ public class AccountDao extends BaseVertXDao {
             params.add(acc.getVerify());
             moreThanOne = true;
         }
+        if (acc.getEmail() != null && !acc.getEmail().equals("")) {
+            if (moreThanOne) sql.append(",");
+            sql.append("email=?");
+            params.add(acc.getEmail());
+            moreThanOne = true;
+        }
+        if (acc.getPassword() != null && !acc.getPassword().equals("")) {
+            if (moreThanOne) sql.append(",");
+            sql.append("password=?");
+            params.add(acc.getPassword());
+            moreThanOne = true;
+        }
         sql.append(" where id=?");
         params.add(acc.getId());
         update(sql.toString(), params, callback);
@@ -78,8 +90,16 @@ public class AccountDao extends BaseVertXDao {
                 });
     }
 
+    void loginById(Account account, Handler<JsonObject> callback) {
+        query("SELECT * FROM awp_account WHERE id = ? and password = ?",
+                new JsonArray().add(account.getId()).add(account.getPassword()),
+                result -> {
+                    callback.handle(result.size() > 0 ? result.get(0) : null);
+                });
+    }
+
     void getAccountList(Handler<List<JsonObject>> callback){
-        query("SELECT id,name FROM awp_account", callback);
+        query("SELECT id,name,email FROM awp_account", callback);
     }
 
     void updateWxPay(Account acc, Handler<Integer> callback) {

@@ -1,21 +1,54 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8"/>
-    <title>error</title>
-    <style>
-        span{
-            font-size: 25px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>出错啦</title>
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../css/shortcuts.css">
+    <link rel="stylesheet" type="text/css" href="../../css/style.css">
 </head>
 <body>
-<h1>error-系统出错，请联系后台管理员</h1>
-<br></br>
-<span>status:<span style="color: red" th:text="${status}"></span></span>
-<br></br>
-<span>path:<span  th:text="${path}"></span></span>
+<div id="container content">
+        <img id="errImg" style="width:100%;height:65%;" class="png" src="../../img/404.png" alt=""/>
+    <h3 align="center" id="message"></h3>
+    <h6 align="center" id="subMsg"></h6>
+    <div class="col-xs-12 padding-t-25"><a class="btn btn-success btn-lg btn-block" href="javascript:history.back()">返回</a></div>
+</div>
+<div id="cloud" class="png"></div>
+<script type="text/javascript">
+    function GetQueryString(paraPart,name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = paraPart.substr(1).match(reg);
+        if (r !== null) return unescape(r[2]); return null;
+    }
+    var status = GetQueryString(window.location.search, "st");
+    switch (status) {
+        case "1":
+            document.getElementById("message").innerHTML = "您访问的活动尚未开始";
+            break;
+        case "3":
+            document.getElementById("message").innerHTML = "您访问的活动暂停中";
+            break;
+        case "4":
+            document.getElementById("message").innerHTML = "您访问的活动已停止";
+            break;
+        case "5":
+            document.getElementById("message").innerHTML = "您访问的活动已被删除";
+            break;
+        case "6":
+            document.getElementById("message").innerHTML = "您访问的链接有误，未指定活动";
+            break;
+        case "7":
+            document.getElementById("message").innerHTML = "您访问的活动尚未配置公众号";
+            document.getElementById("errImg").src = "../../img/500.png";
+            break;
+        case "8":
+            document.getElementById("message").innerHTML = "公众号配置有误，无法完成授权。";
+            document.getElementById("subMsg").innerHTML = "授权报错信息："+GetQueryString(window.location.search, "errmsg");
+            document.getElementById("errImg").src = "../../img/500.png";
+            break;
+    }
+</script>
 </body>
 </html>

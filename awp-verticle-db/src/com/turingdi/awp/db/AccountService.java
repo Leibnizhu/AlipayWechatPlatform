@@ -27,7 +27,6 @@ public class AccountService {
 	 *
 	 * @param id 公众号id
 	 * @return 获取到的公众号数据
-	 * Create by quandong
 	 */
 	public void getById(int id, Handler<JsonObject> callback) {
 		accDao.getById(id, callback); // 调用dao层方法
@@ -41,6 +40,11 @@ public class AccountService {
 		Account account = new Account().setName(username).setPassword(password);
 		accDao.login(account, callback);
     }
+
+	public void loginById(long id, String password, Handler<JsonObject> callback) {
+		Account account = new Account().setId(id).setPassword(password);
+		accDao.loginById(account, callback);
+	}
 
 	public void getAccountList(Handler<List<JsonObject>> callback){
 		accDao.getAccountList(callback);

@@ -2,10 +2,10 @@ var curEid = -1;
 var vm = new Vue({
     el: "#all",
     data: {
-        eid: localStorage.id,
-        selectedEid: localStorage.id, //下拉框选择的id
+        eid: parseInt(localStorage.id),
+        selectedEid: parseInt(localStorage.id), //下拉框选择的id
         name: undefined,
-        role: localStorage.id,
+        role: parseInt(localStorage.role),
         curName: localStorage.name,
         appid: undefined,
         appsecret: undefined,
