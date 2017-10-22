@@ -1,8 +1,10 @@
 {
-  "jdbcUrl": "jdbc:mysql://127.0.0.1:3306/shop?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false",
-  "jdbcUser": "root",
+  /*"jdbcUrl": "jdbc:mysql://127.0.0.1:3306/shop?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false",*/
+  "jdbcUrl": "jdbc:postgresql://127.0.0.1:5432/awp",
+  "jdbcUser": "leibniz",
   "jdbcPassword": "turingdi",
-  /*"jdbcDriver": "***.***",*/
+  "jdbcDriver": "org.postgresql.Driver",
   "projectUrl": "http://leibnizhu.wicp.net/",
-  "certDir": "/home/leibniz/"
+  "certDir": "/home/leibniz/",
+  "serverPort": 8084
 }
