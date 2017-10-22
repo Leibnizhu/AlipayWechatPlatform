@@ -16,10 +16,12 @@
 - 测试环境：`Manjaro 17.0.5 x86_64 Linux 4.9.53-1-MANJARO`,`OpenJDK 1.8.0_144`
 - 硬件配置：Intel Core i7-6560U @ 4x 3.2GHz, 8G DDR3, 256G SSD  
 
-`Spring`(无Shiro过滤)测试结果：
-![](img/spring.png)
-`Vert.X`(JWT授权)测试结果：
-![](img/vertx.png)
+`Spring`(无Shiro过滤)测试结果：  
+![](img/spring.png)  
+`Vert.X`(JWT授权+MariaDB)测试结果：  
+![](img/vertx.png)  
+`Vert.X`(JWT授权+PostgreSQL)测试结果：  
+![](img/vertx_postgres.png)  
 
 ## Maven子模块
 - `awp-base`: PoJo类，工具类（通用工具、微信工具、支付宝工具）
