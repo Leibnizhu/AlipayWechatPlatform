@@ -52,7 +52,7 @@ public class AlipayPayService {
         wxDao.getById(enterpriseId, acc -> {
             try {
                 String notifyUrl = zfbPayNotifyUrl; // 服务器后台回调通知的url
-                AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbAppId"), acc.getString("zfbPrivKey"), acc.getString("zfbPubKey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
+                AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbappid"), acc.getString("zfbprivkey"), acc.getString("zfbpubkuey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
                 PayBizContent payBizContent = new PayBizContent(orderId, price + "", product, null); // 订单的信息
                 AliPayApi.wapPay(aliAccountInfo, payBizContent, response); // 调用支付宝API的方法请求支付宝支付接口
             } catch (IOException e) {
@@ -80,7 +80,7 @@ public class AlipayPayService {
 
         wxDao.getById(enterpriseId, acc -> {
             String notifyUrl = zfbPayNotifyUrl; // 服务器后台回调通知的url
-            AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbAppId"), acc.getString("zfbPrivKey"), acc.getString("zfbPubKey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
+            AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbappid"), acc.getString("zfbprivkey"), acc.getString("zfbpubkey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
             AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
             AlipayTradeRefundRequest request = new AlipayTradeRefundRequest(); // 创建退款请求
             request.setBizContent(bizContentStr); // 设置请求的bizContent
@@ -100,7 +100,7 @@ public class AlipayPayService {
                     callback.handle(true);
                     // 退款成功,其他都是错
                 } else { // 退款失败
-                    log.error("调用支付宝退款接口错误，code={}，msg={}，sub_code={}，sub_msg={}", new Object[]{response.getCode(), response.getMsg(), response.getSubCode(), response.getSubMsg()}); // 打日志
+                    log.error("调用支付宝退款接口错误，code={}，msg={}，sub_code={}，sub_msg={}", response.getCode(), response.getMsg(), response.getSubCode(), response.getSubMsg()); // 打日志
                     callback.handle(false);
                 }
             } else { // 响应失败

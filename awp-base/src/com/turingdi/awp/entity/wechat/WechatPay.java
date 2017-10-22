@@ -21,7 +21,7 @@ public class WechatPay {
         map.put("nonceStr", CommonUtils.getRandomID());
         map.put("package", "prepay_id=" + prepay_id);
         map.put("signType", "MD5");
-        map.put("paysign", getWeixinPaySign(map, wxAccount.getString("mchKey")));
+        map.put("paysign", getWeixinPaySign(map, wxAccount.getString("mchkey")));
         map.put("packages", prepay_id);
     }
 

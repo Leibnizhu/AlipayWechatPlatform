@@ -62,14 +62,14 @@ public class PaySettingSubRouter implements SubRouter {
                     .put("wx", new JsonObject()
                             .put("appId", acc.getString("appid"))
                             .put("appSecret", acc.getString("appsecret"))
-                            .put("mchId", acc.getString("mchId"))
-                            .put("payKey", acc.getString("mchKey"))
-                            .put("opened", acc.getInteger("wxPayOn")))
+                            .put("mchId", acc.getString("mchid"))
+                            .put("payKey", acc.getString("mchkey"))
+                            .put("opened", acc.getInteger("wxpayon")))
                     .put("zfb", new JsonObject()
-                            .put("appId", acc.getString("zfbAppId"))
-                            .put("appPrivKey", acc.getString("zfbPrivKey"))
-                            .put("zfbPubKey", acc.getString("zfbPubKey"))
-                            .put("opened", acc.getInteger("zfbPayOn")));
+                            .put("appId", acc.getString("zfbappid"))
+                            .put("appPrivKey", acc.getString("zfbprivkey"))
+                            .put("zfbPubKey", acc.getString("zfbpubkey"))
+                            .put("opened", acc.getInteger("zfbpayon")));
             rc.response().putHeader("content-type", "application/json; charset=utf-8").end(json.toString());
         });
     }
