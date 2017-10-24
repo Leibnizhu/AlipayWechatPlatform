@@ -100,7 +100,7 @@ P.S. 支付的页面需要引入`https://res.wx.qq.com/open/js/jweixin-1.2.0.js`
 需要使用支付宝支付时，由由用户调用此接口（可以是web服务返回重定向到本接口，或后台计算出接口地址，让js跳转）。  
 请求地址：`http://localhost:8083/pay/zfb/order/{body}`  
 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
-例如(如: http://localhost:8083/oauth/wx/apply/bYkL1CX3PB7sIf6YZGwYSCX3P3IjKBKjKBKMdEH0POIsIWJY1CdLIBNjoOkuHCyLIBN32Iu55p2cI3g3HtqsvGkhHts3P3kNTmigP3Q-ZGLBTO53HCL9TS5BvtM3oOkzTCdBZedzIBN31miMcAN-otj-Htqs1G6zTAN4KAVzo0dMHeipHY6gHCTLo0d5cY63HedLdBXu1minvOk6  
+例如(如: http://localhost:8083/pay/zfb/order/bYkL1CX3PB7sIf6YZGwYSCX3P3IjKBKjKBKMdEH0POIsIWJY1CdLIBNjoOkuHCyLIBN32Iu55p2cI3g3HtqsvGkhHts3P3kNTmigP3Q-ZGLBTO53HCL9TS5BvtM3oOkzTCdBZedzIBN31miMcAN-otj-Htqs1G6zTAN4KAVzo0dMHeipHY6gHCTLo0d5cY63HedLdBXu1minvOk6  
 ```json
 {
     "eid":1,/*web项目使用的公众号在本项目中的用户ID*/
