@@ -16,6 +16,7 @@ public class NetworkUtilTest {
     @Test
     public void asyncPostTest() throws IOException {
         Vertx vertx = Vertx.vertx();
+        NetworkUtils.init(vertx);
         System.out.println("===================Test start===================");
         NetworkUtils.asyncPostString("http://breo.turing.asia/gzwx/smartBox/poll", System.out::println);
     }
