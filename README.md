@@ -48,8 +48,9 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 ## API
 ### 微信授权
 申请微信授权。web服务需要授权时，向用户发送重定向到该接口。
-请求地址：`http://localhost:8083/oauth/wx/apply/{body}`  
-参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
+- 请求地址：`http://localhost:8083/oauth/wx/apply/{body}`  
+- 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码
+
 例如（请修改域名后，在微信打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是图灵Base64加密后的结果）: http://localhost:8083/oauth/wx/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
 ```json
 {
@@ -98,8 +99,9 @@ P.S. 支付的页面需要引入`https://res.wx.qq.com/open/js/jweixin-1.2.0.js`
 ### 支付宝支付
 #### 下单
 需要使用支付宝支付时，由由用户调用此接口（可以是web服务返回重定向到本接口，或后台计算出接口地址，让js跳转）。  
-请求地址：`http://localhost:8083/pay/zfb/order/{body}`  
-参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
+- 请求地址：`http://localhost:8083/pay/zfb/order/{body}`  
+- 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码。  
+
 例如(如: http://localhost:8083/pay/zfb/order/bYkL1CX3PB7sIf6YZGwYSCX3P3IjKBKjKBKMdEH0POIsIWJY1CdLIBNjoOkuHCyLIBN32Iu55p2cI3g3HtqsvGkhHts3P3kNTmigP3Q-ZGLBTO53HCL9TS5BvtM3oOkzTCdBZedzIBN31miMcAN-otj-Htqs1G6zTAN4KAVzo0dMHeipHY6gHCTLo0d5cY63HedLdBXu1minvOk6  
 ```json
 {
@@ -111,6 +113,69 @@ P.S. 支付的页面需要引入`https://res.wx.qq.com/open/js/jweixin-1.2.0.js`
     "success":"http://localhost:8083/static/page/sys/base64.html"/*支付后前段立即跳转的地址*/
 }
 ```
-#### 退款(TODO)
+#### 退款
+(TODO)
 
-### (客服/模板)消息发送(TODO)
+### (客服/模板)消息发送
+#### 微信客服消息
+- 请求方法：PUT  
+- 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
+- 接口地址：`http://localhost:8083/msg/wx/kf`  
+- 请求参数：JSON格式，无需编码，详见`请求提示例`  
+- 响应格式：JSON
+- 响应内容：微信公众号模板消息接口返回的消息
+
+请求体示例：
+```json
+{
+    "eid": 2,/*web项目使用的公众号在本项目中的用户ID*/
+    "openId": "of2333333333333333333333OBuk",/*用户OpenID*/
+    "content": "韩寒会画画后悔画韩红"/*客服消息内容*/
+  }
+```
+响应体示例：
+```json
+{
+    "errcode": 0,
+    "errmsg": "ok"
+}
+```
+
+#### 微信模板消息
+- 请求方法：PUT  
+- 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
+- 接口地址：`http://localhost:8083/msg/wx/tp`  
+- 请求参数：JSON格式，无需编码，详见`请求体示例`  
+- 响应格式：JSON
+- 响应内容：微信公众号模板消息接口返回的消息
+
+请求体示例：
+```json
+{
+    "eid": 2,/*web项目使用的公众号在本项目中的用户ID*/
+    "openId": "of2333333333333333333333OBuk",/*用户OpenID*/
+    "tmpId": "6p233333333333333333333333333333333333333oM",/*模板ID*/
+    "url": "https://www.baidu.com",/*模板消息点击后跳转的地址*/
+    "data": {/*按模板的字段填写具体的内容*/
+      "first": "航班延误",
+      "keyword1": "AA123",
+      "keyword2": "延误",
+      "keyword3": "北京-上海",
+      "keyword4": "2017-9-21",
+      "remark": "韩寒会画画后悔画韩红"
+    }
+  }
+```
+响应体示例：
+```json
+{
+    "errcode": 0,
+    "errmsg": "ok",
+    "msgid": 439631104
+}
+```
+
+#### 支付宝客服消息
+(TODO)
+#### 支付宝模板消息
+(TODO)
