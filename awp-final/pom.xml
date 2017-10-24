@@ -58,6 +58,11 @@
             <artifactId>awp-verticle-pay</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.turingdi.awp</groupId>
+            <artifactId>awp-verticle-message</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

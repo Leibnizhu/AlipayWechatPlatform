@@ -18,7 +18,7 @@
         <module>awp-verticle-db</module>
         <module>awp-verticle-oauth</module>
         <module>awp-verticle-pay</module>
-        <!--<module>awp-verticle-message</module>-->
+        <module>awp-verticle-message</module>
     </modules>
 
     <properties>
@@ -36,6 +36,7 @@
         <mysql.version>6.0.6</mysql.version>
         <slf4j.version>1.7.24</slf4j.version>
         <logback.version>1.1.11</logback.version>
+        <postgresql.version>42.1.4</postgresql.version>
     </properties>
 
     <repositories>
@@ -89,6 +90,11 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
 
             <!--支付宝SDK-->
