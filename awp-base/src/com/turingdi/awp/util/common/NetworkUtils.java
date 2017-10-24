@@ -52,9 +52,9 @@ public class NetworkUtils {
                 req.putHeader("content-type", "application/x-www-form-urlencoded" + encode);
                 break;
         }
-        req.putHeader("content-length", String.valueOf(body.length()));
-        req.write(body);
-        req.end();
+//        req.putHeader("content-length", String.valueOf(body.length()));
+//        req.write(body);
+        req.end(body, encode);
     }
 
     public static void asyncPostJson(String url, Handler<JsonObject> callback) {

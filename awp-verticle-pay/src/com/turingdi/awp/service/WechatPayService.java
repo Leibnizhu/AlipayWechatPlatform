@@ -119,11 +119,7 @@ public class WechatPayService {
         map.put("appid", acc.getString("appid"));
         map.put("mch_id", acc.getString("mchid"));
         map.put("nonce_str", CommonUtils.getRandomID());
-        try {
-            map.put("body", new String(product.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        map.put("body", product);
         map.put("out_trade_no", orderId);
         map.put("total_fee", price);
         map.put("spbill_create_ip", ip.host());
@@ -135,13 +131,14 @@ public class WechatPayService {
         }
         map.put("sign", WechatPay.getWeixinPaySign(map, acc.getString("mchkey")));
         String xmlStr = null;
+        String encode = "ISO8859-1";
         try {
-            xmlStr = XmlUtils.simpleMapToXml(map, "ISO8859-1");
+            xmlStr = XmlUtils.simpleMapToXml(map, encode);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         log.debug("下单请求数据：" + xmlStr);
-        NetworkUtils.asyncPostStringWithData(WECHAT_UNIFY_PAY, xmlStr, XML, callback);
+        NetworkUtils.asyncPostStringWithData(WECHAT_UNIFY_PAY, xmlStr, XML, encode, callback);
     }
 
     /*
