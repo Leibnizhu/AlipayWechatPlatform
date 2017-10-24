@@ -6,7 +6,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author Leibniz.Hu
@@ -24,8 +23,8 @@ public class OrderDao extends BaseVertXDao {
             throw new IllegalArgumentException("Callback in Order object cannot be null!!!");
         if (order.getType() == null)
             throw new IllegalArgumentException("Type in Order object cannot be null!!!");
-        String sql = "INSERT INTO awp_order (eid,orderId,callback,type,createTime) VALUES (?,?,?,?,?)";
-        JsonArray params = new JsonArray().add(order.getEid()).add(order.getOrderId()).add(order.getCallback()).add(order.getType()).add(sdf.format(new Date()));
+        String sql = "INSERT INTO awp_order (eid,orderId,callback,type,createTime) VALUES (?,?,?,?,NOW())";
+        JsonArray params = new JsonArray().add(order.getEid()).add(order.getOrderId()).add(order.getCallback()).add(order.getType());
         update(sql, params, callback);
     }
 
@@ -48,8 +47,8 @@ public class OrderDao extends BaseVertXDao {
             throw new IllegalArgumentException("OrderId in Order object cannot be null!!!");
         if (order.getType() == null)
             throw new IllegalArgumentException("Type in Order object cannot be null!!!");
-        String sql = "UPDATE awp_order SET platOrderId = ?, payTime = ? where orderId=? and type=?";
-        JsonArray params = new JsonArray().add(order.getPlatOrderId()).add(sdf.format(new Date())).add(order.getOrderId()).add(order.getType());
+        String sql = "UPDATE awp_order SET platOrderId = ?, payTime = NOW() where orderId=? and type=?";
+        JsonArray params = new JsonArray().add(order.getPlatOrderId()).add(order.getOrderId()).add(order.getType());
         update(sql, params, callback);
     }
 }

@@ -1,7 +1,23 @@
 package com.turingdi.awp.service;
 
+import com.turingdi.awp.db.AccountDao;
+import com.turingdi.awp.entity.wechat.WechatPay;
+import com.turingdi.awp.util.common.CommonUtils;
+import com.turingdi.awp.util.common.Constants;
+import com.turingdi.awp.util.common.NetworkUtils;
+import com.turingdi.awp.util.common.XmlUtils;
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.SocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static com.turingdi.awp.util.common.NetworkUtils.ContentType.XML;
 
 /**
  * 支付服务类接口实现类
@@ -11,84 +27,71 @@ import org.slf4j.LoggerFactory;
  */
 public class WechatPayService {
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    private String certDir;
-    private String projectUrl;
+    private AccountDao accDao;
     private String wxPayNotifyUrl;
+
+    public WechatPayService(AccountDao accDao) {
+        this.accDao = accDao;
+        this.wxPayNotifyUrl = Constants.PROJ_URL + "pay/wx/noti";
+    }
 
     //统一下单接口
     private final static String WECHAT_UNIFY_PAY = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     //退款接口
     private final static String WECHAT_REFUND = "https://api.mch.weixin.qq.com/secapi/pay/wechatRefund";
 
+    private static final JsonObject WECHAT_VERSION_ERROR = new JsonObject().put("status", "WECHAT_VERSION_LOW");
+    private static final JsonObject ORDER_ERROR = new JsonObject().put("status", "ORDER_FAIL");
 
-/*    private final AccountDao wxDao;
-
-    @Autowired
-    public WechatPayService(Constants constants, AccountDao wxDao) {
-        this.wxDao = wxDao;
-        this.certDir = constants.CERT_DIR;
-        this.projectUrl = constants.PROJ_URL;
-        this.wxPayNotifyUrl = projectUrl + "mb/pay/wxNotify";
-    }
-
-    *//**
+    /**
      * 调用微信统一下单接口
      *
-     * @param product      产品名（会显示在微信支付推送的消息里面）
-     * @param price        价格（单位：分）
-     * @param openId       购买者的OpenID
-     * @param orderId      本地订单ID
-     * @param enterpriseId 商城对应企业用户ID
-     * @param request      HTTP请求对象
-     * @return "当前微信版本号过低"、"下单失败"、成功的返回成功的JSON
+     * @param product       产品名（会显示在微信支付推送的消息里面）
+     * @param price         价格（单位：分）
+     * @param openId        购买者的OpenID
+     * @param orderId       本地订单ID
+     * @param enterpriseId  商城对应企业用户ID
+     * @param request       HTTP请求对象
+     * @param forApiProcess 微信统一下单接口返回的数据的处理
+     * @param forResponse   接口用于响应的Json，可能是 "WECHAT_VERSION_LOW"、"ORDER_FAIL"、成功的返回成功的JSON
      *
      * @author Leibniz
-     *//*
-    public String wechatOrder(String product, int price, String openId, String orderId, int enterpriseId, HttpServletRequest request, Consumer<Map<String, String>> payCallback) throws IOException {
+     */
+    public void wechatOrder(String product, int price, String openId, String orderId, int enterpriseId, HttpServerRequest request, Handler<JsonObject> forResponse, Handler<Map<String, String>> forApiProcess) {
         if (!testSupportPay(request)) {
-            return "当前微信版本号过低";
+            forResponse.handle(WECHAT_VERSION_ERROR);
+            return;
         }
 
         //调用统一下单接口
-        String payParam = null;
-        Account wxAccount = wxDao.getById(enterpriseId);
-        try {
-            payParam = unifyPay(orderId, product, price, request.getRemoteAddr(), openId, null, wxPayNotifyUrl, wxAccount);
-            log.info("统一下单数据: " + payParam);
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error(orderId + "下单失败，请查看微信支持开发配置是否正确");
-        }
+        accDao.getById(enterpriseId, (JsonObject acc) -> {
+            unifyPay(orderId, product, price, request.remoteAddress(), openId, null, wxPayNotifyUrl, acc, payParam -> {
+                log.info("统一下单数据: " + payParam);
+                //解析统一下单接口返回的xml数据
+                Map<String, String> parsePayParam = XmlUtils.xmltoMap(payParam);
 
-        //解析统一下单接口返回的xml数据
-        Map<String, String> parsePayParam = null;
-        try {
-            parsePayParam = xmlAnalysis(payParam);
-        } catch (JDOMException e) {
-            log.error("统一订单返回的数据解析失败,查看统一下单返回的数据是否错误" + payParam);
-        }
+                //如果下单成功，则进行微信支付的js接口签名验证，并将签名的数据返回；否则返回下单失败
+                if (parsePayParam == null) {
+                    forResponse.handle(ORDER_ERROR.put("errMsg", "XML_PARSE_ERROR"));
+                    return;
+                }
 
-        //如果下单成功，则进行微信支付的js接口签名验证，并将签名的数据返回；否则返回下单失败
-        if (parsePayParam == null) {
-            return "下单失败";
-        }
-
-        if ("SUCCESS".equals(parsePayParam.get("return_code"))) {
-            //支付下单信息入库/其他处理
-            payCallback.accept(parsePayParam);
-
-            //微信支付js接口签名验证
-            Map<String, Object> jsApiMap = new WechatPay(parsePayParam.get("prepay_id"), wxAccount).getMap();
-            JSONObject payJsonData = JSONObject.fromObject(jsApiMap);
-            return payJsonData.toString();
-        } else {
-            log.error("统一订单失败：" + payParam);
-            return "下单失败";
-        }
+                if ("SUCCESS".equals(parsePayParam.get("return_code"))) {
+                    //支付下单信息入库/其他处理
+                    forApiProcess.handle(parsePayParam);
+                    //微信支付js接口签名验证
+                    Map<String, Object> jsApiMap = new WechatPay(parsePayParam.get("prepay_id"), acc).getMap();
+                    JsonObject payJsonData = new JsonObject(jsApiMap).put("status", "SUCCESS");
+                    forResponse.handle(payJsonData);
+                } else {
+                    log.error("统一订单失败：" + payParam);
+                    forResponse.handle(ORDER_ERROR.put("errMsg", parsePayParam.get("return_msg")));
+                }
+            });
+        });
     }
 
-    private boolean testSupportPay(HttpServletRequest request) {
+    private boolean testSupportPay(HttpServerRequest request) {
         String[] params = request.getHeader("user-agent").split(" ");
         for (String s : params) {
             if (s.contains("MicroMessenger")) {
@@ -98,6 +101,50 @@ public class WechatPayService {
         }
         return true;
     }
+
+    /**
+     * 调用微信统一下单接口
+     *
+     * @param product 充值设备描述
+     * @param price   充值设备价格
+     * @param ip      充值端Ip
+     * @param openId  充值的微信openId
+     * @param acc
+     * @return 微信统一下单接口返回的xml数据（String）
+     *
+     * @author Leibniz
+     */
+    private void unifyPay(String orderId, String product, int price, SocketAddress ip, String openId, String attach, String notUrl, JsonObject acc, Handler<String> callback) {
+        Map<String, Object> map = new TreeMap<>();
+        map.put("appid", acc.getString("appid"));
+        map.put("mch_id", acc.getString("mchid"));
+        map.put("nonce_str", CommonUtils.getRandomID());
+        try {
+            map.put("body", new String(product.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        map.put("out_trade_no", orderId);
+        map.put("total_fee", price);
+        map.put("spbill_create_ip", ip.host());
+        map.put("notify_url", notUrl);
+        map.put("trade_type", "JSAPI");
+        map.put("openid", openId);
+        if (null != attach) {
+            map.put("attach", attach);
+        }
+        map.put("sign", WechatPay.getWeixinPaySign(map, acc.getString("mchkey")));
+        String xmlStr = null;
+        try {
+            xmlStr = XmlUtils.simpleMapToXml(map, "ISO8859-1");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        log.debug("下单请求数据：" + xmlStr);
+        NetworkUtils.asyncPostStringWithData(WECHAT_UNIFY_PAY, xmlStr, XML, callback);
+    }
+
+    /*
 
     *//**
      * 微信退款
@@ -118,15 +165,15 @@ public class WechatPayService {
         //设置退款需要的字段
         Map<String, Object> map = new TreeMap<>();
         map.put("appid", wxAccount.getAppid());
-        map.put("mch_id", wxAccount.getMchId());
+        map.put("mch_id", wxAccount.getMchid());
         map.put("nonce_str", CommonUtils.getRandomID());
         map.put("out_trade_no", localOrderId);//商户系统内部订单号
         map.put("out_refund_no", System.currentTimeMillis());//商户系统内部的退款单号
         map.put("total_fee", totalFee);
         map.put("refund_fee", refund);
-//        map.put("op_user_id", wxAccount.getMchId());
+//        map.put("op_user_id", wxAccount.getMchid());
         //map.put("refund_account", "REFUND_SOURCE_RECHARGE_FUNDS");//从账户可用余额退款，默认是REFUND_SOURCE_UNSETTLED_FUNDS 从未结算资金退款
-        map.put("sign", WechatPay.getWeixinPaySign(map, wxAccount.getMchKey()));
+        map.put("sign", WechatPay.getWeixinPaySign(map, wxAccount.getMchkey()));
 
         SSLConnectionSocketFactory sslsf = null;
         try {
@@ -146,7 +193,7 @@ public class WechatPayService {
 
         Map<String, String> refundReturnParam = null;
         try {
-            refundReturnParam = xmlAnalysis(result);
+            refundReturnParam = xmltoMap(result);
         } catch (JDOMException e) {
             log.error("退款返回参数解析失败，查看退款返回参数是否正确");
         }
@@ -187,72 +234,9 @@ public class WechatPayService {
         return payResultXml.toString();
     }
 
-    *//**
-     * 解析xml数据，并将解析后的数据传入map里面
-     *
-     * @param xmlData xml数据
-     * @return 解析后的数据
-     *
-     * @author Leibniz
-     *//*
-    public Map<String, String> xmlAnalysis(String xmlData) throws JDOMException {
-        StringReader read = new StringReader(xmlData);
-        // 创建新的输入源SAX 解析器将使用 InputSource 对象来确定如何读取 XML 输入
-        InputSource source = new InputSource(read);
-        SAXBuilder sbx = new SAXBuilder();
-        Document doc = null;
-        try {
-            doc = sbx.build(source);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert doc != null;
-        Element root = doc.getRootElement();
-        List es = root.getChildren();
-        Map<String, String> retMap = new HashMap<>();
-        if (es != null && es.size() != 0) {
-            for (Object obj : es) {
-                if (obj instanceof Element) {
-                    Element element = (Element) obj;
-                    retMap.put(element.getName(), element.getText());
-                }
-            }
-        }
-        return retMap;
-    }
+    */
 
-    *//**
-     * 调用微信统一下单接口
-     *
-     * @param product 充值设备描述
-     * @param price   充值设备价格
-     * @param ip      充值端Ip
-     * @param openId  充值的微信openId
-     * @return 微信统一下单接口返回的xml数据（String）
-     *
-     * @author Leibniz
-     *//*
-    private String unifyPay(String orderId, String product, int price, String ip, String openId, String attach, String notUrl, Account wxAccount) throws IOException {
-        Map<String, Object> map = new TreeMap<>();
-        map.put("appid", wxAccount.getAppid());
-        map.put("mch_id", wxAccount.getMchId());
-        map.put("nonce_str", CommonUtils.getRandomID());
-        map.put("body", new String(product.getBytes("UTF-8")));
-        map.put("out_trade_no", orderId);
-        map.put("total_fee", price);
-        map.put("spbill_create_ip", ip);
-        map.put("notify_url", notUrl);
-        map.put("trade_type", "JSAPI");
-        map.put("openid", openId);
-        if (null != attach) {
-            map.put("attach", attach);
-        }
-        map.put("sign", WechatPay.getWeixinPaySign(map, wxAccount.getMchKey()));
-        System.out.println("下单请求数据：" + XmlUtils.simpleMapToXml(map, "ISO8859-1"));
-        return NetworkUtils.postRequestWithData(WECHAT_UNIFY_PAY, XmlUtils.simpleMapToXml(map, "ISO8859-1"), "xml");
-    }
-
-    *//**
+    /**
      * 读取退款需要用到的证书
      *
      * @param wxAccount    微信账号信息
@@ -264,9 +248,9 @@ public class WechatPayService {
     private SSLConnectionSocketFactory readCert(Account wxAccount, int enterpriseId) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         try (FileInputStream instream = new FileInputStream(new File(certDir + enterpriseId + "_wxPay.p12"))) {
-            keyStore.load(instream, wxAccount.getMchId().toCharArray());
+            keyStore.load(instream, wxAccount.getMchid().toCharArray());
         }
-        SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore, wxAccount.getMchId().toCharArray()).build();
+        SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore, wxAccount.getMchid().toCharArray()).build();
         return new SSLConnectionSocketFactory(sslcontext, new String[]{"TLSv1"}, null,
                 SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
     }

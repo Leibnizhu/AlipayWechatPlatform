@@ -217,7 +217,7 @@ public class AliPayApi {
      * @author Leibniz
      */
     public static boolean sendBreoTemplateMessage(TemplateMessage tplMsg, Account wxAccount) {
-        AliAccountInfo aliAccountInfo = new AliAccountInfo(wxAccount.getZfbAppId(), wxAccount.getZfbPrivKey(), wxAccount.getZfbPubKey(),null, null, null);
+        AliAccountInfo aliAccountInfo = new AliAccountInfo(wxAccount.getZfbappid(), wxAccount.getZfbprivkey(), wxAccount.getZfbpubkey(), null, null, null);
         AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
         AlipayOpenPublicMessageSingleSendRequest request = new AlipayOpenPublicMessageSingleSendRequest(); // 创建发送模版消息请求
         request.setBizContent(tplMsg.toString()); // 设置请求的业务内容
@@ -259,7 +259,7 @@ public class AliPayApi {
             throw new IllegalArgumentException("错误的支付宝退款接口请求业务JSON：" + bizContentStr); // 抛出异常
         }
 
-        AliAccountInfo aliAccountInfo = new AliAccountInfo(wxAccount.getZfbAppId(), wxAccount.getZfbPrivKey(), wxAccount.getZfbPubKey(),null, null, null);
+        AliAccountInfo aliAccountInfo = new AliAccountInfo(wxAccount.getZfbappid(), wxAccount.getZfbprivkey(), wxAccount.getZfbpubkey(), null, null, null);
         AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest(); // 创建退款请求
         request.setBizContent(bizContentStr); // 设置请求的bizContent

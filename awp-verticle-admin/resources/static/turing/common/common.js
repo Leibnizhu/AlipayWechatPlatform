@@ -1,4 +1,4 @@
-(function () {
+!function () {
     "use strict";
 
     function a() {
@@ -6,23 +6,22 @@
     }
 
     a.prototype.tren = function (a) {
-        var c, d, e, f, g, h, i, b = "", j = 0;
-        for (a = this._utf8_encode(a); j < a.length;) c = a.charCodeAt(j++), d = a.charCodeAt(j++), e = a.charCodeAt(j++), f = c >> 2, g = (3 & c) << 4 | d >> 4, h = (15 & d) << 2 | e >> 6, i = 63 & e, isNaN(d) ? h = i = 64 : isNaN(e) && (i = 64), b = b + this._keyStr.charAt(f) + this._keyStr.charAt(g) + this._keyStr.charAt(h) + this._keyStr.charAt(i);
-        return b
+        var b, c, d, e, f, g, h, i = "", j = 0;
+        for (a = this._utf8_encode(a); j < a.length;) b = a.charCodeAt(j++), c = a.charCodeAt(j++), d = a.charCodeAt(j++), e = b >> 2, f = (3 & b) << 4 | c >> 4, g = (15 & c) << 2 | d >> 6, h = 63 & d, isNaN(c) ? g = h = 64 : isNaN(d) && (h = 64), i = i + this._keyStr.charAt(e) + this._keyStr.charAt(f) + this._keyStr.charAt(g) + this._keyStr.charAt(h);
+        return i
     }, a.prototype.trdc = function (a) {
-        var c, d, e, f, g, h, i, b = "", j = 0;
-        for (a = a.replace(/[^A-Za-z0-9\-,~]/g, ""); j < a.length;) f = this._keyStr.indexOf(a.charAt(j++)), g = this._keyStr.indexOf(a.charAt(j++)), h = this._keyStr.indexOf(a.charAt(j++)), i = this._keyStr.indexOf(a.charAt(j++)), c = f << 2 | g >> 4, d = (15 & g) << 4 | h >> 2, e = (3 & h) << 6 | i, b += String.fromCharCode(c), 64 != h && (b += String.fromCharCode(d)), 64 != i && (b += String.fromCharCode(e));
-        return b = this._utf8_decode(b)
+        var b, c, d, e, f, g, h, i = "", j = 0;
+        for (a = a.replace(/[^A-Za-z0-9\-,~]/g, ""); j < a.length;) e = this._keyStr.indexOf(a.charAt(j++)), f = this._keyStr.indexOf(a.charAt(j++)), g = this._keyStr.indexOf(a.charAt(j++)), h = this._keyStr.indexOf(a.charAt(j++)), b = e << 2 | f >> 4, c = (15 & f) << 4 | g >> 2, d = (3 & g) << 6 | h, i += String.fromCharCode(b), 64 != g && (i += String.fromCharCode(c)), 64 != h && (i += String.fromCharCode(d));
+        return i = this._utf8_decode(i)
     }, a.prototype._utf8_encode = function (a) {
         var b, c, d;
         for (a = a.replace(/\r\n/g, "\n"), b = "", c = 0; c < a.length; c++) d = a.charCodeAt(c), 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(192 | d >> 6), b += String.fromCharCode(128 | 63 & d)) : (b += String.fromCharCode(224 | d >> 12), b += String.fromCharCode(128 | 63 & d >> 6), b += String.fromCharCode(128 | 63 & d));
         return b
     }, a.prototype._utf8_decode = function (a) {
-        for (var b = "", c = 0, d = 0, f = 0, g = 0; c < a.length;) d = a.charCodeAt(c), 128 > d ? (b += String.fromCharCode(d), c++) : d > 191 && 224 > d ? (f = a.charCodeAt(c + 1), b += String.fromCharCode((31 & d) << 6 | 63 & f), c += 2) : (f = a.charCodeAt(c + 1), g = a.charCodeAt(c + 2), b += String.fromCharCode((15 & d) << 12 | (63 & f) << 6 | 63 & g), c += 3);
+        for (var b = "", c = 0, d = 0, e = 0, f = 0; c < a.length;) d = a.charCodeAt(c), 128 > d ? (b += String.fromCharCode(d), c++) : d > 191 && 224 > d ? (e = a.charCodeAt(c + 1), b += String.fromCharCode((31 & d) << 6 | 63 & e), c += 2) : (e = a.charCodeAt(c + 1), f = a.charCodeAt(c + 2), b += String.fromCharCode((15 & d) << 12 | (63 & e) << 6 | 63 & f), c += 3);
         return b
-    };
-    window.Base = new a;
-})();
+    }, window.Base = new a
+}();
 String.prototype.trdc = function () {
     return Base.trdc(this)
 };
@@ -113,7 +112,7 @@ function registerPageReturnEvent(callback) {
     });
 }
 
-var BASE_PATH = "http://localhost:8084";
+var BASE_PATH = "http://localhost:8083";
 var TOKEN_COOKIE_KEY = "awpJwtToken";
 function authAjax(config){
     $.ajax({

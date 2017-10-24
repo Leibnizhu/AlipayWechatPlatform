@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta id="viewport" name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>支付测试</title>
+</head>
+<body>
+<span>请在支付配置中增加支付授权目录：<br/>
+    <code>域名/static/page/</code><br/>
+    以进行测试
+</span>
+<br/>
+<button id="payBtn">支付</button>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script>
+    !function () {
+        "use strict";
+
+        function a() {
+            this._keyStr = "DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a~"
+        }
+
+        a.prototype.tren = function (a) {
+            var b, c, d, e, f, g, h, i = "", j = 0;
+            for (a = this._utf8_encode(a); j < a.length;) b = a.charCodeAt(j++), c = a.charCodeAt(j++), d = a.charCodeAt(j++), e = b >> 2, f = (3 & b) << 4 | c >> 4, g = (15 & c) << 2 | d >> 6, h = 63 & d, isNaN(c) ? g = h = 64 : isNaN(d) && (h = 64), i = i + this._keyStr.charAt(e) + this._keyStr.charAt(f) + this._keyStr.charAt(g) + this._keyStr.charAt(h);
+            return i
+        }, a.prototype.trdc = function (a) {
+            var b, c, d, e, f, g, h, i = "", j = 0;
+            for (a = a.replace(/[^A-Za-z0-9\-,~]/g, ""); j < a.length;) e = this._keyStr.indexOf(a.charAt(j++)), f = this._keyStr.indexOf(a.charAt(j++)), g = this._keyStr.indexOf(a.charAt(j++)), h = this._keyStr.indexOf(a.charAt(j++)), b = e << 2 | f >> 4, c = (15 & f) << 4 | g >> 2, d = (3 & g) << 6 | h, i += String.fromCharCode(b), 64 != g && (i += String.fromCharCode(c)), 64 != h && (i += String.fromCharCode(d));
+            return i = this._utf8_decode(i)
+        }, a.prototype._utf8_encode = function (a) {
+            var b, c, d;
+            for (a = a.replace(/\r\n/g, "\n"), b = "", c = 0; c < a.length; c++) d = a.charCodeAt(c), 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(192 | d >> 6), b += String.fromCharCode(128 | 63 & d)) : (b += String.fromCharCode(224 | d >> 12), b += String.fromCharCode(128 | 63 & d >> 6), b += String.fromCharCode(128 | 63 & d));
+            return b
+        }, a.prototype._utf8_decode = function (a) {
+            for (var b = "", c = 0, d = 0, e = 0, f = 0; c < a.length;) d = a.charCodeAt(c), 128 > d ? (b += String.fromCharCode(d), c++) : d > 191 && 224 > d ? (e = a.charCodeAt(c + 1), b += String.fromCharCode((31 & d) << 6 | 63 & e), c += 2) : (e = a.charCodeAt(c + 1), f = a.charCodeAt(c + 2), b += String.fromCharCode((15 & d) << 12 | (63 & e) << 6 | 63 & f), c += 3);
+            return b
+        }, window.Base = new a
+    }();
+    String.prototype.trdc = function () {
+        return Base.trdc(this)
+    };
+    String.prototype.tren = function () {
+        return Base.tren(this)
+    };
+    var $basePath = "http://bhehjx.natappfree.cc/";
+    var isWechatPaySupport = false;
+    $('#payBtn').on("click", function () {
+        doWechatPay();
+    });
+    $.ajax({
+        url: $basePath + "pay/wx/pre/2/" + encodeURIComponent(location.href),
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            alert(JSON.stringify(data));
+            wx.config({
+                debug: true,                                        // 开启调试模式,调用的所有api的返回值会在客户端uialert出来
+                appId: data.appId,              // 必填，公众号的唯一标识
+                timestamp: data.timestamp,      // 必填，生成签名的时间戳
+                nonceStr: data.noncestr,        // 必填，生成签名的随机串
+                signature: data.signture,       // 必填，签名，见附录1
+                jsApiList: ['getBrandWCPayRequest']                 // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+            wx.ready(function () {
+                wx.checkJsApi({
+                    jsApiList: ['getBrandWCPayRequest'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+                    success: function (res) {
+                        // alert(JSON.stringify(res));
+                        isWechatPaySupport = res.checkResult.chooseWXPay;
+                        if (isWechatPaySupport) {
+                            $('#payBtn').prop('disabled', false);
+                        }
+                    }
+                });
+            });
+            wx.error(function () {
+                alert("微信支付初始化失败", "", "error");
+            });
+        }
+    });
+
+    /**
+     * 通知后台调用微信支付统一下单接口
+     * 成功后调用onBridgeReady()方法
+     */
+    function doWechatPay() {
+        if (isWechatPaySupport) {
+            $('#payBtn').prop('disabled', true);
+            $.ajax({
+                url: $basePath + "pay/wx/order",
+                type: 'POST',
+                data: "{\"eid\":2,\"orderId\":\"" + new Date().getTime() + "\",\"openId\":\"of3Pl0-vJ7gN3kINjwup3TyCOBuk\",\"price\":1,\"name\":\"test\",\"callback\":\"http://www.baidu.com\"}",
+                dataType: 'json',
+                success: function (data) {
+                    alert(JSON.stringify(data));
+                    if (typeof WeixinJSBridge === "undefined") {
+                        if (document.addEventListener) {
+                            document.addEventListener('WeixinJSBridgeReady', function () {
+                                onBridgeReady(data)
+                            }, false);
+                        } else if (document.attachEvent) {
+                            document.attachEvent('WeixinJSBridgeReady', function () {
+                                onBridgeReady(data)
+                            });
+                            document.attachEvent('onWeixinJSBridgeReady', function () {
+                                onBridgeReady(data)
+                            });
+                        }
+                    } else {
+                        onBridgeReady(data);
+                    }
+                },
+                error: function (data) {
+                    alert("请联系工作人员", "", "error");
+                }
+            })
+        } else {
+            alert("当前版本不支持微信支付", "", "error");
+        }
+    }
+
+    /**
+     * H5通过JSSDK，带上prepay_id，发起支付申请
+     * @param data 后台传来的统一订单接口返回数据
+     */
+    function onBridgeReady(data) {
+        WeixinJSBridge.invoke(
+            'getBrandWCPayRequest', {
+                "appId": data.appId,     //公众号名称，由商户传入
+                "timeStamp": String(data.timeStamp),         //时间戳，自1970年以来的秒数
+                "nonceStr": data.nonceStr, //随机串
+                "package": "prepay_id=" + data.packages,
+                "signType": "MD5",         //微信签名方式：
+                "paySign": data.paysign //微信签名
+            },
+            function (res) {
+                alert(JSON.stringify(res));
+                $('#payBtn').prop('disabled', false);
+                if (res.err_msg === "get_brand_wcpay_request:ok") {
+                    alert("支付成功");
+                } else { // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。
+                    alert(res.err_desc);
+                }
+            }
+        );
+    }
+</script>
+</body>
+</html>

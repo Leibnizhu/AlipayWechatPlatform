@@ -109,21 +109,21 @@ public class AccountDao extends BaseVertXDao {
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        if (acc.getMchId() != null && !acc.getMchId().equals("")) {
+        if (acc.getMchid() != null && !acc.getMchid().equals("")) {
             sql.append("mchId=?");
-            params.add(acc.getMchId());
+            params.add(acc.getMchid());
             moreThanOne = true;
         }
-        if (acc.getMchKey() != null && !acc.getMchKey().equals("")) {
+        if (acc.getMchkey() != null && !acc.getMchkey().equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("mchKey=?");
-            params.add(acc.getMchKey());
+            params.add(acc.getMchkey());
             moreThanOne = true;
         }
-        if (acc.getWxPayOn() != null) {
+        if (acc.getWxpayon() != null) {
             if (moreThanOne) sql.append(",");
             sql.append("wxPayOn=?");
-            params.add(acc.getWxPayOn());
+            params.add(acc.getWxpayon());
             moreThanOne = true;
         }
         sql.append(" where id=?");
@@ -138,27 +138,27 @@ public class AccountDao extends BaseVertXDao {
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        if (acc.getZfbAppId() != null && !acc.getZfbAppId().equals("")) {
+        if (acc.getZfbappid() != null && !acc.getZfbappid().equals("")) {
             sql.append("zfbAppId=?");
-            params.add(acc.getZfbAppId());
+            params.add(acc.getZfbappid());
             moreThanOne = true;
         }
-        if (acc.getZfbPrivKey() != null && !acc.getZfbPrivKey().equals("")) {
+        if (acc.getZfbprivkey() != null && !acc.getZfbprivkey().equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPrivKey=?");
-            params.add(acc.getZfbPrivKey());
+            params.add(acc.getZfbprivkey());
             moreThanOne = true;
         }
-        if (acc.getZfbPubKey() != null && !acc.getZfbPubKey().equals("")) {
+        if (acc.getZfbpubkey() != null && !acc.getZfbpubkey().equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPubKey=?");
-            params.add(acc.getZfbPubKey());
+            params.add(acc.getZfbpubkey());
             moreThanOne = true;
         }
-        if (acc.getZfbPayOn() != null) {
+        if (acc.getZfbpayon() != null) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPayOn=?");
-            params.add(acc.getZfbPayOn());
+            params.add(acc.getZfbpayon());
             moreThanOne = true;
         }
         sql.append(" where id=?");

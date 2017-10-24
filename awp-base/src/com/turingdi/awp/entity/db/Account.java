@@ -60,29 +60,29 @@ public class Account {
         return this;
     }
 
-    public String getZfbAppId() {
+    public String getZfbappid() {
         return zfbAppId;
     }
 
-    public Account setZfbAppId(String zfbAppId) {
+    public Account setZfbappid(String zfbAppId) {
         this.zfbAppId = zfbAppId;
         return this;
     }
 
-    public String getZfbPrivKey() {
+    public String getZfbprivkey() {
         return zfbPrivKey;
     }
 
-    public Account setZfbPrivKey(String zfbPrivKey) {
+    public Account setZfbprivkey(String zfbPrivKey) {
         this.zfbPrivKey = zfbPrivKey;
         return this;
     }
 
-    public String getZfbPubKey() {
+    public String getZfbpubkey() {
         return zfbPubKey;
     }
 
-    public Account setZfbPubKey(String zfbPubKey) {
+    public Account setZfbpubkey(String zfbPubKey) {
         this.zfbPubKey = zfbPubKey;
         return this;
     }
@@ -150,56 +150,56 @@ public class Account {
         return this;
     }
 
-    public Date getCreateTime() {
+    public Date getCreatetime() {
         return createTime;
     }
 
-    public Account setCreateTime(Date createTime) {
+    public Account setCreatetime(Date createTime) {
         this.createTime = createTime;
         return this;
     }
 
-    public String getMchUrl() {
+    public String getMchurl() {
         return mchUrl;
     }
 
-    public Account setMchUrl(String mchUrl) {
+    public Account setMchurl(String mchUrl) {
         this.mchUrl = mchUrl;
         return this;
     }
 
-    public String getMchKey() {
+    public String getMchkey() {
         return mchKey;
     }
 
-    public Account setMchKey(String mchKey) {
+    public Account setMchkey(String mchKey) {
         this.mchKey = mchKey;
         return this;
     }
 
-    public String getMchId() {
+    public String getMchid() {
         return mchId;
     }
 
-    public Account setMchId(String mchId) {
+    public Account setMchid(String mchId) {
         this.mchId = mchId;
         return this;
     }
 
-    public Integer getWxPayOn() {
+    public Integer getWxpayon() {
         return wxPayOn;
     }
 
-    public Account setWxPayOn(Integer wxPayOn) {
+    public Account setWxpayon(Integer wxPayOn) {
         this.wxPayOn = wxPayOn;
         return this;
     }
 
-    public Integer getZfbPayOn() {
+    public Integer getZfbpayon() {
         return zfbPayOn;
     }
 
-    public Account setZfbPayOn(Integer zfbPayOn) {
+    public Account setZfbpayon(Integer zfbPayOn) {
         this.zfbPayOn = zfbPayOn;
         return this;
     }

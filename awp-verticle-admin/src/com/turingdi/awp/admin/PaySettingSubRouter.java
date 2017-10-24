@@ -122,7 +122,7 @@ public class PaySettingSubRouter implements SubRouter {
         }
 
         //保存支付参数
-        Account acc = new Account().setId(uid).setMchId(mchId).setMchKey(payKey).setWxPayOn(paySwitch);
+        Account acc = new Account().setId(uid).setMchid(mchId).setMchkey(payKey).setWxpayon(paySwitch);
         accServ.updateWxPay(acc, rows -> {
             rc.response().end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
         });
@@ -145,7 +145,7 @@ public class PaySettingSubRouter implements SubRouter {
         }
 
         //保存支付参数
-        Account acc = new Account().setId(uid).setZfbAppId(appId).setZfbPrivKey(appPrivKey).setZfbPubKey(zfbPubKey).setZfbPayOn(paySwitch);
+        Account acc = new Account().setId(uid).setZfbappid(appId).setZfbprivkey(appPrivKey).setZfbpubkey(zfbPubKey).setZfbpayon(paySwitch);
         accServ.updateZfbPay(acc, rows -> {
             rc.response().end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
         });
