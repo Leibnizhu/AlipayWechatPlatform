@@ -1,33 +1,6 @@
-!function () {
-    "use strict";
-
-    function a() {
-        this._keyStr = "DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a~"
-    }
-
-    a.prototype.tren = function (a) {
-        var b, c, d, e, f, g, h, i = "", j = 0;
-        for (a = this._utf8_encode(a); j < a.length;) b = a.charCodeAt(j++), c = a.charCodeAt(j++), d = a.charCodeAt(j++), e = b >> 2, f = (3 & b) << 4 | c >> 4, g = (15 & c) << 2 | d >> 6, h = 63 & d, isNaN(c) ? g = h = 64 : isNaN(d) && (h = 64), i = i + this._keyStr.charAt(e) + this._keyStr.charAt(f) + this._keyStr.charAt(g) + this._keyStr.charAt(h);
-        return i
-    }, a.prototype.trdc = function (a) {
-        var b, c, d, e, f, g, h, i = "", j = 0;
-        for (a = a.replace(/[^A-Za-z0-9\-,~]/g, ""); j < a.length;) e = this._keyStr.indexOf(a.charAt(j++)), f = this._keyStr.indexOf(a.charAt(j++)), g = this._keyStr.indexOf(a.charAt(j++)), h = this._keyStr.indexOf(a.charAt(j++)), b = e << 2 | f >> 4, c = (15 & f) << 4 | g >> 2, d = (3 & g) << 6 | h, i += String.fromCharCode(b), 64 != g && (i += String.fromCharCode(c)), 64 != h && (i += String.fromCharCode(d));
-        return i = this._utf8_decode(i)
-    }, a.prototype._utf8_encode = function (a) {
-        var b, c, d;
-        for (a = a.replace(/\r\n/g, "\n"), b = "", c = 0; c < a.length; c++) d = a.charCodeAt(c), 128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(192 | d >> 6), b += String.fromCharCode(128 | 63 & d)) : (b += String.fromCharCode(224 | d >> 12), b += String.fromCharCode(128 | 63 & d >> 6), b += String.fromCharCode(128 | 63 & d));
-        return b
-    }, a.prototype._utf8_decode = function (a) {
-        for (var b = "", c = 0, d = 0, e = 0, f = 0; c < a.length;) d = a.charCodeAt(c), 128 > d ? (b += String.fromCharCode(d), c++) : d > 191 && 224 > d ? (e = a.charCodeAt(c + 1), b += String.fromCharCode((31 & d) << 6 | 63 & e), c += 2) : (e = a.charCodeAt(c + 1), f = a.charCodeAt(c + 2), b += String.fromCharCode((15 & d) << 12 | (63 & e) << 6 | 63 & f), c += 3);
-        return b
-    }, window.Base = new a
-}();
-String.prototype.trdc = function () {
-    return Base.trdc(this)
-};
-String.prototype.tren = function () {
-    return Base.tren(this)
-};
+!function(){"use strict";function a(){this._keyStr="DJOA7qGmIkxoKdPFXiSE8wCeHZ1vcTbrVh3B9LfWNpUlsnu-gjYzMyt0452RQ6,a~"}a.prototype.tren=function(a){var b,c,d,e,f,g,h,i="",j=0;for(a=this._utf8_encode(a);j<a.length;)b=a.charCodeAt(j++),c=a.charCodeAt(j++),d=a.charCodeAt(j++),e=b>>2,f=(3&b)<<4|c>>4,g=(15&c)<<2|d>>6,h=63&d,isNaN(c)?g=h=64:isNaN(d)&&(h=64),i=i+this._keyStr.charAt(e)+this._keyStr.charAt(f)+this._keyStr.charAt(g)+this._keyStr.charAt(h);return i},a.prototype.trdc=function(a){var b,c,d,e,f,g,h,i="",j=0;for(a=a.replace(/[^A-Za-z0-9\-,~]/g,"");j<a.length;)e=this._keyStr.indexOf(a.charAt(j++)),f=this._keyStr.indexOf(a.charAt(j++)),g=this._keyStr.indexOf(a.charAt(j++)),h=this._keyStr.indexOf(a.charAt(j++)),b=e<<2|f>>4,c=(15&f)<<4|g>>2,d=(3&g)<<6|h,i+=String.fromCharCode(b),64!=g&&(i+=String.fromCharCode(c)),64!=h&&(i+=String.fromCharCode(d));return i=this._utf8_decode(i)},a.prototype._utf8_encode=function(a){var b,c,d;for(a=a.replace(/\r\n/g,"\n"),b="",c=0;c<a.length;c++)d=a.charCodeAt(c),128>d?b+=String.fromCharCode(d):d>127&&2048>d?(b+=String.fromCharCode(192|d>>6),b+=String.fromCharCode(128|63&d)):(b+=String.fromCharCode(224|d>>12),b+=String.fromCharCode(128|63&d>>6),b+=String.fromCharCode(128|63&d));return b},a.prototype._utf8_decode=function(a){for(var b="",c=0,d=0,e=0,f=0;c<a.length;)d=a.charCodeAt(c),128>d?(b+=String.fromCharCode(d),c++):d>191&&224>d?(e=a.charCodeAt(c+1),b+=String.fromCharCode((31&d)<<6|63&e),c+=2):(e=a.charCodeAt(c+1),f=a.charCodeAt(c+2),b+=String.fromCharCode((15&d)<<12|(63&e)<<6|63&f),c+=3);return b},window.Base=new a}();
+String.prototype.trdc = function(){return Base.trdc(this)};
+String.prototype.tren = function(){return Base.tren(this)};
 String.prototype.getParam=function(a,s){var b=new RegExp("(^|"+s+")"+a+"=(.+?)("+s+"|$)","i");var c=this.match(b);if(c!==null){return decodeURIComponent(c[2])}return ""};
 $(document).ready(function(){$(".nav > li > a").click(function(){"active"!=$(this).attr("class")&&($(".nav li ul").slideUp(),$(this).next().slideToggle(),$(".nav li a").removeClass("active"),$(this).addClass("active"))})}),$(document).ready(function(){$("#topstats").click(function(){$(".topstats").slideToggle(100)})}),$(document).ready(function(){$(".sidepanel-open-button").click(function(){$(".sidepanel").toggle(100)})}),$(document).ready(function(){$(".sidebar-open-button-mobile").click(function(){$(".sidebar").toggle(150)})}),$(document).ready(function(){$(".sidebar-open-button").on("click",function(){$(".sidebar").hasClass("hidden")?($(".sidebar").removeClass("hidden"),$(".content").css({marginLeft:200})):($(".sidebar").addClass("hidden"),$(".content").css({marginLeft:0}))})}),$(document).ready(function(){$(".panel-tools .minimise-tool").click(function(){return $(this).parents(".panel").find(".panel-body").slideToggle(100),!1})}),$(document).ready(function(){$(".panel-tools .closed-tool").click(function(){return $(this).parents(".panel").fadeToggle(400),!1})}),$(document).ready(function(){$(".panel-tools .search-tool").click(function(){return $(this).parents(".panel").find(".panel-search").toggle(100),!1})}),$(document).ready(function(){$(".panel-tools .expand-tool").on("click",function(){$(this).parents(".panel").hasClass("panel-fullsize")?$(this).parents(".panel").removeClass("panel-fullsize"):$(this).parents(".panel").addClass("panel-fullsize")})}),$(document).ready(function(){$(".widget-tools .closed-tool").click(function(){return $(this).parents(".widget").fadeToggle(400),!1})}),$(document).ready(function(){$(".widget-tools .expand-tool").on("click",function(){$(this).parents(".widget").hasClass("widget-fullsize")?$(this).parents(".widget").removeClass("widget-fullsize"):$(this).parents(".widget").addClass("widget-fullsize")})}),$(document).ready(function(){$(".kode-alert .closed").click(function(){return $(this).parents(".kode-alert").fadeToggle(350),!1})}),$(document).ready(function(){$(".kode-alert-click").click(function(){return $(this).fadeToggle(350),!1})}),$(function(){$('[data-toggle="tooltip"]').tooltip()}),$(function(){$('[data-toggle="popover"]').popover()}),$(window).on("load",function(){$(".loading").fadeOut(750)});
 Date.prototype.format = function (fmt) {
