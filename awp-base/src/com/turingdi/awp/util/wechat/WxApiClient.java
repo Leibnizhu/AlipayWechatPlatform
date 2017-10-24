@@ -2,8 +2,9 @@ package com.turingdi.awp.util.wechat;
 
 import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.wechat.*;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -93,21 +94,21 @@ public class WxApiClient {
 	}
 	
 	//发布菜单
-	public static JSONObject publishMenus(String menus, Account mpAccount){
+	public static JsonObject publishMenus(String menus, Account mpAccount){
 		String accessToken = getAccessToken(mpAccount);
 		String url = WxApi.getMenuCreateUrl(accessToken);
 		return WxApi.httpsRequest(url, HttpMethod.POST, menus);
 	}
 	
 	//创建个性化菜单
-	public static JSONObject publishAddconditionalMenus(String menus,Account mpAccount){
+	public static JsonObject publishAddconditionalMenus(String menus,Account mpAccount){
 		String accessToken = getAccessToken(mpAccount);
 		String url = WxApi.getMenuAddconditionalUrl(accessToken);
 		return WxApi.httpsRequest(url, HttpMethod.POST, menus);
 	}
 	
 	//删除菜单
-	public static JSONObject deleteMenu(Account mpAccount){
+	public static JsonObject deleteMenu(Account mpAccount){
 		String accessToken = getAccessToken(mpAccount);
 		String url = WxApi.getMenuDeleteUrl(accessToken);
 		return WxApi.httpsRequest(url, HttpMethod.POST, null);
@@ -117,16 +118,16 @@ public class WxApiClient {
 	public static AccountFans syncAccountFans(String openId, Account mpAccount){
 		String accessToken = getAccessToken(mpAccount);
 		String url = WxApi.getFansInfoUrl(accessToken, openId);
-		JSONObject jsonObj = WxApi.httpsRequest(url, "GET", null);
+		JsonObject jsonObj = WxApi.httpsRequest(url, "GET", null);
 		if (null != jsonObj) {
 			if(jsonObj.containsKey("errcode")){
-				int errorCode = jsonObj.getInt("errcode");
+				int errorCode = jsonObj.getInteger("errcode");
 				System.out.println(String.format("获取用户信息失败 errcode:{} errmsg:{}", errorCode, ErrCode.errMsg(errorCode)));
 				return null;
 			}else{
 				AccountFans fans = new AccountFans();
 				fans.setOpenId(jsonObj.getString("openid"));// 用户的标识
-				fans.setSubscribeStatus(new Integer(jsonObj.getInt("subscribe")));// 关注状态（1是关注，0是未关注），未关注时获取不到其余信息
+				fans.setSubscribeStatus(new Integer(jsonObj.getInteger("subscribe")));// 关注状态（1是关注，0是未关注），未关注时获取不到其余信息
 				if(jsonObj.containsKey("subscribe_time")){
 					fans.setSubscribeTime(jsonObj.getString("subscribe_time"));// 用户关注时间
 				}
@@ -139,7 +140,7 @@ public class WxApiClient {
 					}
 				}
 				if(jsonObj.containsKey("sex")){// 用户的性别（1是男性，2是女性，0是未知）
-					fans.setGender(jsonObj.getInt("sex"));
+					fans.setGender(jsonObj.getInteger("sex"));
 				}
 				if(jsonObj.containsKey("language")){// 用户的语言，简体中文为zh_CN
 					fans.setLanguage(jsonObj.getString("language"));
@@ -177,33 +178,33 @@ public class WxApiClient {
 	public static Material syncBatchMaterial(MediaType mediaType, Integer offset, Integer count, Account mpAccount){
 		String accessToken = getAccessToken(mpAccount);
 		String url = WxApi.getBatchMaterialUrl(accessToken);
-		JSONObject bodyObj = new JSONObject();
+		JsonObject bodyObj = new JsonObject();
 		bodyObj.put("type", mediaType.toString());
 		bodyObj.put("offset", offset);
 		bodyObj.put("count", count);
 		String body = bodyObj.toString();
 		try {
-			JSONObject jsonObj = WxApi.httpsRequest(url, "POST", body);
+			JsonObject jsonObj = WxApi.httpsRequest(url, "POST", body);
 			if (jsonObj.containsKey("errcode")) {//获取素材失败
-				System.out.println(ErrCode.errMsg(jsonObj.getInt("errcode")));
+				System.out.println(ErrCode.errMsg(jsonObj.getInteger("errcode")));
 				return null;
 			}else{
 				Material material = new Material();
-				material.setTotalCount(jsonObj.getInt("total_count"));
-				material.setItemCount(jsonObj.getInt("item_count"));
-				JSONArray arr = jsonObj.getJSONArray("item");
+				material.setTotalCount(jsonObj.getInteger("total_count"));
+				material.setItemCount(jsonObj.getInteger("item_count"));
+				JsonArray arr = jsonObj.getJsonArray("item");
 				if(arr != null && arr.size() > 0){
 					List<MaterialItem> itemList = new ArrayList<MaterialItem>();
 					for(int i = 0; i < arr.size(); i++){
-						JSONObject item = arr.getJSONObject(i);
+						JsonObject item = arr.getJsonObject(i);
 						MaterialItem materialItem = new MaterialItem();
 						materialItem.setMediaId(item.getString("media_id"));
 						materialItem.setUpdateTime(item.getLong("update_time")*1000L);
 						if(item.containsKey("content")){//mediaType=news （图文消息）
-							JSONArray articles = item.getJSONObject("content").getJSONArray("news_item");
+							JsonArray articles = item.getJsonObject("content").getJsonArray("news_item");
 							List<MaterialArticle> newsItems = new ArrayList<MaterialArticle>();
 							for(int j = 0; j < articles.size(); j++){
-								JSONObject article = articles.getJSONObject(j);
+								JsonObject article = articles.getJsonObject(j);
 								MaterialArticle ma = new MaterialArticle();
 								ma.setTitle(article.getString("title"));
 								ma.setThumb_media_id(article.getString("thumb_media_id"));
@@ -232,13 +233,13 @@ public class WxApiClient {
 	}
 	
 	//上传图文消息
-	public static JSONObject uploadNews(List<MsgNews> msgNewsList, Account mpAccount){
-		JSONObject rstObj = new JSONObject();
+	public static JsonObject uploadNews(List<MsgNews> msgNewsList, Account mpAccount){
+		JsonObject rstObj = new JsonObject();
 		String accessToken = getAccessToken(mpAccount);
 		try{
 			JSONArray jsonArr = new JSONArray();
 			for(MsgNews news : msgNewsList){
-				JSONObject jsonObj = new JSONObject();
+				JsonObject jsonObj = new JsonObject();
 				//上传图片素材
 				String mediaId = WxApi.uploadMedia(accessToken, MediaType.Image.toString(),news.getPicPath());
 				jsonObj.put("thumb_media_id", mediaId);
@@ -270,7 +271,7 @@ public class WxApiClient {
 				jsonObj.put("content", news.getDescription());
 				jsonArr.add(jsonObj);
 			}
-			JSONObject postObj = new JSONObject();
+			JsonObject postObj = new JsonObject();
 			postObj.put("articles", jsonArr);
 			rstObj = WxApi.httpsRequest(WxApi.getUploadNewsUrl(accessToken), HttpMethod.POST, postObj.toString());
 		}catch(Exception e){
@@ -286,10 +287,10 @@ public class WxApiClient {
 	 * @param mpAccount
 	 * @return
 	 */
-	public static JSONObject massSendByOpenIds(List<String> openids, String mediaId, MsgType msgType, Account mpAccount){
+	public static JsonObject massSendByOpenIds(List<String> openids, String mediaId, MsgType msgType, Account mpAccount){
 		if(openids != null && openids.size() > 0){
-			JSONObject postObj = new JSONObject();
-			JSONObject media = new JSONObject();
+			JsonObject postObj = new JsonObject();
+			JsonObject media = new JsonObject();
 			postObj.put("touser", openids);
 			media.put("media_id", mediaId);
 			postObj.put(msgType.toString(), media);
@@ -307,14 +308,14 @@ public class WxApiClient {
 	 * @param mpAccount
 	 * @return
 	 */
-	public static JSONObject massSendTextByOpenIds(List<String> openids,String content, Account mpAccount){
+	public static JsonObject massSendTextByOpenIds(List<String> openids,String content, Account mpAccount){
 		if(openids != null && openids.size() > 0){
 			if(openids.size() == 1){//根据openId群发，size至少为2
 				openids.add("1");
 			}
 			String[] arr = (String[])openids.toArray(new String[openids.size()]);
-			JSONObject postObj = new JSONObject();
-			JSONObject text = new JSONObject();
+			JsonObject postObj = new JsonObject();
+			JsonObject text = new JsonObject();
 			postObj.put("touser", arr);
 			text.put("content", content);
 			postObj.put("text", text);
@@ -331,7 +332,7 @@ public class WxApiClient {
 	 * @param content 消息内容
 	 * @return
 	 */
-	public static JSONObject sendCustomTextMessage(String openid,String content,Account mpAccount){
+	public static JsonObject sendCustomTextMessage(String openid, String content, Account mpAccount){
 		if(!StringUtils.isBlank(openid) && !StringUtils.isBlank(content)){
 			String accessToken = getAccessToken(mpAccount);
 			content = WxMessageBuilder.prepareCustomText(openid, content);
@@ -344,7 +345,7 @@ public class WxApiClient {
 	 * 发送模板消息
 	 * @return
 	 */
-	public static JSONObject sendTemplateMessage(TemplateMessage tplMsg, Account mpAccount){
+	public static JsonObject sendTemplateMessage(TemplateMessage tplMsg, Account mpAccount){
 		if(tplMsg != null){
 			String accessToken = getAccessToken(mpAccount);
 			return WxApi.httpsRequest(WxApi.getSendTemplateMessageUrl(accessToken), HttpMethod.POST, tplMsg.toString());
@@ -362,7 +363,7 @@ public class WxApiClient {
 		if(scene != null){
 			String accessToken = getAccessToken(mpAccount);
 			String postBody = WxApi.getQrcodeJson(expireSecodes, scene);
-			JSONObject jsObj = WxApi.httpsRequest(WxApi.getCreateQrcodeUrl(accessToken), HttpMethod.POST, postBody);
+			JsonObject jsObj = WxApi.httpsRequest(WxApi.getCreateQrcodeUrl(accessToken), HttpMethod.POST, postBody);
 			if(jsObj != null){
 				String ticket = jsObj.getString("ticket");
 				if(!StringUtils.isBlank(ticket)){
@@ -379,7 +380,7 @@ public class WxApiClient {
 		if(!StringUtils.isBlank(qrcodeStr)){
 			String accessToken = getAccessToken(mpAccount);
 			String postBody = WxApi.getQrcodeLimitJson(qrcodeStr);
-			JSONObject jsObj = WxApi.httpsRequest(WxApi.getCreateQrcodeUrl(accessToken), HttpMethod.POST, postBody);
+			JsonObject jsObj = WxApi.httpsRequest(WxApi.getCreateQrcodeUrl(accessToken), HttpMethod.POST, postBody);
 			if(jsObj != null){
 				String ticket = jsObj.getString("ticket");
 				if(!StringUtils.isBlank(ticket)){

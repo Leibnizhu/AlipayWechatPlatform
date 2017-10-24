@@ -1,5 +1,6 @@
 package com.turingdi.awp.util.wechat;
 
+import io.vertx.core.json.JsonObject;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
@@ -202,19 +203,19 @@ public class WxApi {
 	public static AccessToken getAccessToken(String appId, String appSecret) {
 		AccessToken token = null;
 		String tockenUrl = WxApi.getTokenUrl(appId, appSecret);
-		JSONObject jsonObject = httpsRequest(tockenUrl, HttpMethod.GET, null);
+		JsonObject jsonObject = httpsRequest(tockenUrl, HttpMethod.GET, null);
 		if (null != jsonObject && !jsonObject.containsKey("errcode")) {
 			try {
 				token = new AccessToken();
 				token.setAccessToken(jsonObject.getString("access_token"));
-				token.setExpiresIn(jsonObject.getInt("expires_in"));
+				token.setExpiresIn(jsonObject.getInteger("expires_in"));
 			} catch (JSONException e) {
 				token = null;//获取token失败
 			}
 		}else if(null != jsonObject){
 			System.out.println("获取AccessToken失败，原因=" + jsonObject.getString("errmsg"));
 			token = new AccessToken();
-			token.setErrcode(jsonObject.getInt("errcode"));
+			token.setErrcode(jsonObject.getInteger("errcode"));
 		}
 		return token;
 	}
@@ -223,18 +224,18 @@ public class WxApi {
 	public static JSTicket getJSTicket(String token){
 		JSTicket jsTicket = null;
 		String jsTicketUrl = WxApi.getJsApiTicketUrl(token);
-		JSONObject jsonObject = httpsRequest(jsTicketUrl, HttpMethod.GET, null);
-		if (null != jsonObject && jsonObject.containsKey("errcode") && jsonObject.getInt("errcode") == 0) {
+		JsonObject jsonObject = httpsRequest(jsTicketUrl, HttpMethod.GET, null);
+		if (null != jsonObject && jsonObject.containsKey("errcode") && jsonObject.getInteger("errcode") == 0) {
 			try {
 				jsTicket = new JSTicket();
 				jsTicket.setTicket(jsonObject.getString("ticket"));
-				jsTicket.setExpiresIn(jsonObject.getInt("expires_in"));
+				jsTicket.setExpiresIn(jsonObject.getInteger("expires_in"));
 			} catch (JSONException e) {
 				jsTicket = null;//获取token失败
 			}
 		}else if(null != jsonObject){
 			jsTicket = new JSTicket();
-			jsTicket.setErrcode(jsonObject.getInt("errcode"));
+			jsTicket.setErrcode(jsonObject.getInteger("errcode"));
 		}
 		return jsTicket;
 	}
@@ -243,12 +244,12 @@ public class WxApi {
 	public static OAuthAccessToken getOAuthAccessToken(String appId, String appSecret,String code) {
 		OAuthAccessToken token = null;
 		String tockenUrl = getOAuthTokenUrl(appId, appSecret, code);
-		JSONObject jsonObject = httpsRequest(tockenUrl, HttpMethod.GET, null);
+		JsonObject jsonObject = httpsRequest(tockenUrl, HttpMethod.GET, null);
 		if (null != jsonObject && !jsonObject.containsKey("errcode")) {
 			try {
 				token = new OAuthAccessToken();
 				token.setAccessToken(jsonObject.getString("access_token"));
-				token.setExpiresIn(jsonObject.getInt("expires_in"));
+				token.setExpiresIn(jsonObject.getInteger("expires_in"));
 				token.setOpenid(jsonObject.getString("openid"));
 				token.setScope(jsonObject.getString("scope"));
 			} catch (JSONException e) {
@@ -256,7 +257,7 @@ public class WxApi {
 			}
 		}else if(null != jsonObject){
 			token = new OAuthAccessToken();
-			token.setErrcode(jsonObject.getInt("errcode"));
+			token.setErrcode(jsonObject.getInteger("errcode"));
 		}
 		return token;
 	}
@@ -334,12 +335,12 @@ public class WxApi {
 	}
 
 	//发送请求
-	public static JSONObject httpsRequest(String requestUrl, String requestMethod) {
+	public static JsonObject httpsRequest(String requestUrl, String requestMethod) {
 		return httpsRequest(requestUrl,requestMethod,null);
 	}
 	
-	public static JSONObject httpsRequest(String requestUrl, String requestMethod, String outputStr) {
-		JSONObject jsonObject = null;
+	public static JsonObject httpsRequest(String requestUrl, String requestMethod, String outputStr) {
+		JsonObject jsonObject = null;
 		try {
 			TrustManager[] tm = { new JEEWeiXinX509TrustManager() };
 			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
@@ -372,7 +373,7 @@ public class WxApi {
 			inputStream.close();
 			inputStream = null;
 			conn.disconnect();
-			jsonObject = JSONObject.fromObject(buffer.toString());
+			jsonObject = new JsonObject(buffer.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

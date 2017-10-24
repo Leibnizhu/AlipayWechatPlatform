@@ -8,10 +8,7 @@ import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
-import com.turingdi.awp.verticle.AlipayPaySubRouter;
-import com.turingdi.awp.verticle.TokenSubRouter;
-import com.turingdi.awp.verticle.WechatOauthSubRouter;
-import com.turingdi.awp.verticle.WechatPaySubRouter;
+import com.turingdi.awp.verticle.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
@@ -58,14 +55,17 @@ public class MainVerticle extends AbstractVerticle{
         //支付服务子路由
         mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter(orderServ, wxPayServ, accountSrv).setVertx(vertx).getSubRouter());
         mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ, alipayServ).setVertx(vertx).getSubRouter());
+        //消息发送服务子路由
+        mainRouter.mountSubRouter("/msg/wx", new WechatMessageSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        //TODO 支付宝消息发送
+        //JsTicket和AccessTOken服务子路由
+        mainRouter.mountSubRouter("/tk/wx", new TokenSubRouter(accountSrv).setVertx(vertx).getSubRouter());
         //登录BMS的子路由
         mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由
         mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
         //支付配置子路由
         mainRouter.mountSubRouter("/bms/pay", new PaySettingSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
-        //JsTicket和AccessTOken服务子路由
-        mainRouter.mountSubRouter("/tk/wx", new TokenSubRouter(accountSrv).setVertx(vertx).getSubRouter());
         server.requestHandler(mainRouter::accept)
                 .listen(config().getInteger("serverPort", 8083));
     }

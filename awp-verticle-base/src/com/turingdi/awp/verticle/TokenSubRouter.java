@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @author Leibniz.Hu
  * Created on 2017-10-19 22:11.
  */
-public class TokenSubRouter implements SubRouter {
+public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private AccountService wxAccServ;
     private Vertx vertx;
@@ -54,19 +54,10 @@ public class TokenSubRouter implements SubRouter {
     }
 
     private void responseWithToken(RoutingContext rc, String key, Function<Account, String> tokenGetter) {
+        if (refuseNonLanAccess(rc))
+            return;
         HttpServerRequest req = rc.request();
         HttpServerResponse resp = rc.response();
-        String realIp = req.getHeader("X-Real-IP");
-        String xforward = req.getHeader("X-Forwarded-For");
-        //禁止外网访问
-        if (realIp != null && !(realIp.startsWith("10.0.") || realIp.startsWith("192.168."))) {
-            resp.setStatusCode(403).end();
-            return;
-        }
-        if (xforward != null && !(xforward.startsWith("10.0.") || xforward.startsWith("192.168."))) {
-            resp.setStatusCode(403).end();
-            return;
-        }
         Integer eid = -1;
         try {
             eid = Integer.parseInt(req.getParam("eid"));
@@ -80,4 +71,5 @@ public class TokenSubRouter implements SubRouter {
             resp.end(new JsonObject().put(key, token).toString());
         });
     }
+
 }
