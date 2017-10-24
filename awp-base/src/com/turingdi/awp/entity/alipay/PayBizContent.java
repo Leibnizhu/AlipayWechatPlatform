@@ -2,7 +2,7 @@ package com.turingdi.awp.entity.alipay;
 
 import com.alipay.api.AlipayConstants;
 import com.turingdi.awp.util.common.CommonUtils;
-import net.sf.json.JSONObject;
+import io.vertx.core.json.JsonObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -27,13 +27,13 @@ public class PayBizContent {
 
     @Override
     public String toString() {
-        JSONObject json = new JSONObject();
+        JsonObject json = new JsonObject();
         json.put("out_trade_no", this.outTradeNo);
         json.put("total_amount", CommonUtils.getStringFromIntFen(Integer.parseInt(this.totalAmount)));
         json.put("subject", this.subject);
         json.put("product_code", "QUICK_WAP_PAY");
 
-        if(null != this.passbackParams) {
+        if (null != this.passbackParams) {
             try {
                 json.put("passback_params", URLEncoder.encode(this.passbackParams, AlipayConstants.CHARSET_UTF8));
             } catch (UnsupportedEncodingException e) {

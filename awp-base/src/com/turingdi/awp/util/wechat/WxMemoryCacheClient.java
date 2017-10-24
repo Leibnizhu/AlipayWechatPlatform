@@ -1,7 +1,7 @@
 package com.turingdi.awp.util.wechat;
 
 import com.turingdi.awp.entity.db.Account;
-import org.apache.commons.lang.StringUtils;
+import com.turingdi.awp.util.common.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.turingdi.awp.entity.wechat;
 
-import net.sf.json.JSONObject;
+import io.vertx.core.json.JsonObject;
 
 import java.io.UnsupportedEncodingException;
 
@@ -30,7 +30,7 @@ public class AccountFans extends BaseEntity {
 	private Integer talent;
 	private Integer firstcampid;//用户首次授权时候参与的活动ID
 
-	public static AccountFans fromJson(JSONObject json){
+	public static AccountFans fromJson(JsonObject json){
 		AccountFans user = new AccountFans();
 		user.setOpenId(json.getString("openid"));
 		user.setNickname(json.getString("nickname").getBytes());
@@ -38,7 +38,7 @@ public class AccountFans extends BaseEntity {
 		user.setCountry(json.getString("country"));
 		user.setProvince(json.getString("province"));
 		user.setCity(json.getString("city"));
-		user.setGender(json.getInt("sex"));
+		user.setGender(json.getInteger("sex"));
 		user.setLanguage(json.getString("language"));
 		return user;
 	}

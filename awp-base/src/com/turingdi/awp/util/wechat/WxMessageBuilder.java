@@ -1,8 +1,8 @@
 package com.turingdi.awp.util.wechat;
 
 import com.turingdi.awp.entity.wechat.*;
-import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import io.vertx.core.json.JsonObject;
+import com.turingdi.awp.util.common.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,10 +15,10 @@ public class WxMessageBuilder {
 	
 	//客服文本消息
 	public static String prepareCustomText(String openid,String content){
-		JSONObject jsObj = new JSONObject();
+		JsonObject jsObj = new JsonObject();
 		jsObj.put("touser", openid);
 		jsObj.put("msgtype", MsgType.Text.name());
-		JSONObject textObj = new JSONObject();
+		JsonObject textObj = new JsonObject();
 		textObj.put("content", content);
 		jsObj.put("text", textObj);
 		return jsObj.toString();

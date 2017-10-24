@@ -1,7 +1,7 @@
 package com.turingdi.awp.entity.alipay;
 
 import com.turingdi.awp.util.common.CommonUtils;
-import net.sf.json.JSONObject;
+import io.vertx.core.json.JsonObject;
 
 /**
  * 支付宝退款接口的业务内容请求实体类
@@ -35,7 +35,7 @@ public class RefundBizContent {
 
     @Override
     public String toString() {
-        JSONObject bizContentJson = new JSONObject();
+        JsonObject bizContentJson = new JsonObject();
         if(CommonUtils.notEmptyString(this.outTradeNo)){
             bizContentJson.put("out_trade_no", this.outTradeNo);
         }

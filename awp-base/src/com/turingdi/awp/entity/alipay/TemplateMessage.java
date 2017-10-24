@@ -1,8 +1,6 @@
 package com.turingdi.awp.entity.alipay;
 
-
-import net.sf.json.JSONObject;
-
+import io.vertx.core.json.JsonObject;
 import java.util.Map;
 
 /**
@@ -73,15 +71,15 @@ public class TemplateMessage {
 	 */
 	@Override
 	public String toString(){
-		JSONObject jsObj = new JSONObject();
-		JSONObject template = new JSONObject();
-		JSONObject context = new JSONObject();
+		JsonObject jsObj = new JsonObject();
+		JsonObject template = new JsonObject();
+		JsonObject context = new JsonObject();
 
 		// 构造参数数据的json对象
 		if(dataMap != null){
 			// 遍历参数数据，将每个item封装成json对象然后放到context的json对象中
 			for(String key : dataMap.keySet()) {
-				JSONObject item = new JSONObject(); // 用于存储一个item的json对象
+				JsonObject item = new JsonObject(); // 用于存储一个item的json对象
 				item.put("value", dataMap.get(key)); // 每个item的值
 				item.put("color", color); // item的颜色
 				context.put(key,item); // 将item添加到context的json对象中

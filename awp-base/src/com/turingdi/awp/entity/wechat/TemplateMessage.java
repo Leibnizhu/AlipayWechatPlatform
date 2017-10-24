@@ -1,7 +1,6 @@
 package com.turingdi.awp.entity.wechat;
 
-import net.sf.json.JSONObject;
-
+import io.vertx.core.json.JsonObject;
 import java.util.Map;
 
 /**
@@ -73,15 +72,15 @@ public class TemplateMessage {
 	
 	@Override
 	public String toString(){
-		JSONObject jsObj = new JSONObject();
+		JsonObject jsObj = new JsonObject();
 		jsObj.put("touser", openid);
 		jsObj.put("template_id", templateId);
 		jsObj.put("url", url);
 		
-		JSONObject data = new JSONObject();
+		JsonObject data = new JsonObject();
 		if(dataMap != null){
 			for(String key : dataMap.keySet()){
-				JSONObject item = new JSONObject();
+				JsonObject item = new JsonObject();
 				item.put("value", dataMap.get(key));
 				item.put("color", color);
 				data.put(key,item);

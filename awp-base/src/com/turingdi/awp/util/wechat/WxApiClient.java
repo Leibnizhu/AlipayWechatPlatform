@@ -2,10 +2,9 @@ package com.turingdi.awp.util.wechat;
 
 import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.wechat.*;
+import com.turingdi.awp.util.common.StringUtils;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import net.sf.json.JSONArray;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -237,7 +236,7 @@ public class WxApiClient {
 		JsonObject rstObj = new JsonObject();
 		String accessToken = getAccessToken(mpAccount);
 		try{
-			JSONArray jsonArr = new JSONArray();
+			JsonArray jsonArr = new JsonArray();
 			for(MsgNews news : msgNewsList){
 				JsonObject jsonObj = new JsonObject();
 				//上传图片素材
