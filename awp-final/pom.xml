@@ -69,7 +69,7 @@
         <finalName>${finalName}</finalName>
         <resources>
             <resource>
-                <directory>src</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.*</include>
                 </includes>
