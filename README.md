@@ -72,11 +72,26 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 - 接口地址：`http://localhost:8083/tk/wx/jst/{eid}`  
 - 请求参数：eid路径参数，用户ID  
 
-### 微信支付(TODO)
+### 微信支付
+微信支付相对比较麻烦，单次支付涉及到多个接口。  
+具体的应用可以参考`awp-verticle-admin/resources/static/page/paytest.html`页面的例子。  
+P.S. 支付的页面需要引入`https://res.wx.qq.com/open/js/jweixin-1.2.0.js`。  
 #### 预处理(wx.config用)
-(TODO)
+- 请求方法：GET，由页面AJAX调用  
+- 来源限制：暂无  
+- 接口地址：`http://localhost:8083/pay/wx/pre/{eid}/{url}`  
+- 请求参数：eid:路径参数，用户ID; url:当前页面URL，请将完整URL进行URL编码再发送  
+- 响应格式：JSON
+- 响应内容：appId，timestamp（生成签名的时间戳），noncestr（生成签名的随机串），signture（签名），由`wx.config()`使用。  
+
 #### 下单
-(TODO)
+- 请求方法：POST，由页面AJAX调用  
+- 来源限制：暂无  
+- 接口地址：`http://localhost:8083/pay/wx/order`  
+- 请求参数：JSON格式的字符串，包括以下参数：eid(企业用户ID),orderId(本地订单ID),openId(用户OpenID),price(价格，单位：分),name(产品名),callback(支付成功后回调接口，请填写完整URL，无需编码)  
+- 响应格式：JSON
+- 响应内容：appId,timestamp（生成签名的时间戳），noncestr（生成签名的随机串）,packages(prepay_id),paysign(签名)。供`WeixinJSBridge.invoke('getBrandWCPayRequest',{})`使用  
+
 #### 退款
 (TODO)
 
