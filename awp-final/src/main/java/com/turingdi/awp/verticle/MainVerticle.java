@@ -1,14 +1,18 @@
-package com.turingdi.awp;
+package com.turingdi.awp.verticle;
 
-import com.turingdi.awp.admin.LoginSubRouter;
-import com.turingdi.awp.admin.OfficialAccountSubRouter;
-import com.turingdi.awp.admin.PaySettingSubRouter;
-import com.turingdi.awp.db.*;
+import com.turingdi.awp.db.AccountDao;
+import com.turingdi.awp.db.OrderDao;
+import com.turingdi.awp.db.pool.HikariCPManager;
+import com.turingdi.awp.router.admin.LoginSubRouter;
+import com.turingdi.awp.router.admin.OfficialAccountSubRouter;
+import com.turingdi.awp.router.admin.PaySettingSubRouter;
+import com.turingdi.awp.router.api.*;
+import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.service.AlipayPayService;
+import com.turingdi.awp.service.OrderService;
 import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
-import com.turingdi.awp.verticle.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
