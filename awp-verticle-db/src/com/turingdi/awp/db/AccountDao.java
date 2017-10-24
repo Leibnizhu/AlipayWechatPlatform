@@ -21,7 +21,7 @@ public class AccountDao extends BaseVertXDao {
      * @param acc
      * @param callback
      */
-    void updateBase(Account acc, Handler<Integer> callback) {
+    public void updateBase(Account acc, Handler<Integer> callback) {
         if(acc.getId() == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
@@ -82,7 +82,7 @@ public class AccountDao extends BaseVertXDao {
                 });
     }
 
-    void login(Account account, Handler<JsonObject> callback) {
+    public void login(Account account, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE email = ? and password = ?",
                 new JsonArray().add(account.getName()).add(account.getPassword()),
                 result -> {
@@ -90,7 +90,7 @@ public class AccountDao extends BaseVertXDao {
                 });
     }
 
-    void loginById(Account account, Handler<JsonObject> callback) {
+    public void loginById(Account account, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE id = ? and password = ?",
                 new JsonArray().add(account.getId()).add(account.getPassword()),
                 result -> {
@@ -98,11 +98,11 @@ public class AccountDao extends BaseVertXDao {
                 });
     }
 
-    void getAccountList(Handler<List<JsonObject>> callback){
+    public void getAccountList(Handler<List<JsonObject>> callback){
         query("SELECT id,name,email FROM awp_account", callback);
     }
 
-    void updateWxPay(Account acc, Handler<Integer> callback) {
+    public void updateWxPay(Account acc, Handler<Integer> callback) {
         if(acc.getId() == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
@@ -131,7 +131,7 @@ public class AccountDao extends BaseVertXDao {
         update(sql.toString(), params, callback);
     }
 
-    void updateZfbPay(Account acc, Handler<Integer> callback) {
+    public void updateZfbPay(Account acc, Handler<Integer> callback) {
         if(acc.getId() == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
@@ -166,11 +166,11 @@ public class AccountDao extends BaseVertXDao {
         update(sql.toString(), params, callback);
     }
 
-    List<Account> selectByUserId(int userID) {
+    public List<Account> selectByUserId(int userID) {
         return null;
     }
 
-    List<Account> listForPage(Account searchEntity) {
+    public List<Account> listForPage(Account searchEntity) {
         return null;
     }
 

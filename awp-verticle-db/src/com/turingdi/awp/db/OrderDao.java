@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 public class OrderDao extends BaseVertXDao {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    void insert(Order order, Handler<Integer> callback) {
+    public void insert(Order order, Handler<Integer> callback) {
         if (order.getEid() == null)
             throw new IllegalArgumentException("Eid in Order object cannot be null!!!");
         if (order.getOrderId() == null || order.getOrderId().length() == 0)
@@ -28,7 +28,7 @@ public class OrderDao extends BaseVertXDao {
         update(sql, params, callback);
     }
 
-    void getByOrderId(String orderId, Integer type, Handler<JsonObject> callback) {
+    public void getByOrderId(String orderId, Integer type, Handler<JsonObject> callback) {
         if (orderId == null || orderId.length() == 0)
             throw new IllegalArgumentException("OrderId in Order object cannot be null!!!");
         if (type == null)
@@ -40,7 +40,7 @@ public class OrderDao extends BaseVertXDao {
         });
     }
 
-    void updateAfterPaid(Order order, Handler<Integer> callback) {
+    public void updateAfterPaid(Order order, Handler<Integer> callback) {
         if (order.getPlatOrderId() == null || order.getPlatOrderId().length() == 0)
             throw new IllegalArgumentException("OrderId of pay platform cannot be null!!!");
         if (order.getOrderId() == null || order.getOrderId().length() == 0)

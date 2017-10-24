@@ -1,7 +1,7 @@
-package com.turingdi.awp.admin;
+package com.turingdi.awp.router.admin;
 
-import com.turingdi.awp.base.SubRouter;
-import com.turingdi.awp.db.AccountService;
+import com.turingdi.awp.router.SubRouter;
+import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;

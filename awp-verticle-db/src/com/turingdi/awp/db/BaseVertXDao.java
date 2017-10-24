@@ -1,5 +1,7 @@
 package com.turingdi.awp.db;
 
+import com.turingdi.awp.db.pool.ConnectionPoolManager;
+import com.turingdi.awp.db.pool.HikariCPManager;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;

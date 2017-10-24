@@ -1,4 +1,4 @@
-package com.turingdi.awp.db;
+package com.turingdi.awp.db.pool;
 
 import io.vertx.core.Handler;
 import io.vertx.ext.sql.SQLClient;

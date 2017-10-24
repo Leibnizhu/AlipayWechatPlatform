@@ -29,7 +29,7 @@
 
         <main.class>com.turingdi.awp.MainLauncher</main.class>
         <!--<main.class> io.vertx.core.Launcher</main.class>-->
-        <main.verticle>com.turingdi.awp.MainVerticle</main.verticle>
+        <main.verticle>com.turingdi.awp.verticle.MainVerticle</main.verticle>
 
         <vertx.version>3.4.2</vertx.version>
         <hikaricp.version>2.7.2</hikaricp.version>

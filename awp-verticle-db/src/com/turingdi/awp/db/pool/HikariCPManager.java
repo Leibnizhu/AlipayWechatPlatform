@@ -1,4 +1,4 @@
-package com.turingdi.awp.db;
+package com.turingdi.awp.db.pool;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -41,7 +41,7 @@ public class HikariCPManager implements ConnectionPoolManager{
         return INSTANCE;
     }
 
-    static HikariCPManager getInstance() {
+    public static HikariCPManager getInstance() {
         if (INSTANCE == null) {
             throw new RuntimeException("HikariCPManager is still not initialized!!!");
         }

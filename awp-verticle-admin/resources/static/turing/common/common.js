@@ -46,7 +46,7 @@ function registerPageReturnEvent(callback) {
 }
 
 // var BASE_PATH = "http://localhost:8083";
-var BASE_PATH = window.location.href.substr(0,location.href.indexOf("/static/")+1);
+var BASE_PATH = window.location.href.substr(0, location.href.indexOf("/static/"));
 var TOKEN_COOKIE_KEY = "awpJwtToken";
 function authAjax(config){
     $.ajax({

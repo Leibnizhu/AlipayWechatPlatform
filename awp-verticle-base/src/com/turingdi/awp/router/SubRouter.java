@@ -1,4 +1,4 @@
-package com.turingdi.awp.base;
+package com.turingdi.awp.router;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
