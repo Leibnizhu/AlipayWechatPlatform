@@ -1,15 +1,15 @@
 package com.turingdi.awp.router.api;
 
 import com.alipay.api.AlipayApiException;
-import com.turingdi.awp.service.OrderService;
-import com.turingdi.awp.entity.db.Order;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.util.alipay.AliPayApi;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
@@ -20,9 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
-import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
-import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
+import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
  * @author Leibniz.Hu
@@ -31,13 +29,7 @@ import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
 public class AlipayPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private AlipayPayService payServ = new AlipayPayService();
-    private OrderService orderServ;
     private Vertx vertx;
-
-
-    public AlipayPaySubRouter(OrderService orderServ) {
-        this.orderServ = orderServ;
-    }
 
     @Override
     public Router getSubRouter() {
@@ -72,11 +64,15 @@ public class AlipayPaySubRouter implements SubRouter {
         String successUrl = reqJson.getString("success");
         HttpServerResponse response = rc.response();
         //记录eid和orderId、callback关系
-        Order order = new Order().setOrderId(orderId).setCallback(callback).setEid(eid).setType(1);
-        orderServ.insert(order, rows -> {
+        JsonObject order = new JsonObject().put("orderid", orderId).put("callback", callback).put("eid", eid).put("type", 1);
+        vertx.eventBus().<JsonObject>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_INSERT_ORDER, order), ar -> {
+            if (ar.failed()) {
+                log.error("EventBus消息响应错误", ar.cause());
+                response.setStatusCode(500).end("EventBus error!");
+            }
         });
         vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
-            if(ar.succeeded()){
+            if (ar.succeeded()) {
                 JsonObject acc = ar.result().body();
                 payServ.alipayOrder(name, price, orderId, acc, successUrl, response);
             } else {
@@ -93,35 +89,43 @@ public class AlipayPaySubRouter implements SubRouter {
      * @author Leibniz
      */
     private void alipayNotify(RoutingContext rc) {
-        HttpServerRequest request=rc.request();
+        HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
         Map<String, String> params = AliPayApi.getRequestParams(request); // 解析请求参数
         String isSuccess = "success"; // 响应给支付宝的消息，默认是fail
         log.info("支付宝请求串:{}", params.toString()); // 打印本次请求日志，开发者自行决定是否需要
 
-            String localOrderId = params.get("out_trade_no"); // 从解析后的数据获取本地订单号
+        String localOrderId = params.get("out_trade_no"); // 从解析后的数据获取本地订单号
         //通过本地订单号拿到eid以及callback，公钥
-        orderServ.getByAlipayOrderId(localOrderId, res -> {
-            try {
-                AliPayApi.verifySign(params, res.getString("zfbPubKey")); // 调用支付宝提供的方法进行签名验证
-                // 判断订单状态是否为成功，还有其他的状态，可以根据不同的业务需要进行判断
-                if ("TRADE_SUCCESS".equals(params.get("trade_status"))) { // 支付成功
-                    String alipayOrderId = params.get("trade_no");//从解析后的数据获取支付宝订单号
-                    Order updateOrder = new Order().setPlatOrderId(alipayOrderId).setOrderId(localOrderId).setType(1);
-                    orderServ.updateAfterPaid(updateOrder, rows -> {
-                    });
-                    // 调用下订单时候的callback
-                    String callbackUrl = res.getString("callback");
-                    String separator = callbackUrl.contains("?") ? "&" : "?";
-                    String finalCallbackUrl = callbackUrl + separator + CommonUtils.mapToQueryString(params);
-                    NetworkUtils.asyncGetString(finalCallbackUrl, str -> {
-                        log.debug("调用支付宝回调地址{}返回结果：{}", finalCallbackUrl, str);
-                    });
-                }
-            } catch (AlipayApiException e) { // 验签失败抛出异常
-                log.error("异步通知验签失败", e); // 打印日志，便于调试错误
-            } finally {
-                response.putHeader("content-type", "text/html;charset=UTF-8").end(isSuccess);
+        Future.<Message<JsonObject>>future(f ->
+                vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ORDER_BY_ALIPAY_ORDER_ID, localOrderId), f)
+        ).compose(msg -> Future.<Message<Integer>>future(f -> {
+                    JsonObject body = msg.body();
+                    try {
+                        AliPayApi.verifySign(params, body.getString("zfbPubKey")); // 调用支付宝提供的方法进行签名验证
+                    } catch (AlipayApiException e) { // 验签失败抛出异常
+                        log.error("异步通知验签失败", e); // 打印日志，便于调试错误
+                    } finally {
+                        response.putHeader("content-type", "text/html;charset=UTF-8").end(isSuccess);
+                    }
+                    // 判断订单状态是否为成功，还有其他的状态，可以根据不同的业务需要进行判断
+                    if ("TRADE_SUCCESS".equals(params.get("trade_status"))) { // 支付成功
+                        String alipayOrderId = params.get("trade_no");//从解析后的数据获取支付宝订单号
+                        JsonObject updateOrder = new JsonObject().put("platorderid", alipayOrderId).put("orderid", localOrderId).put("type", 1);
+                        vertx.eventBus().send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_UPDATE_PAID_ORDER, updateOrder), f);
+                        // 调用下订单时候的callback
+                        String callbackUrl = body.getString("callback");
+                        String separator = callbackUrl.contains("?") ? "&" : "?";
+                        String finalCallbackUrl = callbackUrl + separator + CommonUtils.mapToQueryString(params);
+                        NetworkUtils.asyncGetString(finalCallbackUrl, str -> log.debug("调用支付宝回调地址{}返回结果：{}", finalCallbackUrl, str));
+                    }
+                })
+        ).setHandler(res -> {
+            if (res.succeeded()) {
+                log.info("更新订单记录影响到{}条记录", res.result());
+            } else {
+                log.error("抛出异常", res.cause());
+                response.setStatusCode(500).end("EventBus error!");
             }
         });
     }

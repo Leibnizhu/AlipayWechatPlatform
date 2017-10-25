@@ -127,15 +127,7 @@ public class PaySettingSubRouter implements SubRouter {
 
         //保存支付参数
         JsonObject acc = new JsonObject().put("id", uid).put("mchid", mchId).put("mchkey", payKey).put("wxpayon", paySwitch);
-        vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_WECHATPAY, acc), ar -> {
-            if(ar.succeeded()){
-                int rows = ar.result().body();
-                resp.end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
-            } else {
-                log.error("EventBus消息响应错误", ar.cause());
-                resp.setStatusCode(500).end("EventBus error!");
-            }
-        });
+        updatePlatformOrderId(resp, acc);
     }
 
     private void updateAlipayPaySetting(RoutingContext rc) {
@@ -156,6 +148,10 @@ public class PaySettingSubRouter implements SubRouter {
 
         //保存支付参数
         JsonObject acc = new JsonObject().put("id", uid).put("zfbappid", appId).put("zfbprivkey", appPrivKey).put("zfbpubkey", zfbPubKey).put("zfbpayon", paySwitch);
+        updatePlatformOrderId(resp, acc);
+    }
+
+    private void updatePlatformOrderId(HttpServerResponse resp, JsonObject acc) {
         vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_ALIPAY, acc), ar -> {
             if(ar.succeeded()){
                 int rows = ar.result().body();

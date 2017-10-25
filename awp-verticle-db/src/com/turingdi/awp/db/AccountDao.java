@@ -66,7 +66,6 @@ public class AccountDao extends BaseVertXDao {
             if (moreThanOne) sql.append(",");
             sql.append("password=?");
             params.add(password);
-            moreThanOne = true;
         }
         sql.append(" where id=?");
         params.add(id);
@@ -127,7 +126,6 @@ public class AccountDao extends BaseVertXDao {
             if (moreThanOne) sql.append(",");
             sql.append("wxPayOn=?");
             params.add(wxpayon);
-            moreThanOne = true;
         }
         sql.append(" where id=?");
         params.add(id);
@@ -167,7 +165,6 @@ public class AccountDao extends BaseVertXDao {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPayOn=?");
             params.add(zfbpayon);
-            moreThanOne = true;
         }
         sql.append(" where id=?");
         params.add(id);

@@ -104,7 +104,7 @@ public class WechatPayService {
      * @param price   充值设备价格
      * @param ip      充值端Ip
      * @param openId  充值的微信openId
-     * @param acc
+     * @param acc     账户对象
      * @return 微信统一下单接口返回的xml数据（String）
      *
      * @author Leibniz
@@ -136,9 +136,8 @@ public class WechatPayService {
         NetworkUtils.asyncPostStringWithData(WECHAT_UNIFY_PAY, xmlStr, XML, encode, callback);
     }
 
-    /*
 
-    *//**
+    /**
      * 微信退款
      *
      * @param openId         退款订单对应用户的OpenID

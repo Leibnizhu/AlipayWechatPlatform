@@ -1,9 +1,7 @@
 package com.turingdi.awp.router.api;
 
-import com.turingdi.awp.entity.db.Order;
 import com.turingdi.awp.entity.wechat.WechatJdk;
 import com.turingdi.awp.router.SubRouter;
-import com.turingdi.awp.service.OrderService;
 import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.XmlUtils;
 import io.vertx.core.Vertx;
@@ -28,13 +26,7 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
 public class WechatPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private WechatPayService payServ = new WechatPayService();
-    private OrderService orderServ;
     private Vertx vertx;
-
-
-    public WechatPaySubRouter(OrderService orderServ) {
-        this.orderServ = orderServ;
-    }
 
     @Override
     public Router getSubRouter() {
@@ -59,7 +51,7 @@ public class WechatPaySubRouter implements SubRouter {
     /**
      * 微信支付的预处理，js的wx.config需要用
      *
-     * @return wx.config需要用的数据
+     * 异步返回 wx.config需要用的数据
      *
      * @author Leibniz
      */
@@ -91,7 +83,7 @@ public class WechatPaySubRouter implements SubRouter {
     /**
      * 调用微信统一下单接口，获取prepay_id等信息
      *
-     * @return "已支付" "已取消订单" 或者统一下单接口返回的数据，包含prepay_id
+     * 异步返回 "已支付" "已取消订单" 或者统一下单接口返回的数据，包含prepay_id
      *
      * @author Leibniz
      */
@@ -105,25 +97,32 @@ public class WechatPaySubRouter implements SubRouter {
         String name = body.getString("name");
         String callback = body.getString("callback");
         vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            HttpServerResponse response = rc.response();
             if (ar.succeeded()) {
                 JsonObject acc = ar.result().body();
                 payServ.wechatOrder(name, price, openId, orderId, acc, req,
                         forResponse -> {
                             String jsonStr = forResponse.toString();
                             log.debug(jsonStr);
-                            rc.response().putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
+                            response.putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
                         },
                         orderSuccessMap -> {
                             // 下单成功之后的处理
                             log.debug(orderSuccessMap.toString());
-                            Order wechatOrder = new Order().setOrderId(orderId).setEid(eid).setType(0).setCallback(callback);
-                            orderServ.insert(wechatOrder, rows -> {
-                                log.info("微信下单后更新数据库，影响行数={}", rows);
+                            JsonObject wechatOrder = new JsonObject().put("orderid", orderId).put("eid", eid).put("type", 0).put("callback", callback);
+                            vertx.eventBus().<Integer>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_INSERT_ORDER, wechatOrder), ebar -> {
+                                if(ebar.succeeded()){
+                                    int rows = ebar.result().body();
+                                    log.info("微信下单后更新数据库，影响行数={}", rows);
+                                } else {
+                                    log.error("EventBus消息响应错误", ebar.cause());
+                                    response.setStatusCode(500).end("EventBus error!");
+                                }
                             });
                         });
             } else {
                 log.error("EventBus消息响应错误", ar.cause());
-                rc.response().setStatusCode(500).end("EventBus error!");
+                response.setStatusCode(500).end("EventBus error!");
             }
         });
     }
@@ -132,7 +131,7 @@ public class WechatPaySubRouter implements SubRouter {
      * 微信支付回调接口
      * 更新订单状态（更新shop_order，已支付，商城订单号，支付类型，支付时间）
      *
-     * @return 成功则返回微信接口规定的信息，失败则返回“下单失败”
+     * 异步返回 成功则返回微信接口规定的信息，失败则返回“下单失败”
      *
      * @author Leibniz
      */
@@ -142,17 +141,24 @@ public class WechatPaySubRouter implements SubRouter {
         //将解析后的数据传入map
         Map<String, String> payReturnParam = XmlUtils.xmltoMap(param);
         //TODO 完善其他返回状态的处理
+        HttpServerResponse response = rc.response();
         if ("SUCCESS".equals(payReturnParam.get("return_code"))) {
             String localOrderId = payReturnParam.get("out_trade_no"); //本地订单ID
             String wechatOrderId = payReturnParam.get("transaction_id"); //微信订单ID
             //调用callback 更新订单数据，已支付，商城订单号，支付类型，支付时间
-            Order updateOrder = new Order().setPlatOrderId(wechatOrderId).setOrderId(localOrderId).setType(0);
-            orderServ.updateAfterPaid(updateOrder, rows -> {
-                log.info("微信支付回调更新数据库，影响行数={}", rows);
+            JsonObject updateOrder = new JsonObject().put("platorderid", wechatOrderId).put("orderid", localOrderId).put("type", 0);
+            vertx.eventBus().<Integer>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_UPDATE_PAID_ORDER, updateOrder), ebar -> {
+                if(ebar.succeeded()){
+                    int rows = ebar.result().body();
+                    log.info("微信支付回调更新数据库，影响行数={}", rows);
+                } else {
+                    log.error("EventBus消息响应错误", ebar.cause());
+                    response.setStatusCode(500).end("EventBus error!");
+                }
             });
-            rc.response().putHeader("content-type", "application/xml; charset=utf-8").end(WECHAT_CALLBACK_SUCCESS_RETURN);
+            response.putHeader("content-type", "application/xml; charset=utf-8").end(WECHAT_CALLBACK_SUCCESS_RETURN);
         } else {
-            rc.response().end("下单失败");
+            response.end("下单失败");
         }
     }
 }

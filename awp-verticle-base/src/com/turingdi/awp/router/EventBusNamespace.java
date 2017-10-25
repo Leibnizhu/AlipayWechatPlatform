@@ -8,9 +8,10 @@ import io.vertx.core.json.JsonObject;
  * Created on 2017-10-24 22:16.
  */
 public enum EventBusNamespace {
+    //地址命名
     ADDR_ACCOUNT_DB,
     ADDR_ORDER_DB,
-
+    //Account命令的命名
     COMMAND_GET_ACCOUNT_BY_ID,
     COMMAND_EMAIL_LOGIN,
     COMMAND_ID_LOGIN,
@@ -18,6 +19,11 @@ public enum EventBusNamespace {
     COMMAND_UPDATE_NORMAL,
     COMMAND_UPDATE_WECHATPAY,
     COMMAND_UPDATE_ALIPAY,
+    //Order命令的命名
+    COMMAND_INSERT_ORDER,
+    COMMAND_GET_ORDER_BY_ALIPAY_ORDER_ID,
+    COMMAND_GET_ORDER_BY_WECHAT_ORDER_ID,
+    COMMAND_UPDATE_PAID_ORDER
     ;
 
     public String get(){

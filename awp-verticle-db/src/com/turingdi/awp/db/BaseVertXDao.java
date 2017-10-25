@@ -16,13 +16,11 @@ import java.util.List;
  */
 class BaseVertXDao {
     private static Logger LOG = LoggerFactory.getLogger(BaseVertXDao.class);
-    static ConnectionPoolManager hikariCPM = HikariCPManager.getInstance();
+    private static ConnectionPoolManager hikariCPM = HikariCPManager.getInstance();
 
     /**
      * 无参数查询
      *
-     * @param sql
-     * @param callback
      */
     static void query(String sql, Handler<List<JsonObject>> callback) {
         query(sql, null, callback);
@@ -31,40 +29,36 @@ class BaseVertXDao {
     /**
      * 带参数查询
      *
-     * @param sql
-     * @param params
-     * @param callback
      */
     static void query(String sql, JsonArray params, Handler<List<JsonObject>> callback) {
         LOG.debug("excuting SELECT SQL: \"{}\", params:{}", sql, params);
-        hikariCPM.getConnection(conn -> {
-            conn.queryWithParams(sql, params, ar -> {
-                        if (ar.succeeded()) {
-                            List<JsonObject> rows = ar.result().getRows();
-                            LOG.debug("Got {} row(s)", rows.size());
-                            LOG.trace("Query results:{}", rows);
-                            callback.handle(rows);
-                        } else {
-                            LOG.error("读取数据库失败:{}", ar.cause());
-                        }
-                        conn.close();
-                    });
-        });
+        hikariCPM.getConnection(conn -> conn.queryWithParams(sql, params, ar -> {
+                    if (ar.succeeded()) {
+                        List<JsonObject> rows = ar.result().getRows();
+                        LOG.debug("Got {} row(s)", rows.size());
+                        LOG.trace("Query results:{}", rows);
+                        callback.handle(rows);
+                    } else {
+                        LOG.error("读取数据库失败:{}", ar.cause());
+                    }
+                    conn.close();
+                }));
     }
 
+    /**
+     * 插入、更新、删除，带参数
+     */
     static void update(String sql, JsonArray params, Handler<Integer> callback) {
         LOG.debug("excuting INSERT/UPDATE/DELETE SQL: \"{}\", params:{}", sql, params);
-        hikariCPM.getConnection(conn -> {
-            conn.updateWithParams(sql, params, ar -> {
-                if (ar.succeeded()) {
-                    int updated = ar.result().getUpdated();
-                    LOG.debug("Affects {} row(s)", updated);
-                    callback.handle(updated);
-                } else {
-                    LOG.error("读取数据库失败:{}", ar.cause());
-                }
-                conn.close();
-            });
-        });
+        hikariCPM.getConnection(conn -> conn.updateWithParams(sql, params, ar -> {
+            if (ar.succeeded()) {
+                int updated = ar.result().getUpdated();
+                LOG.debug("Affects {} row(s)", updated);
+                callback.handle(updated);
+            } else {
+                LOG.error("读取数据库失败:{}", ar.cause());
+            }
+            conn.close();
+        }));
     }
 }

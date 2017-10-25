@@ -1,6 +1,5 @@
 package com.turingdi.awp.router.api;
 
-import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.router.SubRouter;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
@@ -13,12 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AlipayOauthSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private AccountService wxAccServ;
     private Vertx vertx;
-
-    public AlipayOauthSubRouter(AccountService wxAccServ) {
-        this.wxAccServ = wxAccServ;
-    }
 
     @Override
     public Router getSubRouter() {
@@ -36,7 +30,7 @@ public class AlipayOauthSubRouter implements SubRouter {
         return this;
     }
 
-    /**
+    /*
      * TODO 支付宝授权
      */
 }

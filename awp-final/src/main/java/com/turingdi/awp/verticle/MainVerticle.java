@@ -1,12 +1,10 @@
 package com.turingdi.awp.verticle;
 
-import com.turingdi.awp.db.OrderDao;
 import com.turingdi.awp.db.pool.HikariCPManager;
 import com.turingdi.awp.router.admin.LoginSubRouter;
 import com.turingdi.awp.router.admin.OfficialAccountSubRouter;
 import com.turingdi.awp.router.admin.PaySettingSubRouter;
 import com.turingdi.awp.router.api.*;
-import com.turingdi.awp.service.OrderService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import io.vertx.core.AbstractVerticle;
@@ -25,21 +23,18 @@ import java.util.regex.Pattern;
  * @author Leibniz.Hu
  * Created on 2017-10-11 20:37.
  */
-public class MainVerticle extends AbstractVerticle{
+public class MainVerticle extends AbstractVerticle {
+    private JWTAuth jwtProvider;
+    private Router mainRouter;
 
     @Override
     public void start() throws Exception {
         super.start();
         HttpServer server = vertx.createHttpServer();
         //公用资源初始化
-        Constants.init(config());
-        NetworkUtils.init(vertx);
-        HikariCPManager.init(vertx);
-        JWTAuth jwtProvider = initJWTProvider();
-        OrderDao orderDao = new OrderDao();
-        OrderService orderServ = new OrderService(orderDao);
-        Router mainRouter = Router.router(vertx);
+        initComponents();
         vertx.deployVerticle(AccountDBVerticle.class.getName());
+        vertx.deployVerticle(OrderDBVerticle.class.getName());
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
@@ -50,8 +45,8 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.mountSubRouter("/oauth/wx", new WechatOauthSubRouter().setVertx(vertx).getSubRouter());
         //TODO 支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", new AlipayOauthSubRouter().setVertx(vertx).getSubRouter());
         //支付服务子路由
-        mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter(orderServ).setVertx(vertx).getSubRouter());
-        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter().setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter().setVertx(vertx).getSubRouter());
         //消息发送服务子路由
         mainRouter.mountSubRouter("/msg/wx", new WechatMessageSubRouter().setVertx(vertx).getSubRouter());
         //TODO 支付宝消息发送
@@ -66,16 +61,26 @@ public class MainVerticle extends AbstractVerticle{
         server.requestHandler(mainRouter::accept).listen(config().getInteger("serverPort", 8083));
     }
 
+    /**
+     * 初始化工具类/组件
+     */
+    private void initComponents() {
+        Constants.init(config());
+        NetworkUtils.init(vertx);
+        HikariCPManager.init(vertx);
+        jwtProvider = initJWTProvider();
+        mainRouter = Router.router(vertx);
+    }
+
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");
 
     /**
      * 返回微信安全域名验证文件的内容
-     * @param rc
      */
     private void getWechatVerify(RoutingContext rc) {
         String uri = rc.request().uri().substring(1);
         Matcher matcher = WECHAT_VERIFY.matcher(uri);
-        if(matcher.find()){
+        if (matcher.find()) {
             rc.response().end(matcher.group(1));
         } else {
             rc.response().setStatusCode(404).end();
@@ -84,7 +89,6 @@ public class MainVerticle extends AbstractVerticle{
 
     /**
      * 返回网站LOGO
-     * @param rc
      */
     private void getLogo(RoutingContext rc) {
         rc.response().sendFile("static/img/favicon.ico").close();
@@ -92,13 +96,12 @@ public class MainVerticle extends AbstractVerticle{
 
     /**
      * 初始化JWT
-     * @return
      */
     private JWTAuth initJWTProvider() {
         JsonObject jwtConfig = new JsonObject().put("keyStore", new JsonObject()
-                .put("path", config().getString("keyPath","keystore.jceks")) //此处要与生成keystore的时候用的type、keypass一致
+                .put("path", config().getString("keyPath", "keystore.jceks")) //此处要与生成keystore的时候用的type、keypass一致
                 .put("type", "jceks")
-                .put("password", config().getString("keyPswd","secret")));
+                .put("password", config().getString("keyPswd", "secret")));
         return JWTAuth.create(vertx, jwtConfig);
     }
 }

@@ -27,11 +27,10 @@ import java.io.IOException;
 public class AlipayPayService {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    private String projectUrl;
     private String zfbPayNotifyUrl;
 
     public AlipayPayService() {
-        this.projectUrl = Constants.PROJ_URL;
+        String projectUrl = Constants.PROJ_URL;
         this.zfbPayNotifyUrl = projectUrl + "pay/zfb/noti";
     }
 
@@ -61,7 +60,7 @@ public class AlipayPayService {
      *
      * @param bizContent   支付宝退款接口的业务内容请求JSON实例
      * @param acc      企业用户账户对象
-     * @return 是否调用成功
+     * 异步返回 是否调用成功
      *
      * @author Leibniz
      */

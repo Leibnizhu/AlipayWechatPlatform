@@ -22,7 +22,7 @@ public class AccountService {
 	 * 该方法用于从根据id获取微信公众号信息，通过调用dao层方法进行实现；
 	 *
 	 * @param id 公众号id
-	 * @return 获取到的公众号数据
+	 * 异步返回 获取到的公众号数据
 	 */
 	public void getById(int id, Handler<JsonObject> callback) {
 		accDao.getById(id, callback); // 调用dao层方法

@@ -43,7 +43,7 @@ public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
     }
 
     private void getAccessToken(RoutingContext rc) {
-        responseWithToken(rc, "jsTicket", WxApiClient::getAccessToken);
+        responseWithToken(rc, "AccessToken", WxApiClient::getAccessToken);
     }
 
     private void getJsTicket(RoutingContext rc) {

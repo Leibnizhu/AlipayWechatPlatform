@@ -1,7 +1,6 @@
 package com.turingdi.awp.service;
 
 import com.turingdi.awp.db.OrderDao;
-import com.turingdi.awp.entity.db.Order;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
@@ -13,14 +12,13 @@ import org.slf4j.LoggerFactory;
  */
 public class OrderService {
     private Logger log = LoggerFactory.getLogger(getClass());
-
     private OrderDao orderDao;
 
     public OrderService(OrderDao orderDao) {
         this.orderDao = orderDao;
     }
 
-    public void insert(Order order, Handler<Integer> callback) {
+    public void insert(JsonObject order, Handler<Integer> callback) {
         orderDao.insert(order, callback);
     }
 
@@ -36,7 +34,7 @@ public class OrderService {
         orderDao.getByOrderId(orderId, 0, callback);
     }
 
-    public void updateAfterPaid(Order order, Handler<Integer> callback) {
+    public void updateAfterPaid(JsonObject order, Handler<Integer> callback) {
         try {
             orderDao.updateAfterPaid(order, callback);
         } catch (Exception e) {
