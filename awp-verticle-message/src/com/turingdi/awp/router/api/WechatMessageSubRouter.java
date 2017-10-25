@@ -54,10 +54,10 @@ public class WechatMessageSubRouter extends LanAccessSubRouter implements SubRou
         String openId = params.getString("openId");
         String content = params.getString("content");
         int eid = params.getInteger("eid");
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             HttpServerResponse response = rc.response();
             if(ar.succeeded()){
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 vertx.executeBlocking(future -> {
                     JsonObject result = WxApiClient.sendCustomTextMessage(openId, content, acc.mapTo(Account.class));
                     future.complete(result);
@@ -88,10 +88,10 @@ public class WechatMessageSubRouter extends LanAccessSubRouter implements SubRou
         int eid = params.getInteger("eid");
         Map<String, String> dataMap = getDataMapFromParam(params);
         TemplateMessage tmpMsg = new TemplateMessage().setOpenid(openId).setTemplateId(tmpId).setUrl(url).setDataMap(dataMap);
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             HttpServerResponse response = rc.response();
             if(ar.succeeded()){
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 vertx.executeBlocking(future -> {
                     JsonObject result = WxApiClient.sendTemplateMessage(tmpMsg, acc.mapTo(Account.class));
                     future.complete(result);

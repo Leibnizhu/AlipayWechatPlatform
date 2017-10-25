@@ -1,8 +1,6 @@
 package com.turingdi.awp.router.admin;
 
 import com.turingdi.awp.router.SubRouter;
-import com.turingdi.awp.service.AccountService;
-import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Future;
@@ -21,9 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
-import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
-import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
-import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
+import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
  * @author Leibniz.Hu
@@ -31,12 +27,10 @@ import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
  */
 public class PaySettingSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private AccountService accServ;
     private JWTAuth provider;
     private Vertx vertx;
 
-    public PaySettingSubRouter(AccountService wxAccServ, JWTAuth provider) {
-        this.accServ = wxAccServ;
+    public PaySettingSubRouter(JWTAuth provider) {
         this.provider = provider;
     }
 
@@ -61,9 +55,9 @@ public class PaySettingSubRouter implements SubRouter {
 
     private void getPaySetting(RoutingContext rc) {
         Integer eid = Integer.parseInt(rc.request().getParam("eid"));
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if(ar.succeeded()){
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 JsonObject json = new JsonObject()
                         .put("wx", new JsonObject()
                                 .put("appId", acc.getString("appid"))
@@ -132,9 +126,15 @@ public class PaySettingSubRouter implements SubRouter {
         }
 
         //保存支付参数
-        Account acc = new Account().setId(uid).setMchid(mchId).setMchkey(payKey).setWxpayon(paySwitch);
-        accServ.updateWxPay(acc, rows -> {
-            rc.response().end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
+        JsonObject acc = new JsonObject().put("id", uid).put("mchid", mchId).put("mchkey", payKey).put("wxpayon", paySwitch);
+        vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_WECHATPAY, acc), ar -> {
+            if(ar.succeeded()){
+                int rows = ar.result().body();
+                resp.end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                resp.setStatusCode(500).end("EventBus error!");
+            }
         });
     }
 
@@ -155,9 +155,15 @@ public class PaySettingSubRouter implements SubRouter {
         }
 
         //保存支付参数
-        Account acc = new Account().setId(uid).setZfbappid(appId).setZfbprivkey(appPrivKey).setZfbpubkey(zfbPubKey).setZfbpayon(paySwitch);
-        accServ.updateZfbPay(acc, rows -> {
-            rc.response().end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
+        JsonObject acc = new JsonObject().put("id", uid).put("zfbappid", appId).put("zfbprivkey", appPrivKey).put("zfbpubkey", zfbPubKey).put("zfbpayon", paySwitch);
+        vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_ALIPAY, acc), ar -> {
+            if(ar.succeeded()){
+                int rows = ar.result().body();
+                resp.end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                resp.setStatusCode(500).end("EventBus error!");
+            }
         });
     }
 }

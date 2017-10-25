@@ -18,53 +18,58 @@ public class AccountDao extends BaseVertXDao {
 
     /**
      * 更新账户基本公众号配置
-     * @param acc
-     * @param callback
      */
-    public void updateBase(Account acc, Handler<Integer> callback) {
-        if(acc.getId() == null){
+    public void updateBase(JsonObject acc, Handler<Integer> callback) {
+        Integer id = acc.getInteger("id");
+        if(id == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        if (acc.getName() != null && !acc.getName().equals("")) {
+        String name = acc.getString("name");
+        if (name != null && !name.equals("")) {
             sql.append("name=?");
-            params.add(acc.getName());
+            params.add(name);
             moreThanOne = true;
         }
-        if (acc.getAppid() != null && !acc.getAppid().equals("")) {
+        String appid = acc.getString("appid");
+        if (appid != null && !appid.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("appid=?");
-            params.add(acc.getAppid());
+            params.add(appid);
             moreThanOne = true;
         }
-        if (acc.getAppsecret() != null && !acc.getAppsecret().equals("")) {
+        String appsecret = acc.getString("appsecret");
+        if (appsecret != null && !appsecret.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("appsecret=?");
-            params.add(acc.getAppsecret());
+            params.add(appsecret);
             moreThanOne = true;
         }
-        if (acc.getVerify() != null && !acc.getVerify().equals("")) {
+        String verify = acc.getString("verify");
+        if (verify != null && !verify.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("verify=?");
-            params.add(acc.getVerify());
+            params.add(verify);
             moreThanOne = true;
         }
-        if (acc.getEmail() != null && !acc.getEmail().equals("")) {
+        String email = acc.getString("email");
+        if (email != null && !email.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("email=?");
-            params.add(acc.getEmail());
+            params.add(email);
             moreThanOne = true;
         }
-        if (acc.getPassword() != null && !acc.getPassword().equals("")) {
+        String password = acc.getString("password");
+        if (password != null && !password.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("password=?");
-            params.add(acc.getPassword());
+            params.add(password);
             moreThanOne = true;
         }
         sql.append(" where id=?");
-        params.add(acc.getId());
+        params.add(id);
         update(sql.toString(), params, callback);
     }
 
@@ -77,101 +82,95 @@ public class AccountDao extends BaseVertXDao {
     public void getById(int id, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE ID = ?",
                 new JsonArray().add(id),
-                result -> {
-                    callback.handle(result.size() > 0 ? result.get(0) : null);
-                });
+                result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
-    public void login(Account account, Handler<JsonObject> callback) {
+    public void loginByEmail(Account account, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE email = ? and password = ?",
-                new JsonArray().add(account.getName()).add(account.getPassword()),
-                result -> {
-                    callback.handle(result.size() > 0 ? result.get(0) : null);
-                });
+                new JsonArray().add(account.getEmail()).add(account.getPassword()),
+                result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
     public void loginById(Account account, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE id = ? and password = ?",
                 new JsonArray().add(account.getId()).add(account.getPassword()),
-                result -> {
-                    callback.handle(result.size() > 0 ? result.get(0) : null);
-                });
+                result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
     public void getAccountList(Handler<List<JsonObject>> callback){
-        query("SELECT id,name,email FROM awp_account", callback);
+        query("SELECT id,name,email FROM awp_account ORDER BY ID ASC", callback);
     }
 
-    public void updateWxPay(Account acc, Handler<Integer> callback) {
-        if(acc.getId() == null){
+    public void updateWxPay(JsonObject acc, Handler<Integer> callback) {
+        Integer id = acc.getInteger("id");
+        if(id == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        if (acc.getMchid() != null && !acc.getMchid().equals("")) {
+        String mchid = acc.getString("mchid");
+        if (mchid != null && !mchid.equals("")) {
             sql.append("mchId=?");
-            params.add(acc.getMchid());
+            params.add(mchid);
             moreThanOne = true;
         }
-        if (acc.getMchkey() != null && !acc.getMchkey().equals("")) {
+        String mchkey = acc.getString("mchkey");
+        if (mchkey != null && !mchkey.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("mchKey=?");
-            params.add(acc.getMchkey());
+            params.add(mchkey);
             moreThanOne = true;
         }
-        if (acc.getWxpayon() != null) {
+        Integer wxpayon = acc.getInteger("wxpayon");
+        if (wxpayon != null) {
             if (moreThanOne) sql.append(",");
             sql.append("wxPayOn=?");
-            params.add(acc.getWxpayon());
+            params.add(wxpayon);
             moreThanOne = true;
         }
         sql.append(" where id=?");
-        params.add(acc.getId());
+        params.add(id);
         update(sql.toString(), params, callback);
     }
 
-    public void updateZfbPay(Account acc, Handler<Integer> callback) {
-        if(acc.getId() == null){
+    public void updateZfbPay(JsonObject acc, Handler<Integer> callback) {
+        Integer id = acc.getInteger("id");
+        if(id == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        if (acc.getZfbappid() != null && !acc.getZfbappid().equals("")) {
+        String zfbappid = acc.getString("zfbappid");
+        if (zfbappid != null && !zfbappid.equals("")) {
             sql.append("zfbAppId=?");
-            params.add(acc.getZfbappid());
+            params.add(zfbappid);
             moreThanOne = true;
         }
-        if (acc.getZfbprivkey() != null && !acc.getZfbprivkey().equals("")) {
+        String zfbprivkey = acc.getString("zfbprivkey");
+        if (zfbprivkey != null && !zfbprivkey.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPrivKey=?");
-            params.add(acc.getZfbprivkey());
+            params.add(zfbprivkey);
             moreThanOne = true;
         }
-        if (acc.getZfbpubkey() != null && !acc.getZfbpubkey().equals("")) {
+        String zfbpubkey = acc.getString("zfbpubkey");
+        if (zfbpubkey != null && !zfbpubkey.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPubKey=?");
-            params.add(acc.getZfbpubkey());
+            params.add(zfbpubkey);
             moreThanOne = true;
         }
-        if (acc.getZfbpayon() != null) {
+        Integer zfbpayon = acc.getInteger("zfbpayon");
+        if (zfbpayon != null) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPayOn=?");
-            params.add(acc.getZfbpayon());
+            params.add(zfbpayon);
             moreThanOne = true;
         }
         sql.append(" where id=?");
-        params.add(acc.getId());
+        params.add(id);
         update(sql.toString(), params, callback);
     }
-
-    public List<Account> selectByUserId(int userID) {
-        return null;
-    }
-
-    public List<Account> listForPage(Account searchEntity) {
-        return null;
-    }
-
 }

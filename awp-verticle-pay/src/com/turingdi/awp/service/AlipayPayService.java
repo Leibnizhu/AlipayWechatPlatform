@@ -4,7 +4,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
-import com.turingdi.awp.db.AccountDao;
 import com.turingdi.awp.entity.alipay.AliAccountInfo;
 import com.turingdi.awp.entity.alipay.PayBizContent;
 import com.turingdi.awp.entity.alipay.RefundBizContent;
@@ -31,10 +30,7 @@ public class AlipayPayService {
     private String projectUrl;
     private String zfbPayNotifyUrl;
 
-    private final AccountDao wxDao;
-
-    public AlipayPayService(AccountDao wxDao) {
-        this.wxDao = wxDao;
+    public AlipayPayService() {
         this.projectUrl = Constants.PROJ_URL;
         this.zfbPayNotifyUrl = projectUrl + "pay/zfb/noti";
     }

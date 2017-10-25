@@ -14,12 +14,7 @@ public class AccountService {
 		this.accDao = accDao;
 	}
 
-	public List<Account> selectByUserId(int userId) {
-		return accDao.selectByUserId(userId);
-	}
-
-
-	public void update(Account WxAccount, Handler<Integer> callback) {
+	public void update(JsonObject WxAccount, Handler<Integer> callback) {
 		accDao.updateBase(WxAccount, callback);
 	}
 
@@ -33,13 +28,9 @@ public class AccountService {
 		accDao.getById(id, callback); // 调用dao层方法
 	}
 
-	public List<Account> listForPage(Account searchEntity){
-		return accDao.listForPage(searchEntity);
-	}
-
-    public void login(String username, String password, Handler<JsonObject> callback) {
-		Account account = new Account().setName(username).setPassword(password);
-		accDao.login(account, callback);
+    public void loginByEmail(String email, String password, Handler<JsonObject> callback) {
+		Account account = new Account().setEmail(email).setPassword(password);
+		accDao.loginByEmail(account, callback);
     }
 
 	public void loginById(long id, String password, Handler<JsonObject> callback) {
@@ -51,11 +42,11 @@ public class AccountService {
 		accDao.getAccountList(callback);
 	}
 
-	public void updateWxPay(Account acc, Handler<Integer> callback){
+	public void updateWxPay(JsonObject acc, Handler<Integer> callback){
 		accDao.updateWxPay(acc, callback);
 	}
 
-	public void updateZfbPay(Account acc, Handler<Integer> callback){
+	public void updateZfbPay(JsonObject acc, Handler<Integer> callback){
 		accDao.updateZfbPay(acc, callback);
 	}
 }

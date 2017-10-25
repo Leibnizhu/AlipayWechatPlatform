@@ -3,7 +3,6 @@ package com.turingdi.awp.router.api;
 import com.turingdi.awp.entity.db.Order;
 import com.turingdi.awp.entity.wechat.WechatJdk;
 import com.turingdi.awp.router.SubRouter;
-import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.service.OrderService;
 import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.XmlUtils;
@@ -28,16 +27,13 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
  */
 public class WechatPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private WechatPayService payServ;
+    private WechatPayService payServ = new WechatPayService();
     private OrderService orderServ;
-    private AccountService wxAccServ;
     private Vertx vertx;
 
 
-    public WechatPaySubRouter(OrderService orderServ, WechatPayService payServ, AccountService wxAccServ) {
-        this.payServ = payServ;
+    public WechatPaySubRouter(OrderService orderServ) {
         this.orderServ = orderServ;
-        this.wxAccServ = wxAccServ;
     }
 
     @Override
@@ -71,9 +67,9 @@ public class WechatPaySubRouter implements SubRouter {
         HttpServerRequest req = rc.request();
         HttpServerResponse response = rc.response();
         int eid = Integer.parseInt(req.getParam("eid"));
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if (ar.succeeded()) {
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 String curUrl = null;
                 try {
                     curUrl = URLDecoder.decode(req.getParam("url"), "UTF-8");
@@ -108,9 +104,9 @@ public class WechatPaySubRouter implements SubRouter {
         int price = body.getInteger("price");
         String name = body.getString("name");
         String callback = body.getString("callback");
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if (ar.succeeded()) {
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 payServ.wechatOrder(name, price, openId, orderId, acc, req,
                         forResponse -> {
                             String jsonStr = forResponse.toString();

@@ -1,16 +1,12 @@
 package com.turingdi.awp.verticle;
 
-import com.turingdi.awp.db.AccountDao;
 import com.turingdi.awp.db.OrderDao;
 import com.turingdi.awp.db.pool.HikariCPManager;
 import com.turingdi.awp.router.admin.LoginSubRouter;
 import com.turingdi.awp.router.admin.OfficialAccountSubRouter;
 import com.turingdi.awp.router.admin.PaySettingSubRouter;
 import com.turingdi.awp.router.api.*;
-import com.turingdi.awp.service.AccountService;
-import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.service.OrderService;
-import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import io.vertx.core.AbstractVerticle;
@@ -40,11 +36,7 @@ public class MainVerticle extends AbstractVerticle{
         NetworkUtils.init(vertx);
         HikariCPManager.init(vertx);
         JWTAuth jwtProvider = initJWTProvider();
-        AccountDao accDao = new AccountDao();
         OrderDao orderDao = new OrderDao();
-        AccountService accountSrv = new AccountService(accDao);
-        AlipayPayService alipayServ = new AlipayPayService(accDao);
-        WechatPayService wxPayServ = new WechatPayService(accDao);
         OrderService orderServ = new OrderService(orderDao);
         Router mainRouter = Router.router(vertx);
         vertx.deployVerticle(AccountDBVerticle.class.getName());
@@ -55,24 +47,23 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.route("/favicon.ico").handler(this::getLogo);
         mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
         //授权服务的子路由
-        mainRouter.mountSubRouter("/oauth/wx", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
-// TODO  支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", new WechatOauthSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/oauth/wx", new WechatOauthSubRouter().setVertx(vertx).getSubRouter());
+        //TODO 支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", new AlipayOauthSubRouter().setVertx(vertx).getSubRouter());
         //支付服务子路由
-        mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter(orderServ, wxPayServ, accountSrv).setVertx(vertx).getSubRouter());
-        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ, alipayServ).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter(orderServ).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ).setVertx(vertx).getSubRouter());
         //消息发送服务子路由
         mainRouter.mountSubRouter("/msg/wx", new WechatMessageSubRouter().setVertx(vertx).getSubRouter());
         //TODO 支付宝消息发送
         //JsTicket和AccessTOken服务子路由
-        mainRouter.mountSubRouter("/tk/wx", new TokenSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/tk/wx", new TokenSubRouter().setVertx(vertx).getSubRouter());
         //登录BMS的子路由
-        mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/bms/login", new LoginSubRouter(jwtProvider).setVertx(vertx).getSubRouter());
         //公众号配置子路由
-        mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(jwtProvider).setVertx(vertx).getSubRouter());
         //支付配置子路由
-        mainRouter.mountSubRouter("/bms/pay", new PaySettingSubRouter(accountSrv, jwtProvider).setVertx(vertx).getSubRouter());
-        server.requestHandler(mainRouter::accept)
-                .listen(config().getInteger("serverPort", 8083));
+        mainRouter.mountSubRouter("/bms/pay", new PaySettingSubRouter(jwtProvider).setVertx(vertx).getSubRouter());
+        server.requestHandler(mainRouter::accept).listen(config().getInteger("serverPort", 8083));
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");

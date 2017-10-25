@@ -30,13 +30,12 @@ import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
  */
 public class AlipayPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private AlipayPayService payServ;
+    private AlipayPayService payServ = new AlipayPayService();
     private OrderService orderServ;
     private Vertx vertx;
 
 
-    public AlipayPaySubRouter(OrderService orderServ, AlipayPayService payServ) {
-        this.payServ = payServ;
+    public AlipayPaySubRouter(OrderService orderServ) {
         this.orderServ = orderServ;
     }
 
@@ -76,9 +75,9 @@ public class AlipayPaySubRouter implements SubRouter {
         Order order = new Order().setOrderId(orderId).setCallback(callback).setEid(eid).setType(1);
         orderServ.insert(order, rows -> {
         });
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if(ar.succeeded()){
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 payServ.alipayOrder(name, price, orderId, acc, successUrl, response);
             } else {
                 log.error("EventBus消息响应错误", ar.cause());

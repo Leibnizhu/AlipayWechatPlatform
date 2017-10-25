@@ -1,6 +1,5 @@
 package com.turingdi.awp.service;
 
-import com.turingdi.awp.db.AccountDao;
 import com.turingdi.awp.entity.wechat.WechatPay;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;
@@ -27,11 +26,9 @@ import static com.turingdi.awp.util.common.NetworkUtils.ContentType.XML;
  */
 public class WechatPayService {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private AccountDao accDao;
     private String wxPayNotifyUrl;
 
-    public WechatPayService(AccountDao accDao) {
-        this.accDao = accDao;
+    public WechatPayService() {
         this.wxPayNotifyUrl = Constants.PROJ_URL + "pay/wx/noti";
     }
 

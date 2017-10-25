@@ -1,8 +1,7 @@
 package com.turingdi.awp.router.api;
 
-import com.turingdi.awp.router.LanAccessSubRouter;
-import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.entity.db.Account;
+import com.turingdi.awp.router.LanAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.wechat.WxApiClient;
 import io.vertx.core.Vertx;
@@ -16,9 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Function;
 
-import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
-import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
-import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
+import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
  * @author Leibniz.Hu
@@ -26,12 +23,7 @@ import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
  */
 public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private AccountService wxAccServ;
     private Vertx vertx;
-
-    public TokenSubRouter(AccountService wxAccServ) {
-        this.wxAccServ = wxAccServ;
-    }
 
     @Override
     public Router getSubRouter() {
@@ -71,9 +63,9 @@ public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
         } catch (NumberFormatException e) {
             resp.setStatusCode(500).end("Request parameter eid must be a number!");
         }
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if(ar.succeeded()){
-                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject acc = ar.result().body();
                 String token = tokenGetter.apply(acc.mapTo(Account.class));
                 resp.end(new JsonObject().put(key, token).toString());
             } else {

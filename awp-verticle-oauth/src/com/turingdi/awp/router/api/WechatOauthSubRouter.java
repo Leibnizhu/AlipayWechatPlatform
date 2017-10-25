@@ -1,7 +1,6 @@
 package com.turingdi.awp.router.api;
 
 import com.turingdi.awp.router.SubRouter;
-import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
 import io.vertx.core.Future;
@@ -27,12 +26,7 @@ import static com.turingdi.awp.util.common.Constants.*;
  */
 public class WechatOauthSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private AccountService wxAccServ;
     private Vertx vertx;
-
-    public WechatOauthSubRouter(AccountService wxAccServ) {
-        this.wxAccServ = wxAccServ;
-    }
 
     private static final String WECHAT_JSON_OPENID_KEY = "openid";
     private static final String WECHAT_JSON_ERRCODE_KEY = "errcode";
@@ -79,9 +73,9 @@ public class WechatOauthSubRouter implements SubRouter {
         Integer eid = reqJson.getInteger("eid");
         int type = reqJson.getInteger("type");
         String callback = TuringBase64Util.encode(reqJson.getString("callback"));//授权后回调方法
-        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if (ar.succeeded()) {
-                JsonObject account = (JsonObject) ar.result().body();
+                JsonObject account = ar.result().body();
                 String redirectAfterUrl = PROJ_URL + "oauth/wx/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
                 String returnUrl = null;
                 try {
@@ -152,7 +146,7 @@ public class WechatOauthSubRouter implements SubRouter {
         log.debug("code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
         assert code != null;
         Future.<Message<JsonObject>>future(f ->
-                vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
+                vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
         ).compose(msg -> Future.<JsonObject>future(f -> {
                     JsonObject account = msg.body();
                     String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);

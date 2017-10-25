@@ -1,7 +1,6 @@
 package com.turingdi.awp.router.admin;
 
 import com.turingdi.awp.router.SubRouter;
-import com.turingdi.awp.service.AccountService;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -13,6 +12,8 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.turingdi.awp.router.EventBusNamespace.*;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-10-13 12:44.
@@ -20,12 +21,10 @@ import org.slf4j.LoggerFactory;
 public class LoginSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private static final JWTOptions JWT_OPTIONS = new JWTOptions().setExpiresInMinutes(60 * 4L);//4小时有效
-    private AccountService wxAccServ;
     private Vertx vertx;
     private JWTAuth provider;
 
-    public LoginSubRouter(AccountService wxAccServ, JWTAuth jwtProvider) {
-        this.wxAccServ = wxAccServ;
+    public LoginSubRouter(JWTAuth jwtProvider) {
         this.provider = jwtProvider;
     }
 
@@ -48,21 +47,27 @@ public class LoginSubRouter implements SubRouter {
     private void login(RoutingContext rc) {
         HttpServerRequest req = rc.request();
         HttpServerResponse resp = rc.response();
-        String username = req.getParam("username");
+        String email = req.getParam("username");
         String password = req.getParam("password");
-        wxAccServ.login(username, password, acc -> {
-            JsonObject result = new JsonObject();
-            if (acc == null) {//密码错误或用户不存在
-                result.put("result", "fail");
-                resp.end(result.toString());
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_EMAIL_LOGIN, email, password), ar -> {
+            if(ar.succeeded()){
+                JsonObject acc = ar.result().body();
+                JsonObject result = new JsonObject();
+                if (acc == null) {//密码错误或用户不存在
+                    result.put("result", "fail");
+                    resp.end(result.toString());
+                } else {
+                    //jwt保存
+                    Integer id = acc.getInteger("id");
+                    Integer role = acc.getInteger("role");
+                    String name = acc.getString("name");
+                    String token = provider.generateToken(new JsonObject().put("id", id).put("role", role), JWT_OPTIONS);
+                    result.put("result", "success").put("token", token).put("name", name).put("role", role).put("id", id).put("email", acc.getString("email"));
+                    resp.end(result.toString());
+                }
             } else {
-                //jwt保存
-                Integer id = acc.getInteger("id");
-                Integer role = acc.getInteger("role");
-                String name = acc.getString("name");
-                String token = provider.generateToken(new JsonObject().put("id", id).put("role", role), JWT_OPTIONS);
-                result.put("result", "success").put("token", token).put("name", name).put("role", role).put("id", id).put("email", acc.getString("email"));
-                resp.end(result.toString());
+                log.error("EventBus消息响应错误", ar.cause());
+                resp.setStatusCode(500).end("EventBus error!");
             }
         });
     }
