@@ -129,16 +129,7 @@
             <version>${logback.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>1.9.22</version>
-        </dependency>
+        <!-- XML DOM操作 -->
         <dependency>
             <groupId>jdom</groupId>
             <artifactId>jdom</artifactId>
@@ -154,6 +145,8 @@
             <artifactId>xstream</artifactId>
             <version>1.4.7</version>
         </dependency>
+
+        <!-- javassist，Netty优化用 -->
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
