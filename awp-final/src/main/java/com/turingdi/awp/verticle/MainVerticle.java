@@ -47,6 +47,7 @@ public class MainVerticle extends AbstractVerticle{
         WechatPayService wxPayServ = new WechatPayService(accDao);
         OrderService orderServ = new OrderService(orderDao);
         Router mainRouter = Router.router(vertx);
+        vertx.deployVerticle(AccountDBVerticle.class.getName());
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
@@ -60,7 +61,7 @@ public class MainVerticle extends AbstractVerticle{
         mainRouter.mountSubRouter("/pay/wx", new WechatPaySubRouter(orderServ, wxPayServ, accountSrv).setVertx(vertx).getSubRouter());
         mainRouter.mountSubRouter("/pay/zfb", new AlipayPaySubRouter(orderServ, alipayServ).setVertx(vertx).getSubRouter());
         //消息发送服务子路由
-        mainRouter.mountSubRouter("/msg/wx", new WechatMessageSubRouter(accountSrv).setVertx(vertx).getSubRouter());
+        mainRouter.mountSubRouter("/msg/wx", new WechatMessageSubRouter().setVertx(vertx).getSubRouter());
         //TODO 支付宝消息发送
         //JsTicket和AccessTOken服务子路由
         mainRouter.mountSubRouter("/tk/wx", new TokenSubRouter(accountSrv).setVertx(vertx).getSubRouter());

@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
+import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
+import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
+import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-10-17 11:50.
@@ -57,20 +61,26 @@ public class PaySettingSubRouter implements SubRouter {
 
     private void getPaySetting(RoutingContext rc) {
         Integer eid = Integer.parseInt(rc.request().getParam("eid"));
-        accServ.getById(eid, acc -> {
-            JsonObject json = new JsonObject()
-                    .put("wx", new JsonObject()
-                            .put("appId", acc.getString("appid"))
-                            .put("appSecret", acc.getString("appsecret"))
-                            .put("mchId", acc.getString("mchid"))
-                            .put("payKey", acc.getString("mchkey"))
-                            .put("opened", acc.getInteger("wxpayon")))
-                    .put("zfb", new JsonObject()
-                            .put("appId", acc.getString("zfbappid"))
-                            .put("appPrivKey", acc.getString("zfbprivkey"))
-                            .put("zfbPubKey", acc.getString("zfbpubkey"))
-                            .put("opened", acc.getInteger("zfbpayon")));
-            rc.response().putHeader("content-type", "application/json; charset=utf-8").end(json.toString());
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            if(ar.succeeded()){
+                JsonObject acc = (JsonObject) ar.result().body();
+                JsonObject json = new JsonObject()
+                        .put("wx", new JsonObject()
+                                .put("appId", acc.getString("appid"))
+                                .put("appSecret", acc.getString("appsecret"))
+                                .put("mchId", acc.getString("mchid"))
+                                .put("payKey", acc.getString("mchkey"))
+                                .put("opened", acc.getInteger("wxpayon")))
+                        .put("zfb", new JsonObject()
+                                .put("appId", acc.getString("zfbappid"))
+                                .put("appPrivKey", acc.getString("zfbprivkey"))
+                                .put("zfbPubKey", acc.getString("zfbpubkey"))
+                                .put("opened", acc.getInteger("zfbpayon")));
+                rc.response().putHeader("content-type", "application/json; charset=utf-8").end(json.toString());
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                rc.response().setStatusCode(500).end("EventBus error!");
+            }
         });
     }
 

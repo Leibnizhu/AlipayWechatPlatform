@@ -1,5 +1,6 @@
 package com.turingdi.awp.util.common;
 
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
@@ -61,6 +62,10 @@ public class NetworkUtils {
         asyncRequestJson(HttpMethod.POST, url, callback);
     }
 
+    public static void asyncPostJson(String url, Future<JsonObject> callback) {
+        asyncRequestJson(HttpMethod.POST, url, callback);
+    }
+
     public static void asyncPostString(String url, Handler<String> callback) {
         asyncRequestString(HttpMethod.POST, url, callback);
     }
@@ -87,6 +92,15 @@ public class NetworkUtils {
         client.requestAbs(method, url, resp -> {
             resp.bodyHandler(buf -> {
                 callback.handle(buf.toJsonObject());
+            });
+        }).end();
+    }
+
+    private static void asyncRequestJson(HttpMethod method, String url, Future<JsonObject> callback){
+        checkInitialized();
+        client.requestAbs(method, url, resp -> {
+            resp.bodyHandler(buf -> {
+                callback.complete(buf.toJsonObject());
             });
         }).end();
     }

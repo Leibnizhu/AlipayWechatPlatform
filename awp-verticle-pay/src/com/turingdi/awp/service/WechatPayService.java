@@ -50,46 +50,44 @@ public class WechatPayService {
      * @param price         价格（单位：分）
      * @param openId        购买者的OpenID
      * @param orderId       本地订单ID
-     * @param enterpriseId  商城对应企业用户ID
+     * @param acc           商城对应企业用户
      * @param request       HTTP请求对象
      * @param forApiProcess 微信统一下单接口返回的数据的处理
      * @param forResponse   接口用于响应的Json，可能是 "WECHAT_VERSION_LOW"、"ORDER_FAIL"、成功的返回成功的JSON
-     *
      * @author Leibniz
      */
-    public void wechatOrder(String product, int price, String openId, String orderId, int enterpriseId, HttpServerRequest request, Handler<JsonObject> forResponse, Handler<Map<String, String>> forApiProcess) {
+    public void wechatOrder(String product, int price, String openId, String orderId, JsonObject acc, HttpServerRequest request, Handler<JsonObject> forResponse, Handler<Map<String, String>> forApiProcess) {
         if (!testSupportPay(request)) {
             forResponse.handle(WECHAT_VERSION_ERROR);
             return;
         }
 
         //调用统一下单接口
-        accDao.getById(enterpriseId, (JsonObject acc) -> {
-            unifyPay(orderId, product, price, request.remoteAddress(), openId, null, wxPayNotifyUrl, acc, payParam -> {
-                log.info("统一下单数据: " + payParam);
-                //解析统一下单接口返回的xml数据
-                Map<String, String> parsePayParam = XmlUtils.xmltoMap(payParam);
+        unifyPay(orderId, product, price, request.remoteAddress(), openId, null, wxPayNotifyUrl, acc, payParam -> {
+            log.info("统一下单数据: " + payParam);
+            //解析统一下单接口返回的xml数据
+            Map<String, String> parsePayParam = XmlUtils.xmltoMap(payParam);
 
-                //如果下单成功，则进行微信支付的js接口签名验证，并将签名的数据返回；否则返回下单失败
-                if (parsePayParam == null) {
-                    forResponse.handle(ORDER_ERROR.put("errMsg", "XML_PARSE_ERROR"));
-                    return;
-                }
+            //如果下单成功，则进行微信支付的js接口签名验证，并将签名的数据返回；否则返回下单失败
+            if (parsePayParam == null) {
+                forResponse.handle(ORDER_ERROR.put("errMsg", "XML_PARSE_ERROR"));
+                return;
+            }
 
-                if ("SUCCESS".equals(parsePayParam.get("return_code"))) {
-                    //支付下单信息入库/其他处理
-                    forApiProcess.handle(parsePayParam);
-                    //微信支付js接口签名验证
-                    Map<String, Object> jsApiMap = new WechatPay(parsePayParam.get("prepay_id"), acc).getMap();
-                    JsonObject payJsonData = new JsonObject(jsApiMap).put("status", "SUCCESS");
-                    forResponse.handle(payJsonData);
-                } else {
-                    log.error("统一订单失败：" + payParam);
-                    forResponse.handle(ORDER_ERROR.put("errMsg", parsePayParam.get("return_msg")));
-                }
-            });
+            if ("SUCCESS".equals(parsePayParam.get("return_code"))) {
+                //支付下单信息入库/其他处理
+                forApiProcess.handle(parsePayParam);
+                //微信支付js接口签名验证
+                Map<String, Object> jsApiMap = new WechatPay(parsePayParam.get("prepay_id"), acc).getMap();
+                JsonObject payJsonData = new JsonObject(jsApiMap).put("status", "SUCCESS");
+                forResponse.handle(payJsonData);
+            } else {
+                log.error("统一订单失败：" + payParam);
+                forResponse.handle(ORDER_ERROR.put("errMsg", parsePayParam.get("return_msg")));
+            }
         });
     }
+
 
     private boolean testSupportPay(HttpServerRequest request) {
         String[] params = request.getHeader("user-agent").split(" ");

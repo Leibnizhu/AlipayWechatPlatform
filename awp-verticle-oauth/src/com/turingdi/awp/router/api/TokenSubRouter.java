@@ -1,5 +1,6 @@
 package com.turingdi.awp.router.api;
 
+import com.turingdi.awp.router.LanAccessSubRouter;
 import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.router.SubRouter;
@@ -14,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Function;
+
+import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
+import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
+import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
 
 /**
  * @author Leibniz.Hu
@@ -66,9 +71,15 @@ public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
         } catch (NumberFormatException e) {
             resp.setStatusCode(500).end("Request parameter eid must be a number!");
         }
-        wxAccServ.getById(eid, acc -> {
-            String token = tokenGetter.apply(acc.mapTo(Account.class));
-            resp.end(new JsonObject().put(key, token).toString());
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            if(ar.succeeded()){
+                JsonObject acc = (JsonObject) ar.result().body();
+                String token = tokenGetter.apply(acc.mapTo(Account.class));
+                resp.end(new JsonObject().put(key, token).toString());
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                resp.setStatusCode(500).end("EventBus error!");
+            }
         });
     }
 

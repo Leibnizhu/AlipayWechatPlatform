@@ -49,7 +49,7 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 ### 微信授权
 申请微信授权。web服务需要授权时，向用户发送重定向到该接口。
 - 请求地址：`http://localhost:8083/oauth/wx/apply/{body}`  
-- 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/sys/page/base64.html 进行编码
+- 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/page/sys/base64.html 进行编码
 
 例如（请修改域名后，在微信打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是图灵Base64加密后的结果）: http://localhost:8083/oauth/wx/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
 ```json

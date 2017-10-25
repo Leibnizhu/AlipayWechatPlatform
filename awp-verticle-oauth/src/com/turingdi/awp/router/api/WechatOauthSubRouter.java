@@ -1,10 +1,12 @@
 package com.turingdi.awp.router.api;
 
-import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.router.SubRouter;
+import com.turingdi.awp.service.AccountService;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static com.turingdi.awp.router.EventBusNamespace.*;
 import static com.turingdi.awp.util.common.Constants.*;
 
 /**
@@ -70,20 +73,27 @@ public class WechatOauthSubRouter implements SubRouter {
      * @param rc Vertx的RoutingContext对象
      */
     private void applyForOauth(RoutingContext rc) {
+        HttpServerResponse resp = rc.response();
         String decodedBody = TuringBase64Util.decode(rc.request().getParam("body"));
         JsonObject reqJson = new JsonObject(decodedBody);
         Integer eid = reqJson.getInteger("eid");
         int type = reqJson.getInteger("type");
         String callback = TuringBase64Util.encode(reqJson.getString("callback"));//授权后回调方法
-        wxAccServ.getById(eid, account -> {
-            String redirectAfterUrl = PROJ_URL + "oauth/wx/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
-            String returnUrl = null;
-            try {
-                returnUrl = String.format((type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)
-                        , account.getString("appid"), URLEncoder.encode(redirectAfterUrl, "UTF-8"));
-            } catch (UnsupportedEncodingException ignored) { //不可能出现的
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            if (ar.succeeded()) {
+                JsonObject account = (JsonObject) ar.result().body();
+                String redirectAfterUrl = PROJ_URL + "oauth/wx/" + (type == 0 ? "baseCb" : "infoCb") + "?eid=" + eid + "&visitUrl=" + callback;
+                String returnUrl = null;
+                try {
+                    returnUrl = String.format((type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)
+                            , account.getString("appid"), URLEncoder.encode(redirectAfterUrl, "UTF-8"));
+                } catch (UnsupportedEncodingException ignored) { //不可能出现的
+                }
+                resp.setStatusCode(302).putHeader("Location", returnUrl).end();
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                resp.setStatusCode(500).end("EventBus error!");
             }
-            rc.response().setStatusCode(302).putHeader("Location", returnUrl).end();
         });
     }
 
@@ -97,9 +107,16 @@ public class WechatOauthSubRouter implements SubRouter {
         Integer eid = Integer.parseInt(request.getParam("eid"));
         log.debug("code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
         assert code != null;
-        wxAccServ.getById(eid, account -> {
+        Future.<Message<JsonObject>>future(f ->
+                vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
+        ).compose(msg -> Future.<JsonObject>future(f -> {
+            JsonObject account = msg.body();
             String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
-            NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
+            NetworkUtils.asyncPostJson(openIdUrl, f);
+                })
+        ).setHandler(res -> {
+            if(res.succeeded()){
+                JsonObject openIdJson = res.result();
                 log.debug("授权返回的json数据：{}", openIdJson);
                 //重定向到原访问URL
                 if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
@@ -117,7 +134,10 @@ public class WechatOauthSubRouter implements SubRouter {
                     //有错误
                     response.setStatusCode(302).putHeader("Location", PROJ_URL + "static/pageerror.html?st=8&errmsg=" + openIdJson.getString("errmsg")).end();
                 }
-            });
+            } else {
+                log.error("抛出异常", res.cause());
+                response.setStatusCode(500).end();
+            }
         });
     }
 
@@ -131,31 +151,42 @@ public class WechatOauthSubRouter implements SubRouter {
         Integer eid = Integer.parseInt(request.getParam("eid"));
         log.debug("code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
         assert code != null;
-        wxAccServ.getById(eid, account -> {
-            String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
-            NetworkUtils.asyncPostJson(openIdUrl, openIdJson -> {
-                log.debug("授权返回的json数据：{}", openIdJson);
-                if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
-                    String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
-                    String userinfo_url = String.format(USERINFO_API, openIdJson.getString(WECHAT_JSON_ACCESSTOKEN_KEY), openId);
-                    NetworkUtils.asyncPostJson(userinfo_url, userInfoJson -> {
-                        //重定向到原访问URL
-                        String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
-                        if (visitUrl.length() > 0) {
-                            if (userInfoJson.size() > 0) {
-                                visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
-                                log.debug("当前授权的用户信息:{}", userInfoJson.toString());
-                                response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(userInfoJson.toString())).end();
-                            } else {
-                                response.setStatusCode(302).putHeader("Location", visitUrl).end();
-                            }
-                        } else {
-                            log.error("没有找到授权后回调地址" + request.absoluteURI());
-                            response.end("未设置授权后回调地址");
-                        }
-                    });
+        Future.<Message<JsonObject>>future(f ->
+                vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
+        ).compose(msg -> Future.<JsonObject>future(f -> {
+                    JsonObject account = msg.body();
+                    String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
+                    NetworkUtils.asyncPostJson(openIdUrl, f);
+                })
+        ).compose(openIdJson -> Future.<JsonObject>future(f -> {
+                    log.debug("授权返回的json数据：{}", openIdJson);
+                    if (openIdJson.containsKey(WECHAT_JSON_OPENID_KEY)) {
+                        String openId = openIdJson.getString(WECHAT_JSON_OPENID_KEY);
+                        String userinfo_url = String.format(USERINFO_API, openIdJson.getString(WECHAT_JSON_ACCESSTOKEN_KEY), openId);
+                        NetworkUtils.asyncPostJson(userinfo_url, f);
+                    }
+                })
+        ).setHandler(res -> {
+            if (res.succeeded()) {
+                JsonObject userInfoJson = res.result();
+                //重定向到原访问URL
+                String visitUrl = request.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
+                if (visitUrl.length() > 0) {
+                    if (userInfoJson.size() > 0) {
+                        visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
+                        log.debug("当前授权的用户信息:{}", userInfoJson.toString());
+                        response.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(userInfoJson.toString())).end();
+                    } else {
+                        response.setStatusCode(302).putHeader("Location", visitUrl).end();
+                    }
+                } else {
+                    log.error("没有找到授权后回调地址" + request.absoluteURI());
+                    response.end("未设置授权后回调地址");
                 }
-            });
+            } else {
+                log.error("抛出异常", res.cause());
+                response.setStatusCode(500).end();
+            }
         });
     }
 }

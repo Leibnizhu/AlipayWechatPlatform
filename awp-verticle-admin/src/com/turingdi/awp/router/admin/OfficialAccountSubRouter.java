@@ -15,6 +15,10 @@ import io.vertx.ext.web.handler.JWTAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
+import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
+import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-10-13 12:44.
@@ -37,7 +41,7 @@ public class OfficialAccountSubRouter implements SubRouter {
         }
         Router offAccRouter = Router.router(vertx);
         offAccRouter.route("/*").handler(JWTAuthHandler.create(provider));
-        offAccRouter.get("/").handler(this::getOfficialAccount);
+        offAccRouter.get("/").handler(this::getSelfAccount);
         offAccRouter.get("/all").handler(this::getAccountList);
         offAccRouter.get("/:id").handler(this::getAccountById);
         offAccRouter.put("/").handler(this::updateOfficialAccount);
@@ -51,12 +55,49 @@ public class OfficialAccountSubRouter implements SubRouter {
         return this;
     }
 
-    private void getOfficialAccount(RoutingContext rc) {
+    /**
+     * 查询指定ID的账户信息，无需权限判定
+     * @param rc
+     */
+    private void getSelfAccount(RoutingContext rc) {
         JsonObject jwtJson = rc.user().principal();
         int userId = jwtJson.getInteger("id");
-        wxAccServ.getById(userId, offAcc -> {
-            responseOneAccount(rc, offAcc);
+        queryAccountAndResponse(rc, userId);
+    }
+
+    /**
+     * 查询指定ID的账户信息，需要进行权限判定
+     * @param rc
+     */
+    private void getAccountById(RoutingContext rc) {
+        if (forbidAccess(rc, true)) {
+            return;
+        }
+        int queryId = Integer.parseInt(rc.request().getParam("id"));
+        queryAccountAndResponse(rc, queryId);
+    }
+
+    private void queryAccountAndResponse(RoutingContext rc, int queryId) {
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, queryId), ar -> {
+            if(ar.succeeded()){
+                responseOneAccount(rc, (JsonObject) ar.result().body());
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                rc.response().setStatusCode(500).end("EventBus error!");
+            }
         });
+    }
+
+    private void responseOneAccount(RoutingContext rc, JsonObject offAcc) {
+        JsonObject result = new JsonObject()
+                .put("id", offAcc.getInteger("id"))
+                .put("name", offAcc.getString("name"))
+                .put("appid", offAcc.getString("appid"))
+                .put("appsecret", offAcc.getString("appsecret"))
+                .put("verify", offAcc.getString("verify"))
+                .put("role", offAcc.getInteger("role"))
+                .put("projUrl", Constants.PROJ_URL);
+        rc.response().putHeader("content-type", "application/json; charset=utf-8").end(result.toString());
     }
 
     /**
@@ -81,28 +122,6 @@ public class OfficialAccountSubRouter implements SubRouter {
             }
         }
         return false;
-    }
-
-    private void getAccountById(RoutingContext rc) {
-        if (forbidAccess(rc, true)) {
-            return;
-        }
-        int queryId = Integer.parseInt(rc.request().getParam("id"));
-        wxAccServ.getById(queryId, offAcc -> {
-            responseOneAccount(rc, offAcc);
-        });
-    }
-
-    private void responseOneAccount(RoutingContext rc, JsonObject offAcc) {
-        JsonObject result = new JsonObject()
-                .put("id", offAcc.getInteger("id"))
-                .put("name", offAcc.getString("name"))
-                .put("appid", offAcc.getString("appid"))
-                .put("appsecret", offAcc.getString("appsecret"))
-                .put("verify", offAcc.getString("verify"))
-                .put("role", offAcc.getInteger("role"))
-                .put("projUrl", Constants.PROJ_URL);
-        rc.response().putHeader("content-type", "application/json; charset=utf-8").end(result.toString());
     }
 
     private void getAccountList(RoutingContext rc) {

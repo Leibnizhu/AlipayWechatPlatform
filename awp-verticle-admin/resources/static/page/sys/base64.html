@@ -139,7 +139,7 @@
                                 <option value="1">普通授权</option>
                             </select>
                                 回调地址：<input type="text" style="width: 250px; height: auto" v-model="callback">
-                                <button>生成授权接口参数</button>
+                                <button @click="calOauth">生成授权接口参数</button>
                                 <textarea rows="2" :value="oauth" v-model="oauth"></textarea>
                             </div>
                         </div>
@@ -173,8 +173,7 @@
             oauth: undefined
         },
         mounted: function () {
-            var json = "{\"eid\":" + this.eid + ",\"type\":" + this.type + ",\"callback\":\"" + this.callback + "\"}";
-            this.oauth = json.tren();
+            this.calOauth();
         },
         methods: {
             encode: function () {
@@ -182,6 +181,10 @@
             },
             decode: function () {
                 this.decoded = this.encoded.trdc();
+            },
+            calOauth: function(){
+                var json = "{\"eid\":" + this.eid + ",\"type\":" + this.type + ",\"callback\":\"" + this.callback + "\"}";
+                this.oauth = json.tren();
             }
         }
     });

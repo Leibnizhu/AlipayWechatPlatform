@@ -1,14 +1,15 @@
 package com.turingdi.awp.router.api;
 
-import com.turingdi.awp.service.AccountService;
-import com.turingdi.awp.service.OrderService;
 import com.turingdi.awp.entity.db.Order;
 import com.turingdi.awp.entity.wechat.WechatJdk;
 import com.turingdi.awp.router.SubRouter;
+import com.turingdi.awp.service.AccountService;
+import com.turingdi.awp.service.OrderService;
 import com.turingdi.awp.service.WechatPayService;
 import com.turingdi.awp.util.common.XmlUtils;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
+
+import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
  * @author Leibniz.Hu
@@ -66,19 +69,27 @@ public class WechatPaySubRouter implements SubRouter {
      */
     private void wechatPreHandle(RoutingContext rc) {
         HttpServerRequest req = rc.request();
+        HttpServerResponse response = rc.response();
         int eid = Integer.parseInt(req.getParam("eid"));
-        try {
-            String curUrl = URLDecoder.decode(req.getParam("url"), "UTF-8");
-            wxAccServ.getById(eid, acc -> {
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            if (ar.succeeded()) {
+                JsonObject acc = (JsonObject) ar.result().body();
+                String curUrl = null;
+                try {
+                    curUrl = URLDecoder.decode(req.getParam("url"), "UTF-8");
+                } catch (UnsupportedEncodingException ignore) {
+                }
                 //调用微信jdk类
                 Map<String, String> jdkMap = new WechatJdk(req, acc, curUrl).getMap();
                 jdkMap.put("appId", acc.getString("appid"));
                 String jsonStr = JsonObject.mapFrom(jdkMap).toString();
                 log.debug(jsonStr);
-                rc.response().putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
-            });
-        } catch (UnsupportedEncodingException ignore) {
-        }
+                response.putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                response.setStatusCode(500).end("EventBus error!");
+            }
+        });
     }
 
     /**
@@ -97,20 +108,28 @@ public class WechatPaySubRouter implements SubRouter {
         int price = body.getInteger("price");
         String name = body.getString("name");
         String callback = body.getString("callback");
-        payServ.wechatOrder(name, price, openId, orderId, eid, req,
-                forResponse -> {
-                    String jsonStr = forResponse.toString();
-                    log.debug(jsonStr);
-                    rc.response().putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
-                },
-                orderSuccessMap -> {
-                    // 下单成功之后的处理
-                    log.debug(orderSuccessMap.toString());
-                    Order wechatOrder = new Order().setOrderId(orderId).setEid(eid).setType(0).setCallback(callback);
-                    orderServ.insert(wechatOrder, rows -> {
-                        log.info("微信下单后更新数据库，影响行数={}", rows);
-                    });
-                });
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            if (ar.succeeded()) {
+                JsonObject acc = (JsonObject) ar.result().body();
+                payServ.wechatOrder(name, price, openId, orderId, acc, req,
+                        forResponse -> {
+                            String jsonStr = forResponse.toString();
+                            log.debug(jsonStr);
+                            rc.response().putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
+                        },
+                        orderSuccessMap -> {
+                            // 下单成功之后的处理
+                            log.debug(orderSuccessMap.toString());
+                            Order wechatOrder = new Order().setOrderId(orderId).setEid(eid).setType(0).setCallback(callback);
+                            orderServ.insert(wechatOrder, rows -> {
+                                log.info("微信下单后更新数据库，影响行数={}", rows);
+                            });
+                        });
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                rc.response().setStatusCode(500).end("EventBus error!");
+            }
+        });
     }
 
     /**

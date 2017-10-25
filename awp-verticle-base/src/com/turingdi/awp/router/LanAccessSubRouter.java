@@ -1,6 +1,5 @@
-package com.turingdi.awp.router.api;
+package com.turingdi.awp.router;
 
-import com.turingdi.awp.router.SubRouter;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;

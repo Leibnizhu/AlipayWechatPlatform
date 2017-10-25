@@ -20,6 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
+import static com.turingdi.awp.router.EventBusNamespace.COMMAND_GET_ACCOUNT_BY_ID;
+import static com.turingdi.awp.router.EventBusNamespace.makeMessage;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-09-27 14:36.
@@ -72,7 +76,15 @@ public class AlipayPaySubRouter implements SubRouter {
         Order order = new Order().setOrderId(orderId).setCallback(callback).setEid(eid).setType(1);
         orderServ.insert(order, rows -> {
         });
-        payServ.alipayOrder(name, price, orderId, eid, successUrl, response);
+        vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
+            if(ar.succeeded()){
+                JsonObject acc = (JsonObject) ar.result().body();
+                payServ.alipayOrder(name, price, orderId, acc, successUrl, response);
+            } else {
+                log.error("EventBus消息响应错误", ar.cause());
+                response.setStatusCode(500).end("EventBus error!");
+            }
+        });
     }
 
     /**

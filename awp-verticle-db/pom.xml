@@ -48,6 +48,11 @@
             <artifactId>awp-base</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.turingdi.awp</groupId>
+            <artifactId>awp-verticle-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--
         <dependency>
