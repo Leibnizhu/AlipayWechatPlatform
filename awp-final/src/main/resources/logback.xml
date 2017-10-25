@@ -3,7 +3,7 @@
     <property name="LOG_HOME" value="/var/log/awp"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{HH:mm:ss.SSS} %thread[%-5level]-%logger{36}[%L]: %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%-5level]-%logger{36}[%L]: %msg%n</pattern>
         </layout>
     </appender>
 
