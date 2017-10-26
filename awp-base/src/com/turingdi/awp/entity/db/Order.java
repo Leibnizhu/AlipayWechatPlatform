@@ -15,6 +15,16 @@ public class Order {
     private Date createTime;
     private Date payTime;
 
+    public static class JsonKey{
+        public static String EID = "eid";
+        public static String ORDERID = "orderid";
+        public static String PLATORDERID = "platorderid";
+        public static String CALLBACK = "callback";
+        public static String TYPE = "type";
+        public static String CREATETIME = "createtime";
+        public static String PAYTIME = "paytime";
+    }
+
     public String getPlatOrderId() {
         return platOrderId;
     }

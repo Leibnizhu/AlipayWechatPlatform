@@ -17,6 +17,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.WXAPPID;
+import static com.turingdi.awp.entity.db.Order.JsonKey.*;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
@@ -69,7 +71,7 @@ public class WechatPaySubRouter implements SubRouter {
                 }
                 //调用微信jdk类
                 Map<String, String> jdkMap = new WechatJdk(req, acc, curUrl).getMap();
-                jdkMap.put("appId", acc.getString("appid"));
+                jdkMap.put("appId", acc.getString(WXAPPID));
                 String jsonStr = JsonObject.mapFrom(jdkMap).toString();
                 log.debug(jsonStr);
                 response.putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
@@ -109,7 +111,7 @@ public class WechatPaySubRouter implements SubRouter {
                         orderSuccessMap -> {
                             // 下单成功之后的处理
                             log.debug(orderSuccessMap.toString());
-                            JsonObject wechatOrder = new JsonObject().put("orderid", orderId).put("eid", eid).put("type", 0).put("callback", callback);
+                            JsonObject wechatOrder = new JsonObject().put(ORDERID, orderId).put(EID, eid).put(TYPE, 0).put(CALLBACK, callback);
                             vertx.eventBus().<Integer>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_INSERT_ORDER, wechatOrder), ebar -> {
                                 if(ebar.succeeded()){
                                     int rows = ebar.result().body();
@@ -146,7 +148,7 @@ public class WechatPaySubRouter implements SubRouter {
             String localOrderId = payReturnParam.get("out_trade_no"); //本地订单ID
             String wechatOrderId = payReturnParam.get("transaction_id"); //微信订单ID
             //调用callback 更新订单数据，已支付，商城订单号，支付类型，支付时间
-            JsonObject updateOrder = new JsonObject().put("platorderid", wechatOrderId).put("orderid", localOrderId).put("type", 0);
+            JsonObject updateOrder = new JsonObject().put(PLATORDERID, wechatOrderId).put(ORDERID, localOrderId).put(TYPE, 0);
             vertx.eventBus().<Integer>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_UPDATE_PAID_ORDER, updateOrder), ebar -> {
                 if(ebar.succeeded()){
                     int rows = ebar.result().body();

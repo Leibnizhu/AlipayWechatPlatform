@@ -16,6 +16,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.MCHID;
+import static com.turingdi.awp.entity.db.Account.JsonKey.MCHKEY;
+import static com.turingdi.awp.entity.db.Account.JsonKey.WXAPPID;
 import static com.turingdi.awp.util.common.NetworkUtils.ContentType.XML;
 
 /**
@@ -105,14 +108,14 @@ public class WechatPayService {
      * @param ip      充值端Ip
      * @param openId  充值的微信openId
      * @param acc     账户对象
-     * @return 微信统一下单接口返回的xml数据（String）
+     * 异步返回 微信统一下单接口返回的xml数据（String）
      *
      * @author Leibniz
      */
     private void unifyPay(String orderId, String product, int price, SocketAddress ip, String openId, String attach, String notUrl, JsonObject acc, Handler<String> callback) {
         Map<String, Object> map = new TreeMap<>();
-        map.put("appid", acc.getString("appid"));
-        map.put("mch_id", acc.getString("mchid"));
+        map.put("appid", acc.getString(WXAPPID));
+        map.put("mch_id", acc.getString(MCHID));
         map.put("nonce_str", CommonUtils.getRandomID());
         map.put("body", product);
         map.put("out_trade_no", orderId);
@@ -124,7 +127,7 @@ public class WechatPayService {
         if (null != attach) {
             map.put("attach", attach);
         }
-        map.put("sign", WechatPay.getWeixinPaySign(map, acc.getString("mchkey")));
+        map.put("sign", WechatPay.getWeixinPaySign(map, acc.getString(MCHKEY)));
         String xmlStr = null;
         String encode = "ISO8859-1";
         try {
@@ -146,7 +149,7 @@ public class WechatPayService {
      * @param localOrderId   本地订单ID
      * @param enterpriseId   对应商城企业用户ID
      * @param refundCallback 退款成功之后的回调方法
-     * @return "success" "fail" "订单不存在"
+     * 异步返回 "success" "fail" "订单不存在"
      *
      * @author Leibniz
      *//*

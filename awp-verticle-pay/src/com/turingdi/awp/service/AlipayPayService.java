@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.ZFBAPPID;
+import static com.turingdi.awp.entity.db.Account.JsonKey.ZFBPRIVKEY;
+import static com.turingdi.awp.entity.db.Account.JsonKey.ZFBPUBKEY;
+
 /**
  * 支付服务类接口实现类
  *
@@ -47,7 +51,7 @@ public class AlipayPayService {
     public void alipayOrder(String product, int price, String orderId, JsonObject acc, String successUrl, HttpServerResponse response) {
         try {
             String notifyUrl = zfbPayNotifyUrl; // 服务器后台回调通知的url
-            AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbappid"), acc.getString("zfbprivkey"), acc.getString("zfbpubkuey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
+            AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString(ZFBAPPID), acc.getString(ZFBPRIVKEY), acc.getString(ZFBPUBKEY), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
             PayBizContent payBizContent = new PayBizContent(orderId, price + "", product, null); // 订单的信息
             AliPayApi.wapPay(aliAccountInfo, payBizContent, response); // 调用支付宝API的方法请求支付宝支付接口
         } catch (IOException e) {
@@ -73,7 +77,7 @@ public class AlipayPayService {
         }
 
         String notifyUrl = zfbPayNotifyUrl; // 服务器后台回调通知的url
-        AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString("zfbappid"), acc.getString("zfbprivkey"), acc.getString("zfbpubkey"), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
+        AliAccountInfo aliAccountInfo = new AliAccountInfo(acc.getString(ZFBAPPID), acc.getString(ZFBPRIVKEY), acc.getString(ZFBPUBKEY), successUrl, notifyUrl, null); // 该对象保存了支付宝账号的相关信息，以及请求回调地址
         AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest(); // 创建退款请求
         request.setBizContent(bizContentStr); // 设置请求的bizContent

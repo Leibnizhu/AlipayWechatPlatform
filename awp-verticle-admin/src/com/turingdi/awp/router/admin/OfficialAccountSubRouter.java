@@ -16,6 +16,7 @@ import io.vertx.ext.web.handler.JWTAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.*;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
@@ -85,12 +86,12 @@ public class OfficialAccountSubRouter implements SubRouter {
 
     private void responseOneAccount(RoutingContext rc, JsonObject offAcc) {
         JsonObject result = new JsonObject()
-                .put("id", offAcc.getInteger("id"))
-                .put("name", offAcc.getString("name"))
-                .put("appid", offAcc.getString("appid"))
-                .put("appsecret", offAcc.getString("appsecret"))
-                .put("verify", offAcc.getString("verify"))
-                .put("role", offAcc.getInteger("role"))
+                .put("id", offAcc.getInteger(ID))
+                .put("name", offAcc.getString(NAME))
+                .put("appid", offAcc.getString(WXAPPID))
+                .put("appsecret", offAcc.getString(WXAPPSECRET))
+                .put("verify", offAcc.getString(VERIFY))
+                .put("role", offAcc.getInteger(ROLE))
                 .put("projUrl", Constants.PROJ_URL);
         rc.response().putHeader("content-type", "application/json; charset=utf-8").end(result.toString());
     }
@@ -144,7 +145,7 @@ public class OfficialAccountSubRouter implements SubRouter {
         String appid = req.getParam("appid");
         String appsecret = req.getParam("appsecret");
         String verify = req.getParam("verify");
-        JsonObject updateAcc = new JsonObject().put("id", id).put("name", name).put("appid", appid).put("appsecret", appsecret).put("verify", verify);
+        JsonObject updateAcc = new JsonObject().put(ID, id).put(NAME, name).put(WXAPPID, appid).put(WXAPPSECRET, appsecret).put(VERIFY, verify);
         vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_NORMAL, updateAcc), ar -> {
             HttpServerResponse response = rc.response();
             if(ar.succeeded()){
@@ -189,9 +190,9 @@ public class OfficialAccountSubRouter implements SubRouter {
                     }
                     needUpdatePassword = true;
                 }
-                JsonObject updateAcc = new JsonObject().put("id", id).put("email", email);
+                JsonObject updateAcc = new JsonObject().put(ID, id).put(EMAIL, email);
                 if (needUpdatePassword) {
-                    updateAcc.put("password", newPassword);
+                    updateAcc.put(PASSWORD, newPassword);
                 }
                 vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_NORMAL, updateAcc), f);
             })

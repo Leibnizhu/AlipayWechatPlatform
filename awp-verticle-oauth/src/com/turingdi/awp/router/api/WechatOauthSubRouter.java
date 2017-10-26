@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.WXAPPID;
+import static com.turingdi.awp.entity.db.Account.JsonKey.WXAPPSECRET;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 import static com.turingdi.awp.util.common.Constants.*;
 
@@ -80,7 +82,7 @@ public class WechatOauthSubRouter implements SubRouter {
                 String returnUrl = null;
                 try {
                     returnUrl = String.format((type == 0 ? OAUTH_BASE_API : OAUTH_INFO_API)
-                            , account.getString("appid"), URLEncoder.encode(redirectAfterUrl, "UTF-8"));
+                            , account.getString(WXAPPID), URLEncoder.encode(redirectAfterUrl, "UTF-8"));
                 } catch (UnsupportedEncodingException ignored) { //不可能出现的
                 }
                 resp.setStatusCode(302).putHeader("Location", returnUrl).end();
@@ -105,7 +107,7 @@ public class WechatOauthSubRouter implements SubRouter {
                 vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
         ).compose(msg -> Future.<JsonObject>future(f -> {
             JsonObject account = msg.body();
-            String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
+            String openIdUrl = String.format(OPENID_API, account.getString(WXAPPID), account.getString(WXAPPSECRET), code);
             NetworkUtils.asyncPostJson(openIdUrl, f);
                 })
         ).setHandler(res -> {
@@ -149,7 +151,7 @@ public class WechatOauthSubRouter implements SubRouter {
                 vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
         ).compose(msg -> Future.<JsonObject>future(f -> {
                     JsonObject account = msg.body();
-                    String openIdUrl = String.format(OPENID_API, account.getString("appid"), account.getString("appsecret"), code);
+                    String openIdUrl = String.format(OPENID_API, account.getString(WXAPPID), account.getString(WXAPPSECRET), code);
                     NetworkUtils.asyncPostJson(openIdUrl, f);
                 })
         ).compose(openIdJson -> Future.<JsonObject>future(f -> {

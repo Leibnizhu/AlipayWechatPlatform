@@ -29,13 +29,11 @@ public class AccountService {
 	}
 
     public void loginByEmail(String email, String password, Handler<JsonObject> callback) {
-		Account account = new Account().setEmail(email).setPassword(password);
-		accDao.loginByEmail(account, callback);
+		accDao.loginByEmail(email, password, callback);
     }
 
 	public void loginById(long id, String password, Handler<JsonObject> callback) {
-		Account account = new Account().setId(id).setPassword(password);
-		accDao.loginById(account, callback);
+		accDao.loginById(id, password, callback);
 	}
 
 	public void getAccountList(Handler<List<JsonObject>> callback){

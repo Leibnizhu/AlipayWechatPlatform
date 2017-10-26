@@ -1,7 +1,6 @@
 package com.turingdi.awp.db;
 
 
-import com.turingdi.awp.entity.db.Account;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -9,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+import static com.turingdi.awp.entity.db.Account.JsonKey.*;
 
 public class AccountDao extends BaseVertXDao {
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -20,48 +21,48 @@ public class AccountDao extends BaseVertXDao {
      * 更新账户基本公众号配置
      */
     public void updateBase(JsonObject acc, Handler<Integer> callback) {
-        Integer id = acc.getInteger("id");
+        Integer id = acc.getInteger(ID);
         if(id == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        String name = acc.getString("name");
+        String name = acc.getString(NAME);
         if (name != null && !name.equals("")) {
             sql.append("name=?");
             params.add(name);
             moreThanOne = true;
         }
-        String appid = acc.getString("appid");
+        String appid = acc.getString(WXAPPID);
         if (appid != null && !appid.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("appid=?");
             params.add(appid);
             moreThanOne = true;
         }
-        String appsecret = acc.getString("appsecret");
+        String appsecret = acc.getString(WXAPPSECRET);
         if (appsecret != null && !appsecret.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("appsecret=?");
             params.add(appsecret);
             moreThanOne = true;
         }
-        String verify = acc.getString("verify");
+        String verify = acc.getString(VERIFY);
         if (verify != null && !verify.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("verify=?");
             params.add(verify);
             moreThanOne = true;
         }
-        String email = acc.getString("email");
+        String email = acc.getString(EMAIL);
         if (email != null && !email.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("email=?");
             params.add(email);
             moreThanOne = true;
         }
-        String password = acc.getString("password");
+        String password = acc.getString(PASSWORD);
         if (password != null && !password.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("password=?");
@@ -84,15 +85,15 @@ public class AccountDao extends BaseVertXDao {
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
-    public void loginByEmail(Account account, Handler<JsonObject> callback) {
+    public void loginByEmail(String email, String password, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE email = ? and password = ?",
-                new JsonArray().add(account.getEmail()).add(account.getPassword()),
+                new JsonArray().add(email).add(password),
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
-    public void loginById(Account account, Handler<JsonObject> callback) {
+    public void loginById(long id, String password, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE id = ? and password = ?",
-                new JsonArray().add(account.getId()).add(account.getPassword()),
+                new JsonArray().add(id).add(password),
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
@@ -101,27 +102,27 @@ public class AccountDao extends BaseVertXDao {
     }
 
     public void updateWxPay(JsonObject acc, Handler<Integer> callback) {
-        Integer id = acc.getInteger("id");
+        Integer id = acc.getInteger(ID);
         if(id == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        String mchid = acc.getString("mchid");
+        String mchid = acc.getString(MCHID);
         if (mchid != null && !mchid.equals("")) {
             sql.append("mchId=?");
             params.add(mchid);
             moreThanOne = true;
         }
-        String mchkey = acc.getString("mchkey");
+        String mchkey = acc.getString(MCHKEY);
         if (mchkey != null && !mchkey.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("mchKey=?");
             params.add(mchkey);
             moreThanOne = true;
         }
-        Integer wxpayon = acc.getInteger("wxpayon");
+        Integer wxpayon = acc.getInteger(WXPAYON);
         if (wxpayon != null) {
             if (moreThanOne) sql.append(",");
             sql.append("wxPayOn=?");
@@ -133,34 +134,34 @@ public class AccountDao extends BaseVertXDao {
     }
 
     public void updateZfbPay(JsonObject acc, Handler<Integer> callback) {
-        Integer id = acc.getInteger("id");
+        Integer id = acc.getInteger(ID);
         if(id == null){
             throw new IllegalArgumentException("Account ID cannot be null!!!");
         }
         StringBuilder sql = new StringBuilder("update awp_account set ");
         JsonArray params = new JsonArray();
         boolean moreThanOne = false;
-        String zfbappid = acc.getString("zfbappid");
+        String zfbappid = acc.getString(ZFBAPPID);
         if (zfbappid != null && !zfbappid.equals("")) {
             sql.append("zfbAppId=?");
             params.add(zfbappid);
             moreThanOne = true;
         }
-        String zfbprivkey = acc.getString("zfbprivkey");
+        String zfbprivkey = acc.getString(ZFBPRIVKEY);
         if (zfbprivkey != null && !zfbprivkey.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPrivKey=?");
             params.add(zfbprivkey);
             moreThanOne = true;
         }
-        String zfbpubkey = acc.getString("zfbpubkey");
+        String zfbpubkey = acc.getString(ZFBPUBKEY);
         if (zfbpubkey != null && !zfbpubkey.equals("")) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPubKey=?");
             params.add(zfbpubkey);
             moreThanOne = true;
         }
-        Integer zfbpayon = acc.getInteger("zfbpayon");
+        Integer zfbpayon = acc.getInteger(ZFBPAYON);
         if (zfbpayon != null) {
             if (moreThanOne) sql.append(",");
             sql.append("zfbPayOn=?");

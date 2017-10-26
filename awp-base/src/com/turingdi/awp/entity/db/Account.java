@@ -24,6 +24,29 @@ public class Account {
     private String zfbPrivKey;
     private String zfbPubKey;
 
+    public static class JsonKey{
+        public static String ID = "id";
+        public static String NAME = "name";
+        public static String EMAIL = "email";
+        public static String PASSWORD = "password";
+        public static String ROLE = "role";
+        public static String ACCOUNT = "account";
+        public static String WXAPPID = "appid";
+        public static String WXAPPSECRET = "appsecret";
+        public static String VERIFY = "verify";
+        public static String URL = "url";
+        public static String TOKEN = "token";
+        public static String CREATETIME = "createtime";
+        public static String WXPAYON = "wxpayon";
+        public static String MCHURL = "mchurl";
+        public static String MCHKEY = "mchkey";
+        public static String MCHID = "mchid";
+        public static String ZFBPAYON = "zfbpayon";
+        public static String ZFBAPPID = "zfbappid";
+        public static String ZFBPRIVKEY = "zfbprivkey";
+        public static String ZFBPUBKEY = "zfbpubkey";
+    }
+    
     public Integer getRole() {
         return role;
     }

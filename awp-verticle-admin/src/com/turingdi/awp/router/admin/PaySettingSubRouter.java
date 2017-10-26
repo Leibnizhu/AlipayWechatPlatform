@@ -1,5 +1,6 @@
 package com.turingdi.awp.router.admin;
 
+import com.turingdi.awp.router.EventBusNamespace;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.*;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
@@ -60,16 +62,16 @@ public class PaySettingSubRouter implements SubRouter {
                 JsonObject acc = ar.result().body();
                 JsonObject json = new JsonObject()
                         .put("wx", new JsonObject()
-                                .put("appId", acc.getString("appid"))
-                                .put("appSecret", acc.getString("appsecret"))
-                                .put("mchId", acc.getString("mchid"))
-                                .put("payKey", acc.getString("mchkey"))
-                                .put("opened", acc.getInteger("wxpayon")))
+                                .put("appId", acc.getString(WXAPPID))
+                                .put("appSecret", acc.getString(WXAPPSECRET))
+                                .put("mchId", acc.getString(MCHID))
+                                .put("payKey", acc.getString(MCHKEY))
+                                .put("opened", acc.getInteger(WXPAYON)))
                         .put("zfb", new JsonObject()
-                                .put("appId", acc.getString("zfbappid"))
-                                .put("appPrivKey", acc.getString("zfbprivkey"))
-                                .put("zfbPubKey", acc.getString("zfbpubkey"))
-                                .put("opened", acc.getInteger("zfbpayon")));
+                                .put("appId", acc.getString(ZFBAPPID))
+                                .put("appPrivKey", acc.getString(ZFBPRIVKEY))
+                                .put("zfbPubKey", acc.getString(ZFBPUBKEY))
+                                .put("opened", acc.getInteger(ZFBPAYON)));
                 rc.response().putHeader("content-type", "application/json; charset=utf-8").end(json.toString());
             } else {
                 log.error("EventBus消息响应错误", ar.cause());
@@ -126,8 +128,8 @@ public class PaySettingSubRouter implements SubRouter {
         }
 
         //保存支付参数
-        JsonObject acc = new JsonObject().put("id", uid).put("mchid", mchId).put("mchkey", payKey).put("wxpayon", paySwitch);
-        updatePlatformOrderId(resp, acc);
+        JsonObject acc = new JsonObject().put(ID, uid).put(MCHID, mchId).put(MCHKEY, payKey).put(WXPAYON, paySwitch);
+        updatePlatformOrderId(resp, acc, COMMAND_UPDATE_WECHATPAY);
     }
 
     private void updateAlipayPaySetting(RoutingContext rc) {
@@ -147,12 +149,12 @@ public class PaySettingSubRouter implements SubRouter {
         }
 
         //保存支付参数
-        JsonObject acc = new JsonObject().put("id", uid).put("zfbappid", appId).put("zfbprivkey", appPrivKey).put("zfbpubkey", zfbPubKey).put("zfbpayon", paySwitch);
-        updatePlatformOrderId(resp, acc);
+        JsonObject acc = new JsonObject().put(ID, uid).put(ZFBAPPID, appId).put(ZFBPRIVKEY, appPrivKey).put(ZFBPUBKEY, zfbPubKey).put(ZFBPAYON, paySwitch);
+        updatePlatformOrderId(resp, acc, COMMAND_UPDATE_ALIPAY);
     }
 
-    private void updatePlatformOrderId(HttpServerResponse resp, JsonObject acc) {
-        vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_UPDATE_ALIPAY, acc), ar -> {
+    private void updatePlatformOrderId(HttpServerResponse resp, JsonObject acc, EventBusNamespace command) {
+        vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(command, acc), ar -> {
             if(ar.succeeded()){
                 int rows = ar.result().body();
                 resp.end(new JsonObject().put("status", rows > 0 ? "success" : "fail").toString());

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.NAME;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 
@@ -65,7 +66,7 @@ public class WechatMessageSubRouter extends LanAccessSubRouter implements SubRou
                     if(res.succeeded()){
                         response.putHeader("content-type", "application/json;charset=UTF-8").end(res.result().toString());
                     } else {
-                        log.error("向公众号"+acc.getString("name")+"的粉丝"+openId+"发送客服消息时抛出异常", res.cause());
+                        log.error("向公众号"+acc.getString(NAME)+"的粉丝"+openId+"发送客服消息时抛出异常", res.cause());
                         response.setStatusCode(500).end(res.cause().getMessage());
                     }
                 });
@@ -99,7 +100,7 @@ public class WechatMessageSubRouter extends LanAccessSubRouter implements SubRou
                     if(res.succeeded()){
                         response.putHeader("content-type", "application/json;charset=UTF-8").end(res.result().toString());
                     } else {
-                        log.error("向公众号"+acc.getString("name")+"的粉丝"+openId+"发送模板消息(ID="+tmpId+")时抛出异常", res.cause());
+                        log.error("向公众号"+acc.getString(NAME)+"的粉丝"+openId+"发送模板消息(ID="+tmpId+")时抛出异常", res.cause());
                         response.setStatusCode(500).end(res.cause().getMessage());
                     }
                 });

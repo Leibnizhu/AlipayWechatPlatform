@@ -8,6 +8,9 @@ import io.vertx.core.json.JsonObject;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.MCHKEY;
+import static com.turingdi.awp.entity.db.Account.JsonKey.WXAPPID;
+
 /**
  * @author Leibniz.Hu
  * Created on 2017-09-07 13:29.
@@ -16,12 +19,12 @@ public class WechatPay {
     private Map<String, Object> map = new TreeMap<>();
 
     public WechatPay(String prepay_id, JsonObject wxAccount) {
-        map.put("appId", wxAccount.getString("appid"));
+        map.put("appId", wxAccount.getString(WXAPPID));
         map.put("timeStamp", String.valueOf(System.currentTimeMillis() / 1000));
         map.put("nonceStr", CommonUtils.getRandomID());
         map.put("package", "prepay_id=" + prepay_id);
         map.put("signType", "MD5");
-        map.put("paysign", getWeixinPaySign(map, wxAccount.getString("mchkey")));
+        map.put("paysign", getWeixinPaySign(map, wxAccount.getString(MCHKEY)));
         map.put("packages", prepay_id);
     }
 
@@ -31,7 +34,7 @@ public class WechatPay {
         return MD5Utils.getMD5(entityBuilder.toString()).toUpperCase();
     }
 
-    public static StringBuilder getSignString(Map<String, Object> map) {
+    private static StringBuilder getSignString(Map<String, Object> map) {
         StringBuilder entityBuilder = new StringBuilder();
         //遍历map，分别拿出key和value
         for (Map.Entry<String, Object> entry : map.entrySet()) {

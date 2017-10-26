@@ -216,7 +216,7 @@ public class AliPayApi {
      * @return 是否调用成功
      * @author Leibniz
      */
-    public static boolean sendBreoTemplateMessage(TemplateMessage tplMsg, Account wxAccount) {
+    public static boolean sendTemplateMessage(TemplateMessage tplMsg, Account wxAccount) {
         AliAccountInfo aliAccountInfo = new AliAccountInfo(wxAccount.getZfbappid(), wxAccount.getZfbprivkey(), wxAccount.getZfbpubkey(), null, null, null);
         AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
         AlipayOpenPublicMessageSingleSendRequest request = new AlipayOpenPublicMessageSingleSendRequest(); // 创建发送模版消息请求

@@ -12,6 +12,9 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.turingdi.awp.entity.db.Account.JsonKey.ID;
+import static com.turingdi.awp.entity.db.Account.JsonKey.NAME;
+import static com.turingdi.awp.entity.db.Account.JsonKey.ROLE;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
@@ -58,9 +61,9 @@ public class LoginSubRouter implements SubRouter {
                     resp.end(result.toString());
                 } else {
                     //jwt保存
-                    Integer id = acc.getInteger("id");
-                    Integer role = acc.getInteger("role");
-                    String name = acc.getString("name");
+                    Integer id = acc.getInteger(ID);
+                    Integer role = acc.getInteger(ROLE);
+                    String name = acc.getString(NAME);
                     String token = provider.generateToken(new JsonObject().put("id", id).put("role", role), JWT_OPTIONS);
                     result.put("result", "success").put("token", token).put("name", name).put("role", role).put("id", id).put("email", acc.getString("email"));
                     resp.end(result.toString());
