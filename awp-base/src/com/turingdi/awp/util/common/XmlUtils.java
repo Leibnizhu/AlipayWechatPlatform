@@ -24,7 +24,7 @@ public class XmlUtils {
     public static String simpleMapToXml(Map<String, Object> map, String encode) throws UnsupportedEncodingException {
         StringBuilder xmlBuilder = new StringBuilder();
         xmlBuilder.append("<xml>");
-        for (Map.Entry entry : map.entrySet()) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
             xmlBuilder.append("<").append(entry.getKey()).append(">")
                     .append(entry.getValue())
                     .append("</").append(entry.getKey()).append(">");
