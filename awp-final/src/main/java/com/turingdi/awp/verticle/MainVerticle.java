@@ -33,8 +33,7 @@ public class MainVerticle extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         //公用资源初始化
         initComponents();
-        vertx.deployVerticle(AccountDBVerticle.class.getName());
-        vertx.deployVerticle(OrderDBVerticle.class.getName());
+        deployDAOVerticles();
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
@@ -70,6 +69,14 @@ public class MainVerticle extends AbstractVerticle {
         HikariCPManager.init(vertx);
         jwtProvider = initJWTProvider();
         mainRouter = Router.router(vertx);
+    }
+
+    /**
+     * 部署数据库访问的Verticle
+     */
+    private void deployDAOVerticles() {
+        vertx.deployVerticle(AccountDBVerticle.class.getName());
+        vertx.deployVerticle(OrderDBVerticle.class.getName());
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");

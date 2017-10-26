@@ -110,9 +110,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!--<shadedArtifactAttached>true</shadedArtifactAttached>-->
-                            <!--<createSourcesJar>false</createSourcesJar>-->
-                            <!--<promoteTransitiveDependencies>true</promoteTransitiveDependencies>-->
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -126,10 +123,41 @@
                             </transformers>
                             <artifactSet>
                             </artifactSet>
-                            <outputFile>${project.build.directory}/${finalName}-${project.version}-fat.jar</outputFile>
+                                <outputFile>${project.build.directory}/${finalName}-${project.version}-fat.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.2.8</version>
+                <executions>
+                    <execution>
+                        <id>docker</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+                    <!-- Configure the image name -->
+                    <imageName>sample/vertx-hello</imageName>
+                    <resources>
+                        <resource>
+                            <targetPath>/verticles</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>${finalName}-${project.version}-fat.jar</include>
+                                <include>classes/config.json</include>
+                            </includes>
+                        </resource>
+                        <!-- don't forget to also add all the dependencies required by your application -->
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>
