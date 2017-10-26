@@ -12,4 +12,4 @@ COPY verticles/* $VERTICLE_HOME/
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
 ENTRYPOINT ["sh", "-c"]
-CMD ["exec java -jar $VERTICLE_FILE run $VERTICLE_NAME -conf $VERTICLE_HOME/classes/config.json"]
+CMD ["exec java -jar $VERTICLE_FILE" run VERTICLE_NAME -conf $VERTICLE_HOME/config.json"]
