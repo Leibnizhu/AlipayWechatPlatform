@@ -1,9 +1,7 @@
 package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.db.pool.HikariCPManager;
-import com.turingdi.awp.router.admin.LoginSubRouter;
-import com.turingdi.awp.router.admin.OfficialAccountSubRouter;
-import com.turingdi.awp.router.admin.PaySettingSubRouter;
+import com.turingdi.awp.router.admin.*;
 import com.turingdi.awp.router.api.*;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
