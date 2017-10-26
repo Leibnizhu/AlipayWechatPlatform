@@ -1,6 +1,7 @@
 target/
 **/target/
 **/.vertx/
+**/.vscode/
 **/file-uploads/
 !.mvn/wrapper/maven-wrapper.jar
 
