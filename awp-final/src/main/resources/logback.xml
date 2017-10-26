@@ -12,7 +12,7 @@
             <FileNamePattern>${LOG_HOME}/awp_log.%d{yyyy-MM-dd}(%i).log</FileNamePattern>          、
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
             <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>10MB</MaxFileSize>
+                <MaxFileSize>100MB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
@@ -23,8 +23,13 @@
         <prudent>false</prudent>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+        <!--<appender-ref ref="FILE"/>-->
     </root>
+
+    <logger name="com.turingdi">
+        <level value="DEBUG" />
+       <!-- <appender-ref ref="FILE"/>-->
+    </logger>
 </configuration>
