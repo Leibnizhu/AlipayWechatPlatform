@@ -27,20 +27,24 @@
 - `awp-base`: PoJo类，工具类（通用工具、微信工具、支付宝工具）
 - `awp-final`: 最终打成Vert.X整合包，包括后台管理和服务的入口
 - `awp-verticle-admin`: 后台管理页面，需要JWT授权登录
-- `awp-verticle-base`: Verticle基础通用类，目前只有一个`SubRouter`接口
+- `awp-verticle-base`: Verticle基础通用类，包括一个基础接口机器抽象类，以及定义EventBus常量的命名空间
 - `awp-verticle-db`: 数据库相关类
 - `awp-verticle-message`: 微信、支付宝(模板/客服/图文)消息发送服务(TODO)
 - `awp-verticle-oauth`: 微信、支付宝(TODO)授权服务
 - `awp-verticle-pay`: 微信、支付宝支付服务(TODO)
 
 ## 启动方式
+### 配置文件
+可以放在任何位置，任何文件名，内容参考`awp-final/src/main/resources/config.json`。  
+
 ### 命令行启动
 ```bash
 mvn clean && maven package
-java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainVerticle
+java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainVerticle -conf [/path/to/配置文件]
 ```
+
 ### 调试
-从`awp-final`子模块中的`com.turingdi.awp.MainLauncher`类启动项目即可。
+从`awp-final`子模块中的`com.turingdi.awp.MainLauncher`类启动项目即可，启动参数参考命令行启动的命令（从`run`开始）。
 
 ## 后台管理页面
 入口地址：`http://localhost:8083/static/`
