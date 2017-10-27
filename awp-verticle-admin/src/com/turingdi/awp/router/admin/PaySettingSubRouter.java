@@ -1,6 +1,7 @@
 package com.turingdi.awp.router.admin;
 
 import com.turingdi.awp.router.EventBusNamespace;
+import com.turingdi.awp.router.JwtAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;
@@ -24,10 +25,17 @@ import static com.turingdi.awp.entity.db.Account.JsonKey.*;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
+ * 支付配置Controller/SubRouter
+ * 需要JWT授权
+ * 功能：
+ * 1. 获取当前支付配置
+ * 2. 更新微信支付配置（允许上传支付证书）
+ * 3. 更新支付宝支付配置
+ * 
  * @author Leibniz.Hu
  * Created on 2017-10-17 11:50.
  */
-public class PaySettingSubRouter implements SubRouter {
+public class PaySettingSubRouter extends JwtAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private JWTAuth provider;
     private Vertx vertx;
@@ -55,7 +63,13 @@ public class PaySettingSubRouter implements SubRouter {
         return this;
     }
 
+    /**
+     * 获取当前支付配置
+     */
     private void getPaySetting(RoutingContext rc) {
+        if (forbidAccess(rc, "eid", true)) {
+            return;
+        }
         Integer eid = Integer.parseInt(rc.request().getParam("eid"));
         vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if(ar.succeeded()){
@@ -81,6 +95,9 @@ public class PaySettingSubRouter implements SubRouter {
     }
 
     private void updateWechatPaySetting(RoutingContext rc) {
+        if (forbidAccess(rc, "uid", true)) {
+            return;
+        }
         Set<FileUpload> uploads = rc.fileUploads();
         HttpServerRequest req = rc.request();
         HttpServerResponse resp = rc.response().putHeader("content-type", "application/json; charset=utf-8");
@@ -129,10 +146,13 @@ public class PaySettingSubRouter implements SubRouter {
 
         //保存支付参数
         JsonObject acc = new JsonObject().put(ID, uid).put(MCHID, mchId).put(MCHKEY, payKey).put(WXPAYON, paySwitch);
-        updatePlatformOrderId(resp, acc, COMMAND_UPDATE_WECHATPAY);
+        updatePaySetting(resp, acc, COMMAND_UPDATE_WECHATPAY);
     }
 
     private void updateAlipayPaySetting(RoutingContext rc) {
+        if (forbidAccess(rc, "uid", true)) {
+            return;
+        }
         HttpServerRequest req = rc.request();
         HttpServerResponse resp = rc.response().putHeader("content-type", "application/json; charset=utf-8");
         //解析参数
@@ -150,10 +170,10 @@ public class PaySettingSubRouter implements SubRouter {
 
         //保存支付参数
         JsonObject acc = new JsonObject().put(ID, uid).put(ZFBAPPID, appId).put(ZFBPRIVKEY, appPrivKey).put(ZFBPUBKEY, zfbPubKey).put(ZFBPAYON, paySwitch);
-        updatePlatformOrderId(resp, acc, COMMAND_UPDATE_ALIPAY);
+        updatePaySetting(resp, acc, COMMAND_UPDATE_ALIPAY);
     }
 
-    private void updatePlatformOrderId(HttpServerResponse resp, JsonObject acc, EventBusNamespace command) {
+    private void updatePaySetting(HttpServerResponse resp, JsonObject acc, EventBusNamespace command) {
         vertx.eventBus().<Integer>send(ADDR_ACCOUNT_DB.get(), makeMessage(command, acc), ar -> {
             if(ar.succeeded()){
                 int rows = ar.result().body();
