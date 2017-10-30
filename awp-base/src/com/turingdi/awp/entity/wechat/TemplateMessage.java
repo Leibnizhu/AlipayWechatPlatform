@@ -1,7 +1,6 @@
 package com.turingdi.awp.entity.wechat;
 
 import io.vertx.core.json.JsonObject;
-import java.util.Map;
 
 /**
  * 发送的模板消息对象
@@ -12,9 +11,9 @@ public class TemplateMessage {
 	private String templateId;//模板id
 	private String url;//链接
 	private String color = "#173177";//颜色
-	private Map<String,String> dataMap;//参数数据
+	private JsonObject dataMap;//参数数据
 
-	public TemplateMessage(String openid, String templateId, String url, Map<String, String> dataMap) {
+	public TemplateMessage(String openid, String templateId, String url, JsonObject dataMap) {
 		this.openid = openid;
 		this.templateId = templateId;
 		this.url = url;
@@ -52,11 +51,11 @@ public class TemplateMessage {
 		return this;
 	}
 
-	public Map<String, String> getDataMap() {
+	public JsonObject getDataMap() {
 		return dataMap;
 	}
 
-	public TemplateMessage setDataMap(Map<String, String> dataMap) {
+	public TemplateMessage setDataMap(JsonObject dataMap) {
 		this.dataMap = dataMap;
 		return this;
 	}
@@ -79,9 +78,9 @@ public class TemplateMessage {
 		
 		JsonObject data = new JsonObject();
 		if(dataMap != null){
-			for(String key : dataMap.keySet()){
+			for(String key : dataMap.fieldNames()){
 				JsonObject item = new JsonObject();
-				item.put("value", dataMap.get(key));
+				item.put("value", dataMap.getString(key));
 				item.put("color", color);
 				data.put(key,item);
 			}
@@ -89,6 +88,4 @@ public class TemplateMessage {
 		jsObj.put("data", data);
 		return jsObj.toString();
 	}
-	
-	
 }

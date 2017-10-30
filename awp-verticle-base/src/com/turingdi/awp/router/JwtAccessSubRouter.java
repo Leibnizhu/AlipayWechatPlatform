@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 给需要JWT授权的oSubRuter提供forbidAccess进行权限控制
+ * 详见forbidAccess()方法的注释
+ * 
  * @author Leibniz.Hu
  * Created on 2017-10-27 17:38.
  */
@@ -13,6 +16,9 @@ public abstract class JwtAccessSubRouter implements SubRouter{
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**
+     * 判断当前请求i是否满足权限需求
+     * 详见checkId参数
+     * 
      * @param idKey 请求中的企业用户id参数名
      * @param checkId true=需要管理员权限，或者非管理员但ID相等才允许访问；false=只有管理员允许访问
      * @return true=禁止访问 false=允许访问

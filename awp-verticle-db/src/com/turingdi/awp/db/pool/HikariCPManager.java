@@ -12,15 +12,23 @@ import org.slf4j.LoggerFactory;
 import static com.turingdi.awp.util.common.Constants.*;
 
 /**
+ * ConnectionPoolManager接口的HikariCPi连接池实现类
+ * 
  * @author Leibniz.Hu
  * Created on 2017-10-12 12:28.
  */
-public class HikariCPManager implements ConnectionPoolManager{
+public class HikariCPManager implements ConnectionPoolManager {
     private Logger log = LoggerFactory.getLogger(getClass());
     private volatile static HikariCPManager INSTANCE = null;
     private JDBCClient client;
 
-    private HikariCPManager(Vertx vertx){
+    /**
+     * 因为是单例，这个唯一的构造器是私有的
+     * 主要任务是初始化连接池
+     * 从vertx配置中读取u数据库相关配置，然后创建JDBCClient，保存到私有变量
+     * @author Leibniz.Hu
+     */
+    private HikariCPManager(Vertx vertx) {
         JsonObject vertxConfig = vertx.getOrCreateContext().config();
         JsonObject config = new JsonObject()
                 .put("provider_class", vertxConfig.getString("provider_class", "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider"))
@@ -33,6 +41,10 @@ public class HikariCPManager implements ConnectionPoolManager{
         this.client = JDBCClient.createShared(vertx, config, "HikariCP");
     }
 
+    /**
+     * 初始化的方法
+     * 传入Vertx对象，用于调用私有构造器，产生单例对象
+     */
     public static HikariCPManager init(Vertx vertx) {
         if (INSTANCE != null) {
             throw new RuntimeException("HikariCPManager is already initialized, please do not call init() any more!!!");
@@ -41,6 +53,9 @@ public class HikariCPManager implements ConnectionPoolManager{
         return INSTANCE;
     }
 
+    /**
+     * 获取单例对象的方法
+     */
     public static HikariCPManager getInstance() {
         if (INSTANCE == null) {
             throw new RuntimeException("HikariCPManager is still not initialized!!!");
@@ -55,7 +70,7 @@ public class HikariCPManager implements ConnectionPoolManager{
                 callback.handle(ar.result());
             } else {
                 // 获取连接失败 - 处理异常
-                log.error("获取数据库链接失败");
+                log.error("获取数据库链接失败", ar.cause());
             }
         });
     }

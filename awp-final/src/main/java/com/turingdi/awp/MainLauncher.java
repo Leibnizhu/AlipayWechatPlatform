@@ -3,6 +3,8 @@ package com.turingdi.awp;
 import io.vertx.core.Launcher;
 
 /**
+ * 主入口，继承Launcher，配置日志
+ * 
  * @author Leibniz.Hu
  * Created on 2017-10-11 20:18.
  */

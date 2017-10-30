@@ -55,7 +55,8 @@ public class AlipayPayService {
             PayBizContent payBizContent = new PayBizContent(orderId, price + "", product, null); // 订单的信息
             AliPayApi.wapPay(aliAccountInfo, payBizContent, response); // 调用支付宝API的方法请求支付宝支付接口
         } catch (IOException e) {
-            log.error(orderId + "下单失败，请查看微信支持开发配置是否正确", e);
+            log.error(orderId + "下单失败，请查看开发配置是否正确", e);
+            response.setStatusCode(500).end("Alipay Order error!");
         }
     }
 

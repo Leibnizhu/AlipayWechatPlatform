@@ -125,10 +125,10 @@ public class OfficialAccountSubRouter extends JwtAccessSubRouter implements SubR
         if (forbidAccess(rc, "id", false)) {
             return;
         }
+        log.debug("即将发送EventBus消息查询所有账号");
         vertx.eventBus().<JsonArray>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ALL_ACCOUNT), ar -> {
             HttpServerResponse response = rc.response();
             if(ar.succeeded()){
-                log.debug("查询所有账号");
                 JsonArray rows = ar.result().body();
                 response.putHeader("content-type", "application/json; charset=utf-8").end(rows.toString());
             } else {

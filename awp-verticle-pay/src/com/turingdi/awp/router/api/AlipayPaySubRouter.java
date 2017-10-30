@@ -25,6 +25,8 @@ import static com.turingdi.awp.entity.db.Order.JsonKey.*;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
+ * 支付宝支付的Controller/SubRouter
+ *
  * @author Leibniz.Hu
  * Created on 2017-09-27 14:36.
  */
@@ -58,6 +60,7 @@ public class AlipayPaySubRouter implements SubRouter {
     private void alipayOrder(RoutingContext rc) {
         //请求json解码，获取订单参数
         JsonObject reqJson = new JsonObject(TuringBase64Util.decode(rc.request().getParam("body")));
+        log.debug("接收到支付宝下单请求，下单参数：{}", reqJson);
         int eid = reqJson.getInteger(EID);
         String orderId = reqJson.getString(ORDERID);//orderId  本地订单ID
         int price = reqJson.getInteger("price");
@@ -95,7 +98,7 @@ public class AlipayPaySubRouter implements SubRouter {
         HttpServerResponse response = rc.response();
         Map<String, String> params = AliPayApi.getRequestParams(request); // 解析请求参数
         String isSuccess = "success"; // 响应给支付宝的消息，默认是fail
-        log.info("支付宝请求串:{}", params.toString()); // 打印本次请求日志，开发者自行决定是否需要
+        log.info("支付宝支付回调方法接收到请求参数:{}", params.toString()); // 打印本次请求日志，开发者自行决定是否需要
 
         String localOrderId = params.get("out_trade_no"); // 从解析后的数据获取本地订单号
         //通过本地订单号拿到eid以及callback，公钥

@@ -23,6 +23,8 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
 import static com.turingdi.awp.util.common.Constants.*;
 
 /**
+ * 微信授权的Controller/SubRouter
+ *
  * @author Leibniz.Hu
  * Created on 2017-09-26 16:54.
  */
@@ -67,6 +69,7 @@ public class WechatOauthSubRouter implements SubRouter {
      * }
      *
      * @param rc Vertx的RoutingContext对象
+     * @author Leibniz.Hu
      */
     private void applyForOauth(RoutingContext rc) {
         HttpServerResponse resp = rc.response();
@@ -94,24 +97,28 @@ public class WechatOauthSubRouter implements SubRouter {
     }
 
     /**
+     * 微信静默授权的回调方法
+     * 由微信服务器调用
+     *
      * @param rc Vertx的RoutingContext对象
+     * @author Leibniz.Hu
      */
     private void oauthBaseCallback(RoutingContext rc) {
         HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
         String code = request.getParam("code");
         Integer eid = Integer.parseInt(request.getParam("eid"));
-        log.debug("code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
+        log.debug("微信静默授权回调方法接收到请求：code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
         assert code != null;
         Future.<Message<JsonObject>>future(f ->
                 vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)
         ).compose(msg -> Future.<JsonObject>future(f -> {
-            JsonObject account = msg.body();
-            String openIdUrl = String.format(OPENID_API, account.getString(WXAPPID), account.getString(WXAPPSECRET), code);
-            NetworkUtils.asyncPostJson(openIdUrl, f);
+                    JsonObject account = msg.body();
+                    String openIdUrl = String.format(OPENID_API, account.getString(WXAPPID), account.getString(WXAPPSECRET), code);
+                    NetworkUtils.asyncPostJson(openIdUrl, f);
                 })
         ).setHandler(res -> {
-            if(res.succeeded()){
+            if (res.succeeded()) {
                 JsonObject openIdJson = res.result();
                 log.debug("授权返回的json数据：{}", openIdJson);
                 //重定向到原访问URL
@@ -138,14 +145,18 @@ public class WechatOauthSubRouter implements SubRouter {
     }
 
     /**
+     * 微信普通授权（获取用户信息）的回调方法
+     * 由微信服务器调用
+     *
      * @param rc Vertx的RoutingContext对象
+     * @author Leibniz.Hu
      */
     private void oauthInfoCallback(RoutingContext rc) {
         HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
         String code = request.getParam("code");
         Integer eid = Integer.parseInt(request.getParam("eid"));
-        log.debug("code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
+        log.debug("微信普通授权回调方法接收到请求：code={},远程地址={},远程域名={},绝对URI={}", code, request.remoteAddress(), request.host(), request.absoluteURI());
         assert code != null;
         Future.<Message<JsonObject>>future(f ->
                 vertx.eventBus().send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), f)

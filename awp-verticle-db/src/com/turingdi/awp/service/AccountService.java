@@ -1,12 +1,16 @@
 package com.turingdi.awp.service;
 
 import com.turingdi.awp.db.AccountDao;
-import com.turingdi.awp.entity.db.Account;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.util.List;
-
+/**
+ * 账户信息相关的服务类，基本与DAO类一致，不再做注释
+ * 
+ * @author Leibniz.Hu
+ * Created on 2017-10-18 17:36.
+ */
 public class AccountService {
 	private AccountDao accDao;
 
@@ -18,12 +22,6 @@ public class AccountService {
 		accDao.updateBase(WxAccount, callback);
 	}
 
-	/**
-	 * 该方法用于从根据id获取微信公众号信息，通过调用dao层方法进行实现；
-	 *
-	 * @param id 公众号id
-	 * 异步返回 获取到的公众号数据
-	 */
 	public void getById(int id, Handler<JsonObject> callback) {
 		accDao.getById(id, callback); // 调用dao层方法
 	}
@@ -36,7 +34,7 @@ public class AccountService {
 		accDao.loginById(id, password, callback);
 	}
 
-	public void getAccountList(Handler<List<JsonObject>> callback){
+	public void getAccountList(Handler<JsonArray> callback){
 		accDao.getAccountList(callback);
 	}
 

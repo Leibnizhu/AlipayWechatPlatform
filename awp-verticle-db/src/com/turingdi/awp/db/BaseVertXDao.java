@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
+ * 基础DAO类
+ * 提供查询、插入/删除/更新的包装方法
+ * 
  * @author Leibniz.Hu
  * Created on 2017-10-12 13:07.
  */
@@ -21,6 +24,9 @@ class BaseVertXDao {
     /**
      * 无参数查询
      *
+     * @param sql 查询语句
+     * @param callback 查询结束后的回调方法
+     * @author Leibniz.Hu
      */
     static void query(String sql, Handler<List<JsonObject>> callback) {
         query(sql, null, callback);
@@ -28,35 +34,48 @@ class BaseVertXDao {
 
     /**
      * 带参数查询
-     *
+     * 
+     * @param sql 查询语句
+     * @param params 查询参数
+     * @param callback 查询结束后的回调方法
+     * @author Leibniz.Hu
      */
     static void query(String sql, JsonArray params, Handler<List<JsonObject>> callback) {
-        LOG.debug("excuting SELECT SQL: \"{}\", params:{}", sql, params);
+        LOG.debug("准备执行SELECT: \"{}\", 参数:{}", sql, params);
         hikariCPM.getConnection(conn -> conn.queryWithParams(sql, params, ar -> {
-                    if (ar.succeeded()) {
-                        List<JsonObject> rows = ar.result().getRows();
-                        LOG.debug("Got {} row(s)", rows.size());
-                        LOG.trace("Query results:{}", rows);
-                        callback.handle(rows);
-                    } else {
-                        LOG.error("读取数据库失败:{}", ar.cause());
-                    }
-                    conn.close();
-                }));
+            if (ar.succeeded()) {
+                List<JsonObject> rows = ar.result().getRows();
+                LOG.debug("查询到{}行记录……", rows.size());
+                LOG.trace("查询结果:{}。", rows);
+                callback.handle(rows);
+            } else {
+                Throwable cause = ar.cause();
+                LOG.error("读取数据库失败:{}!", cause);
+                throw new RuntimeException(cause);
+            }
+            conn.close();
+        }));
     }
 
     /**
      * 插入、更新、删除，带参数
+     * 
+     * @param sql 插入/删除/更新语句
+     * @param params SQL参数
+     * @param callback 执行结束的回调方法，内容是影响的数据库行数
+     * @author Leibniz.Hu
      */
     static void update(String sql, JsonArray params, Handler<Integer> callback) {
-        LOG.debug("excuting INSERT/UPDATE/DELETE SQL: \"{}\", params:{}", sql, params);
+        LOG.debug("准备执行INSERT/UPDATE/DELETE语句: \"{}\", 参数:{}", sql, params);
         hikariCPM.getConnection(conn -> conn.updateWithParams(sql, params, ar -> {
             if (ar.succeeded()) {
                 int updated = ar.result().getUpdated();
-                LOG.debug("Affects {} row(s)", updated);
+                LOG.debug("影响了{}行记录……", updated);
                 callback.handle(updated);
             } else {
-                LOG.error("读取数据库失败:{}", ar.cause());
+                Throwable cause = ar.cause();
+                LOG.error("读取数据库失败:{}!", ar.cause());
+                throw new RuntimeException(cause);
             }
             conn.close();
         }));

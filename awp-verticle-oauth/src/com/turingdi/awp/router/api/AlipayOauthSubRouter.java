@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 支付宝授权的Controller/SubRouter
+ *
  * @author Leibniz.Hu
  * Created on 2017-09-26 16:54.
  */

@@ -1,11 +1,14 @@
 package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.db.pool.HikariCPManager;
-import com.turingdi.awp.router.admin.*;
+import com.turingdi.awp.router.admin.LoginSubRouter;
+import com.turingdi.awp.router.admin.OfficialAccountSubRouter;
+import com.turingdi.awp.router.admin.PaySettingSubRouter;
 import com.turingdi.awp.router.api.*;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
@@ -18,6 +21,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 主Verticle，工作：
+ * 1. 初始化公共资源
+ * 2. 部署其他DB相关的Verticle
+ * 3. 配置Router并n启动Web服务器，监听
+ * 
  * @author Leibniz.Hu
  * Created on 2017-10-11 20:37.
  */
@@ -73,8 +81,9 @@ public class MainVerticle extends AbstractVerticle {
      * 部署数据库访问的Verticle
      */
     private void deployDAOVerticles() {
-        vertx.deployVerticle(AccountDBVerticle.class.getName());
-        vertx.deployVerticle(OrderDBVerticle.class.getName());
+        DeploymentOptions options = new DeploymentOptions().setWorker(true);
+        vertx.deployVerticle(AccountDBVerticle.class.getName(), options);
+        vertx.deployVerticle(OrderDBVerticle.class.getName(), options);
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");

@@ -18,6 +18,8 @@ import java.util.function.Function;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
+ * 获取微信公众号的AccessToken和JsTIcket的Controller/SubRouter
+ *
  * @author Leibniz.Hu
  * Created on 2017-10-19 22:11.
  */
@@ -42,17 +44,36 @@ public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
         return this;
     }
 
+    /**
+     * 获取(缓存的)AccessToken
+     *
+     * @author Leibniz.Hu
+     */
     private void getAccessToken(RoutingContext rc) {
         responseWithToken(rc, "AccessToken", WxApiClient::getAccessToken);
     }
 
+    /**
+     * 获取(缓存的)JsTicket
+     *
+     * @author Leibniz.Hu
+     */
     private void getJsTicket(RoutingContext rc) {
         responseWithToken(rc, "jsTicket", WxApiClient::getJSTicket);
     }
 
+    /**
+     * 调用tokenGetter方法获取所需的Token并响应
+     *
+     * @param rc          路由的RoutingContext对象
+     * @param key         响应的Json的Key
+     * @param tokenGetter 获取Token的方法
+     * @author Leibniz.Hu
+     */
     private void responseWithToken(RoutingContext rc, String key, Function<Account, String> tokenGetter) {
         if (refuseNonLanAccess(rc))
             return;
+        log.debug("接收到请求获取微信公众号的" + key);
         HttpServerRequest req = rc.request();
         HttpServerResponse resp = rc.response();
         Integer eid = -1;
@@ -64,7 +85,7 @@ public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
             resp.setStatusCode(500).end("Request parameter eid must be a number!");
         }
         vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
-            if(ar.succeeded()){
+            if (ar.succeeded()) {
                 JsonObject acc = ar.result().body();
                 String token = tokenGetter.apply(acc.mapTo(Account.class));
                 resp.end(new JsonObject().put(key, token).toString());

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 订单相关的服务类，基本与DAO类一致，不再做注释
+ *
  * @author Leibniz.Hu
  * Created on 2017-10-18 17:36.
  */
@@ -23,11 +25,7 @@ public class OrderService {
     }
 
     public void getByAlipayOrderId(String orderId, Handler<JsonObject> callback) {
-        try {
-            orderDao.getByOrderId(orderId, 1, callback);
-        } catch (Exception e) {
-            log.error("获取订单信息出错", e);
-        }
+        orderDao.getByOrderId(orderId, 1, callback);
     }
 
     public void getByWechatOrderId(String orderId, Handler<JsonObject> callback) {
@@ -35,10 +33,6 @@ public class OrderService {
     }
 
     public void updateAfterPaid(JsonObject order, Handler<Integer> callback) {
-        try {
-            orderDao.updateAfterPaid(order, callback);
-        } catch (Exception e) {
-            log.error("更新订单信息出错", e);
-        }
+        orderDao.updateAfterPaid(order, callback);
     }
 }

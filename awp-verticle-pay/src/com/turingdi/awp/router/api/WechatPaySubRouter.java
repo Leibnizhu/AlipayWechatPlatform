@@ -22,6 +22,8 @@ import static com.turingdi.awp.entity.db.Order.JsonKey.*;
 import static com.turingdi.awp.router.EventBusNamespace.*;
 
 /**
+ * 微信支付的Controller/SubRouter
+ *
  * @author Leibniz.Hu
  * Created on 2017-09-27 14:35.
  */
@@ -73,7 +75,7 @@ public class WechatPaySubRouter implements SubRouter {
                 Map<String, String> jdkMap = new WechatJdk(req, acc, curUrl).getMap();
                 jdkMap.put("appId", acc.getString(WXAPPID));
                 String jsonStr = JsonObject.mapFrom(jdkMap).toString();
-                log.debug(jsonStr);
+                log.debug("接收到(ID={})微信JSSDK初始化请求，返回Json：{}", eid, jsonStr);
                 response.putHeader("content-type", "application/json;charset=UTF-8").end(jsonStr);
             } else {
                 log.error("EventBus消息响应错误", ar.cause());
@@ -92,6 +94,7 @@ public class WechatPaySubRouter implements SubRouter {
     private void wechatOrder(RoutingContext rc) {
         HttpServerRequest req = rc.request();
         JsonObject body = rc.getBodyAsJson();
+        log.debug("接收到微信支付下单请求，下单参数：{}", body);
         int eid = body.getInteger("eid");
         String orderId = body.getString("orderId");
         String openId = body.getString("openId");
@@ -113,7 +116,7 @@ public class WechatPaySubRouter implements SubRouter {
                             log.debug(orderSuccessMap.toString());
                             JsonObject wechatOrder = new JsonObject().put(ORDERID, orderId).put(EID, eid).put(TYPE, 0).put(CALLBACK, callback);
                             vertx.eventBus().<Integer>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_INSERT_ORDER, wechatOrder), ebar -> {
-                                if(ebar.succeeded()){
+                                if (ebar.succeeded()) {
                                     int rows = ebar.result().body();
                                     log.info("微信下单后更新数据库，影响行数={}", rows);
                                 } else {
@@ -139,7 +142,7 @@ public class WechatPaySubRouter implements SubRouter {
      */
     private void wechatNotify(RoutingContext rc) {
         String param = rc.getBody().toString();
-        log.info("支付成功后返回的xml数据: " + param);
+        log.info("接收到微信支付回调请求，请求数据: " + param);
         //将解析后的数据传入map
         Map<String, String> payReturnParam = XmlUtils.xmltoMap(param);
         //TODO 完善其他返回状态的处理
@@ -150,7 +153,7 @@ public class WechatPaySubRouter implements SubRouter {
             //调用callback 更新订单数据，已支付，商城订单号，支付类型，支付时间
             JsonObject updateOrder = new JsonObject().put(PLATORDERID, wechatOrderId).put(ORDERID, localOrderId).put(TYPE, 0);
             vertx.eventBus().<Integer>send(ADDR_ORDER_DB.get(), makeMessage(COMMAND_UPDATE_PAID_ORDER, updateOrder), ebar -> {
-                if(ebar.succeeded()){
+                if (ebar.succeeded()) {
                     int rows = ebar.result().body();
                     log.info("微信支付回调更新数据库，影响行数={}", rows);
                 } else {

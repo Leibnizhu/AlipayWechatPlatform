@@ -7,10 +7,11 @@ import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 import static com.turingdi.awp.entity.db.Account.JsonKey.*;
 
+/**
+ * AWP_Account表对应的DAO类
+ */
 public class AccountDao extends BaseVertXDao {
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -85,22 +86,34 @@ public class AccountDao extends BaseVertXDao {
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
+    /**
+     * 根据Emaile和密码登录
+     */
     public void loginByEmail(String email, String password, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE email = ? and password = ?",
                 new JsonArray().add(email).add(password),
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
+    /**
+     * 根据用户ID和密码登录
+     */
     public void loginById(long id, String password, Handler<JsonObject> callback) {
         query("SELECT * FROM awp_account WHERE id = ? and password = ?",
                 new JsonArray().add(id).add(password),
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 
-    public void getAccountList(Handler<List<JsonObject>> callback){
-        query("SELECT id,name,email FROM awp_account ORDER BY ID ASC", callback);
+    /**
+     * 获取所有用户的（ID，名字，Email）列表
+     */
+    public void getAccountList(Handler<JsonArray> callback){
+        query("SELECT id,name,email FROM awp_account ORDER BY ID ASC", jsonObjList -> callback.handle(new JsonArray(jsonObjList)));
     }
 
+    /**
+     * 更新微信支付配置
+     */
     public void updateWxPay(JsonObject acc, Handler<Integer> callback) {
         Integer id = acc.getInteger(ID);
         if(id == null){
@@ -133,6 +146,9 @@ public class AccountDao extends BaseVertXDao {
         update(sql.toString(), params, callback);
     }
 
+    /**
+     * 更新支付宝支付配置
+     */
     public void updateZfbPay(JsonObject acc, Handler<Integer> callback) {
         Integer id = acc.getInteger(ID);
         if(id == null){
