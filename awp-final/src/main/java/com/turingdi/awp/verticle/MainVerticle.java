@@ -32,14 +32,53 @@ import java.util.regex.Pattern;
 public class MainVerticle extends AbstractVerticle {
     private JWTAuth jwtProvider;
     private Router mainRouter;
+    private HttpServer server;
 
     @Override
     public void start() throws Exception {
         super.start();
-        HttpServer server = vertx.createHttpServer();
-        //公用资源初始化
-        initComponents();
-        deployDAOVerticles();
+        initComponents();//初始化工具类/组件
+        deployDAOVerticles();//部署数据库访问的Verticle
+        mountSubRouters();//挂载所有子路由
+        startServer();//启动服务器
+    }
+
+    /**
+     * 初始化工具类/组件
+     */
+    private void initComponents() {
+        Constants.init(config());
+        NetworkUtils.init(vertx);
+        HikariCPManager.init(vertx);
+        server = vertx.createHttpServer();
+        jwtProvider = initJWTProvider();
+        mainRouter = Router.router(vertx);
+    }
+
+    /**
+     * 初始化JWT
+     */
+    private JWTAuth initJWTProvider() {
+        JsonObject jwtConfig = new JsonObject().put("keyStore", new JsonObject()
+                .put("path", config().getString("keyPath", "keystore.jceks")) //此处要与生成keystore的时候用的type、keypass一致
+                .put("type", "jceks")
+                .put("password", config().getString("keyPswd", "secret")));
+        return JWTAuth.create(vertx, jwtConfig);
+    }
+
+    /**
+     * 部署数据库访问的Verticle
+     */
+    private void deployDAOVerticles() {
+        DeploymentOptions options = new DeploymentOptions().setWorker(true);
+        vertx.deployVerticle(AccountDBVerticle.class.getName(), options);
+        vertx.deployVerticle(OrderDBVerticle.class.getName(), options);
+    }
+
+    /**
+     * 挂载所有子路由
+     */
+    private void mountSubRouters() {
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
@@ -63,27 +102,13 @@ public class MainVerticle extends AbstractVerticle {
         mainRouter.mountSubRouter("/bms/offAcc", new OfficialAccountSubRouter(jwtProvider).setVertx(vertx).getSubRouter());
         //支付配置子路由
         mainRouter.mountSubRouter("/bms/pay", new PaySettingSubRouter(jwtProvider).setVertx(vertx).getSubRouter());
+    }
+
+    /**
+     * 启动服务器
+     */
+    private void startServer() {
         server.requestHandler(mainRouter::accept).listen(config().getInteger("serverPort", 8083));
-    }
-
-    /**
-     * 初始化工具类/组件
-     */
-    private void initComponents() {
-        Constants.init(config());
-        NetworkUtils.init(vertx);
-        HikariCPManager.init(vertx);
-        jwtProvider = initJWTProvider();
-        mainRouter = Router.router(vertx);
-    }
-
-    /**
-     * 部署数据库访问的Verticle
-     */
-    private void deployDAOVerticles() {
-        DeploymentOptions options = new DeploymentOptions().setWorker(true);
-        vertx.deployVerticle(AccountDBVerticle.class.getName(), options);
-        vertx.deployVerticle(OrderDBVerticle.class.getName(), options);
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");
@@ -106,16 +131,5 @@ public class MainVerticle extends AbstractVerticle {
      */
     private void getLogo(RoutingContext rc) {
         rc.response().sendFile("static/img/favicon.ico").close();
-    }
-
-    /**
-     * 初始化JWT
-     */
-    private JWTAuth initJWTProvider() {
-        JsonObject jwtConfig = new JsonObject().put("keyStore", new JsonObject()
-                .put("path", config().getString("keyPath", "keystore.jceks")) //此处要与生成keystore的时候用的type、keypass一致
-                .put("type", "jceks")
-                .put("password", config().getString("keyPswd", "secret")));
-        return JWTAuth.create(vertx, jwtConfig);
     }
 }
