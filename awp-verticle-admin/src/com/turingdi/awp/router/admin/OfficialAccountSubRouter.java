@@ -4,16 +4,15 @@ import com.turingdi.awp.router.JwtAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.JWTAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,32 +34,26 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
  */
 public class OfficialAccountSubRouter extends JwtAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private JWTAuth provider;
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router offAccRouter;
 
-    public OfficialAccountSubRouter(JWTAuth provider) {
-        this.provider = provider;
+    public static Router create(Handler<RoutingContext> jwtHandler){
+        return new OfficialAccountSubRouter(jwtHandler).subRouter();
     }
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router offAccRouter = Router.router(vertx);
-        offAccRouter.route("/*").handler(JWTAuthHandler.create(provider));
+    private OfficialAccountSubRouter(Handler<RoutingContext> jwtHandler) {
+        offAccRouter = Router.router(vertx);
+        offAccRouter.route("/*").handler(jwtHandler);
         offAccRouter.get("/").handler(this::getSelfAccount);
         offAccRouter.get("/all").handler(this::getAccountList);
         offAccRouter.get("/:id").handler(this::getAccountById);
         offAccRouter.put("/").handler(this::updateOfficialAccount);
         offAccRouter.put("/pswd").handler(this::updateEmailPassword);
-        return offAccRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return offAccRouter;
     }
 
     /**

@@ -3,6 +3,7 @@ package com.turingdi.awp.router.api;
 import com.turingdi.awp.entity.wechat.WechatJdk;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.service.WechatPayService;
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.XmlUtils;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
@@ -30,24 +31,23 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
 public class WechatPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private WechatPayService payServ = new WechatPayService();
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router payRouter;
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router payRouter = Router.router(vertx);
+    public static Router create(){
+        return new WechatPaySubRouter().subRouter();
+    }
+
+    private WechatPaySubRouter(){
+        payRouter = Router.router(vertx);
         payRouter.get("/pre/:eid/:url").handler(this::wechatPreHandle);
         payRouter.post("/order").handler(this::wechatOrder);
         payRouter.post("/noti").handler(this::wechatNotify);
-        return payRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return payRouter;
     }
 
     private static final String WECHAT_CALLBACK_SUCCESS_RETURN = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";

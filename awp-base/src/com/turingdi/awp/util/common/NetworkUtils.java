@@ -27,7 +27,11 @@ public class NetworkUtils {
         JSON, XML, FORM
     }
 
-    public static void init(Vertx vertx){
+    public static void init(){
+        Vertx vertx = Constants.vertx();
+        if(vertx == null){
+            throw new RuntimeException("请先初始化Constants类！");
+        }
         client = vertx.createHttpClient(new HttpClientOptions().setLogActivity(false));
     }
 

@@ -1,5 +1,6 @@
 package com.turingdi.awp.db.pool;
 
+import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -45,9 +46,13 @@ public class HikariCPManager implements ConnectionPoolManager {
      * 初始化的方法
      * 传入Vertx对象，用于调用私有构造器，产生单例对象
      */
-    public static HikariCPManager init(Vertx vertx) {
+    public static HikariCPManager init() {
         if (INSTANCE != null) {
             throw new RuntimeException("HikariCPManager is already initialized, please do not call init() any more!!!");
+        }
+        Vertx vertx = Constants.vertx();
+        if(vertx == null){
+            throw new RuntimeException("请先初始化Constants类！");
         }
         INSTANCE = new HikariCPManager(vertx); //创建单例实例
         return INSTANCE;

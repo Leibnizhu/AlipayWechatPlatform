@@ -5,6 +5,7 @@ import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.service.AlipayPayService;
 import com.turingdi.awp.util.alipay.AliPayApi;
 import com.turingdi.awp.util.common.CommonUtils;
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
 import io.vertx.core.Future;
@@ -33,23 +34,22 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
 public class AlipayPaySubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private AlipayPayService payServ = new AlipayPayService();
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router payRouter;
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router payRouter = Router.router(vertx);
+    public static Router create(){
+        return new AlipayPaySubRouter().subRouter();
+    }
+
+    private AlipayPaySubRouter(){
+        payRouter = Router.router(vertx);
         payRouter.get("/order/:body").handler(this::alipayOrder);
         payRouter.post("/noti").handler(this::alipayNotify);
-        return payRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return payRouter;
     }
 
     /**

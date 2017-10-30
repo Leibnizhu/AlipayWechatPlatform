@@ -4,6 +4,7 @@ import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.wechat.TemplateMessage;
 import com.turingdi.awp.router.LanAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.wechat.WxApiClient;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
@@ -25,23 +26,22 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
  */
 public class WechatMessageSubRouter extends LanAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router wxMsgRouter;
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router wxMsgRouter = Router.router(vertx);
+    public static Router create(){
+        return new WechatMessageSubRouter().subRouter();
+    }
+
+    private WechatMessageSubRouter(){
+        wxMsgRouter = Router.router(vertx);
         wxMsgRouter.put("/kf").handler(this::sendCustomerServiceMessage);
         wxMsgRouter.put("/tp").handler(this::sendTemplateMessage);
-        return wxMsgRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return wxMsgRouter;
     }
 
     /**

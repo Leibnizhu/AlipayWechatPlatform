@@ -3,6 +3,7 @@ package com.turingdi.awp.router.api;
 import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.router.LanAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.wechat.WxApiClient;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
@@ -25,23 +26,22 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
  */
 public class TokenSubRouter extends LanAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router tokenRouter;
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router tokenRouter = Router.router(vertx);
+    public static Router create(){
+        return new TokenSubRouter().subRouter();
+    }
+
+    private TokenSubRouter() {
+        tokenRouter = Router.router(vertx);
         tokenRouter.post("/jst/:eid").handler(this::getJsTicket);
         tokenRouter.post("/act/:eid").handler(this::getAccessToken);
-        return tokenRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return tokenRouter;
     }
 
     /**

@@ -6,16 +6,15 @@ import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.JWTAuthHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,30 +36,24 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
  */
 public class PaySettingSubRouter extends JwtAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private JWTAuth provider;
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router paySetRouter;
 
-    public PaySettingSubRouter(JWTAuth provider) {
-        this.provider = provider;
+    public static Router create(Handler<RoutingContext> jwtHandler){
+        return new PaySettingSubRouter(jwtHandler).subRouter();
     }
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router paySetRouter = Router.router(vertx);
-        paySetRouter.route("/*").handler(JWTAuthHandler.create(provider));
+    private PaySettingSubRouter(Handler<RoutingContext> jwtHandler) {
+        paySetRouter = Router.router(vertx);
+        paySetRouter.route("/*").handler(jwtHandler);
         paySetRouter.get("/:eid").handler(this::getPaySetting);
         paySetRouter.post("/wx").handler(this::updateWechatPaySetting);
         paySetRouter.post("/zfb").handler(this::updateAlipayPaySetting);
-        return paySetRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return paySetRouter;
     }
 
     /**

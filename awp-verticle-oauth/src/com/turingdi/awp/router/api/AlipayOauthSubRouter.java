@@ -17,19 +17,10 @@ public class AlipayOauthSubRouter implements SubRouter {
     private Vertx vertx;
 
     @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
+    public Router subRouter() {
         Router zfbOauthRouter = Router.router(vertx);
 //        zfbOauthRouter.get("/oauth/:body").handler(this::applyForOauth);//申请授权
         return zfbOauthRouter;
-    }
-
-    @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
     }
 
     /*

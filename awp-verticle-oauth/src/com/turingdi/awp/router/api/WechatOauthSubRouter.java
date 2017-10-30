@@ -1,6 +1,7 @@
 package com.turingdi.awp.router.api;
 
 import com.turingdi.awp.router.SubRouter;
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import com.turingdi.awp.util.common.TuringBase64Util;
 import io.vertx.core.Future;
@@ -30,28 +31,27 @@ import static com.turingdi.awp.util.common.Constants.*;
  */
 public class WechatOauthSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private Vertx vertx;
+    private Vertx vertx = Constants.vertx();
+    private Router wxOauthRouter;
 
     private static final String WECHAT_JSON_OPENID_KEY = "openid";
     private static final String WECHAT_JSON_ERRCODE_KEY = "errcode";
     private static final String WECHAT_JSON_ACCESSTOKEN_KEY = "access_token";
 
-    @Override
-    public Router getSubRouter() {
-        if (vertx == null) {
-            throw new IllegalStateException("Please set Vertx before you call getSubRouter()!!!");
-        }
-        Router wxOauthRouter = Router.router(vertx);
+    public static Router create(){
+        return new WechatOauthSubRouter().subRouter();
+    }
+
+    private WechatOauthSubRouter(){
+        wxOauthRouter = Router.router(vertx);
         wxOauthRouter.get("/apply/:body").handler(this::applyForOauth);//申请微信授权
         wxOauthRouter.get("/baseCb").handler(this::oauthBaseCallback);//静默授权回调
         wxOauthRouter.get("/infoCb").handler(this::oauthInfoCallback);//用户信息授权回调
-        return wxOauthRouter;
     }
 
     @Override
-    public SubRouter setVertx(Vertx vertx) {
-        this.vertx = vertx;
-        return this;
+    public Router subRouter() {
+        return wxOauthRouter;
     }
 
     /**
