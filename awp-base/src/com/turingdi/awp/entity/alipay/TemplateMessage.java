@@ -1,7 +1,6 @@
 package com.turingdi.awp.entity.alipay;
 
 import io.vertx.core.json.JsonObject;
-import java.util.Map;
 
 /**
  * 发送的模板消息对象
@@ -12,10 +11,10 @@ public class TemplateMessage {
 	private String url;//链接
 	private String color = "#173177";//关键字颜色
 	private String headColor = "#173177";//标题颜色
-	private Map<String,String> dataMap;//参数数据
+	private JsonObject dataMap;//参数数据
 
 	// 构造方法
-	public TemplateMessage(String openid, String templateId, String url, Map<String, String> dataMap) {
+	public TemplateMessage(String openid, String templateId, String url, JsonObject dataMap) {
 		this.openid = openid;
 		this.templateId = templateId;
 		this.url = url;
@@ -26,40 +25,54 @@ public class TemplateMessage {
 		return openid;
 	}
 
-	public void setOpenid(String openid) {
+	public TemplateMessage setOpenid(String openid) {
 		this.openid = openid;
+		return this;
 	}
 
 	public String getTemplateId() {
 		return templateId;
 	}
 
-	public void setTemplateId(String templateId) {
+	public TemplateMessage setTemplateId(String templateId) {
 		this.templateId = templateId;
+		return this;
 	}
 
 	public String getUrl() {
 		return url;
 	}
 
-	public void setUrl(String url) {
+	public TemplateMessage setUrl(String url) {
 		this.url = url;
-	}
-
-	public Map<String, String> getDataMap() {
-		return dataMap;
-	}
-
-	public void setDataMap(Map<String, String> dataMap) {
-		this.dataMap = dataMap;
+		return this;
 	}
 
 	public String getColor() {
 		return color;
 	}
 
-	public void setColor(String color) {
+	public TemplateMessage setColor(String color) {
 		this.color = color;
+		return this;
+	}
+
+	public String getHeadColor() {
+		return headColor;
+	}
+
+	public TemplateMessage setHeadColor(String headColor) {
+		this.headColor = headColor;
+		return this;
+	}
+
+	public JsonObject getDataMap() {
+		return dataMap;
+	}
+
+	public TemplateMessage setDataMap(JsonObject dataMap) {
+		this.dataMap = dataMap;
+		return this;
 	}
 
 	/**
@@ -78,9 +91,9 @@ public class TemplateMessage {
 		// 构造参数数据的json对象
 		if(dataMap != null){
 			// 遍历参数数据，将每个item封装成json对象然后放到context的json对象中
-			for(String key : dataMap.keySet()) {
+			for(String key : dataMap.fieldNames()) {
 				JsonObject item = new JsonObject(); // 用于存储一个item的json对象
-				item.put("value", dataMap.get(key)); // 每个item的值
+				item.put("value", dataMap.getString(key)); // 每个item的值
 				item.put("color", color); // item的颜色
 				context.put(key,item); // 将item添加到context的json对象中
 			}

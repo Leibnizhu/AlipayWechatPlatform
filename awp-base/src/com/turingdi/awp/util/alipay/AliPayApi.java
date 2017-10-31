@@ -18,6 +18,7 @@ import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.alipay.*;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,7 +217,7 @@ public class AliPayApi {
      * @return 是否调用成功
      * @author Leibniz
      */
-    public static boolean sendTemplateMessage(TemplateMessage tplMsg, Account wxAccount) {
+    public static JsonObject sendTemplateMessage(TemplateMessage tplMsg, Account wxAccount) {
         AliAccountInfo aliAccountInfo = new AliAccountInfo(wxAccount.getZfbappid(), wxAccount.getZfbprivkey(), wxAccount.getZfbpubkey(), null, null, null);
         AlipayClient alipayClient = AliPayCliFactory.getAlipayClient(aliAccountInfo); // 获取支付宝连接
         AlipayOpenPublicMessageSingleSendRequest request = new AlipayOpenPublicMessageSingleSendRequest(); // 创建发送模版消息请求
@@ -230,18 +231,21 @@ public class AliPayApi {
         }
 
         // 判断响应是否为空
+        String errmsg = null;
         if (response != null) { // 响应为空
             // 判断响应是否成功
             if(response.isSuccess()) { // 响应成功，即发送模版消息成功
                 LOG.debug("调用成功code={},msg={}", new Object[]{response.getCode(), response.getMsg()}); // 打成功日志
-                return true; // 返回发送成功标识
+                return new JsonObject().put("status", "success").put("sucmsg", response.getMsg()); // 返回发送成功标识
             } else { // 响应失败，即发送模版消息失败
                 LOG.error("调用失败code={},subCode={},subMsg={}", new Object[]{response.getCode(), response.getSubCode(), response.getSubMsg()}); // 打失败日志
+                errmsg = response.getSubCode() + ":" + response.getSubMsg();
             }
         } else { // 响应为空
             LOG.error("调用支付宝模板消息接口时发生异常，返回响应对象为null！"); // 打异常日志
+            errmsg = "response is null";
         }
-        return false; // 返回发送失败标识
+        return new JsonObject().put("status", "fail").put("errmsg", errmsg); // 返回发送失败标识
     }
 
     /**

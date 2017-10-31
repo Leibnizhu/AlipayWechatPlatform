@@ -113,7 +113,7 @@ public class MainVerticle extends AbstractVerticle {
         mainRouter.mountSubRouter("/pay/zfb", factory.create(ALIPAY_PAY));
         //消息发送服务子路由
         mainRouter.mountSubRouter("/msg/wx", factory.create(WECHAT_MSG));
-        //mainRouter.mountSubRouter("/msg/zfb", factory.create(ALIPAY_MSG));//TODO 支付宝消息发送
+        mainRouter.mountSubRouter("/msg/zfb", factory.create(ALIPAY_MSG));
         //JsTicket和AccessTOken服务子路由
         mainRouter.mountSubRouter("/tk/wx", factory.create(WECHAT_TOKEN));
         //登录BMS的子路由

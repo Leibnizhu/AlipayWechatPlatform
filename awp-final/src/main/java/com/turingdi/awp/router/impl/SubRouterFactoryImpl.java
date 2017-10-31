@@ -48,7 +48,7 @@ public class SubRouterFactoryImpl implements SubRouterFactory {
                 router = WechatMessageSubRouter.create();
                 break;
             case ALIPAY_MSG:
-                router = null;
+                router = AlipayMessageSubRouter.create();
                 break;
             case WECHAT_TOKEN:
                 router = TokenSubRouter.create();
