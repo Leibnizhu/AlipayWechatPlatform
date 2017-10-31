@@ -1,6 +1,7 @@
 package com.turingdi.awp.db.pool;
 
 import com.turingdi.awp.util.common.Constants;
+import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -28,9 +29,10 @@ public class HikariCPManager implements ConnectionPoolManager {
      * 主要任务是初始化连接池
      * 从vertx配置中读取u数据库相关配置，然后创建JDBCClient，保存到私有变量
      * @author Leibniz.Hu
+     * @param ctx
      */
-    private HikariCPManager(Vertx vertx) {
-        JsonObject vertxConfig = vertx.getOrCreateContext().config();
+    private HikariCPManager(Context ctx) {
+        JsonObject vertxConfig = ctx.config();
         JsonObject config = new JsonObject()
                 .put("provider_class", vertxConfig.getString("provider_class", "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider"))
                 .put("jdbcUrl", JDBC_URL)
@@ -39,7 +41,7 @@ public class HikariCPManager implements ConnectionPoolManager {
                 .put("password", JDBC_PSWD)
                 .put("minimumIdle", vertxConfig.getInteger("minimumIdle", 2))
                 .put("maximumPoolSize", vertxConfig.getInteger("maximumPoolSize", 10));
-        this.client = JDBCClient.createShared(vertx, config, "HikariCP");
+        this.client = JDBCClient.createShared(ctx.owner(), config, "HikariCP");
     }
 
     /**
@@ -54,7 +56,7 @@ public class HikariCPManager implements ConnectionPoolManager {
         if(vertx == null){
             throw new RuntimeException("请先初始化Constants类！");
         }
-        INSTANCE = new HikariCPManager(vertx); //创建单例实例
+        INSTANCE = new HikariCPManager(Constants.vertxContext()); //创建单例实例
         return INSTANCE;
     }
 

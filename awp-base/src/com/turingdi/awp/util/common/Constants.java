@@ -17,15 +17,21 @@ public class Constants {
     public static String JDBC_PSWD;
     public static String JDBC_DRIVER;
 
+    private static Vertx vertx;
+    private static Context vertxContext;
+
     public static Vertx vertx() {
         return vertx;
     }
 
-    private static Vertx vertx;
+    public static Context vertxContext() {
+        return vertxContext;
+    }
 
-    public static void init(Context context) {
-        Constants.vertx = context.owner();
-        JsonObject config = context.config();
+    public static void init(Context vertxContext) {
+        Constants.vertx = vertxContext.owner();
+        Constants.vertxContext = vertxContext;
+        JsonObject config = vertxContext.config();
         PROJ_URL = config.getString("projectUrl", "http://itq46u.natappfree.cc/");
         CERT_DIR = config.getString("certDir", "/home/leibniz/");
         JDBC_URL = config.getString("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/fission?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false");

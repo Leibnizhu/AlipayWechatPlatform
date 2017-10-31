@@ -1,25 +1,23 @@
 package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.db.pool.HikariCPManager;
-import com.turingdi.awp.router.admin.LoginSubRouter;
-import com.turingdi.awp.router.admin.OfficialAccountSubRouter;
-import com.turingdi.awp.router.admin.PaySettingSubRouter;
-import com.turingdi.awp.router.api.*;
+import com.turingdi.awp.router.SubRouterFactory;
+import com.turingdi.awp.router.SubRouterFactoryImpl;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.JWTAuthHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.turingdi.awp.router.SubRouterFactory.SubRouterType.*;
 
 /**
  * 主Verticle，工作：
@@ -31,9 +29,8 @@ import java.util.regex.Pattern;
  * Created on 2017-10-11 20:37.
  */
 public class MainVerticle extends AbstractVerticle {
-    private Handler<RoutingContext> jwtHandler;
-    private JWTAuth jwtProvider;
     private Router mainRouter;
+    private SubRouterFactory factory;
 
     @Override
     public void start() throws Exception {
@@ -51,9 +48,9 @@ public class MainVerticle extends AbstractVerticle {
         Constants.init(context);
         NetworkUtils.init();
         HikariCPManager.init();
-        jwtProvider = initJWTProvider();
-        jwtHandler = JWTAuthHandler.create(jwtProvider);
-        mainRouter = Router.router(vertx);
+        JWTAuth jwtProvider = initJWTProvider();
+        this.factory = SubRouterFactoryImpl.of(jwtProvider);
+        this.mainRouter = Router.router(vertx);
     }
 
     /**
@@ -87,22 +84,22 @@ public class MainVerticle extends AbstractVerticle {
         mainRouter.route("/favicon.ico").handler(this::getLogo);
         mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
         //授权服务的子路由
-        mainRouter.mountSubRouter("/oauth/wx", WechatOauthSubRouter.create());
-        //TODO 支付宝授权     mainRouter.mountSubRouter("/oauth/zfb", AlipayOauthSubRouter.create());
+        mainRouter.mountSubRouter("/oauth/wx", factory.create(WECHAT_OAUTH));
+        mainRouter.mountSubRouter("/oauth/zfb", factory.create(ALIPAY_OAUTH));//TODO 支付宝授权
         //支付服务子路由
-        mainRouter.mountSubRouter("/pay/wx", WechatPaySubRouter.create());
-        mainRouter.mountSubRouter("/pay/zfb", AlipayPaySubRouter.create());
+        mainRouter.mountSubRouter("/pay/wx", factory.create(WECHAT_PAY));
+        mainRouter.mountSubRouter("/pay/zfb", factory.create(ALIPAY_PAY));
         //消息发送服务子路由
-        mainRouter.mountSubRouter("/msg/wx", WechatMessageSubRouter.create());
+        mainRouter.mountSubRouter("/msg/wx", factory.create(WECHAT_MSG));
         //TODO 支付宝消息发送
         //JsTicket和AccessTOken服务子路由
-        mainRouter.mountSubRouter("/tk/wx", TokenSubRouter.create());
+        mainRouter.mountSubRouter("/tk/wx", factory.create(WECHAT_MSG));
         //登录BMS的子路由
-        mainRouter.mountSubRouter("/bms/login", LoginSubRouter.create(jwtProvider));
+        mainRouter.mountSubRouter("/bms/login", factory.create(BMS_LOGIN));
         //公众号配置子路由
-        mainRouter.mountSubRouter("/bms/offAcc", OfficialAccountSubRouter.create(jwtHandler));
+        mainRouter.mountSubRouter("/bms/offAcc", factory.create(BMS_ACCOUNT));
         //支付配置子路由
-        mainRouter.mountSubRouter("/bms/pay", PaySettingSubRouter.create(jwtHandler));
+        mainRouter.mountSubRouter("/bms/pay", factory.create(BMS_PAY));
     }
 
     /**

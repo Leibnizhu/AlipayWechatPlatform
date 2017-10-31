@@ -33,8 +33,8 @@ public class LoginSubRouter implements SubRouter {
     private Router loginRouter;
     private JWTAuth provider;
 
-    public static Router create(JWTAuth provider){
-        return new LoginSubRouter(provider).subRouter();
+    public static Router create(JWTAuth jwtProvider){
+        return new LoginSubRouter(jwtProvider).subRouter();
     }
 
     private LoginSubRouter(JWTAuth jwtProvider) {

@@ -16,6 +16,10 @@ public class AlipayOauthSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
     private Vertx vertx;
 
+    public static Router create(){
+        return new AlipayOauthSubRouter().subRouter();
+    }
+
     @Override
     public Router subRouter() {
         Router zfbOauthRouter = Router.router(vertx);
