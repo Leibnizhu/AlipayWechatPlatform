@@ -5,14 +5,16 @@ import com.turingdi.awp.router.SubRouterFactory;
 import com.turingdi.awp.router.SubRouterFactoryImpl;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
+import io.vertx.core.*;
+import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,8 +31,10 @@ import static com.turingdi.awp.router.SubRouterFactory.SubRouterType.*;
  * Created on 2017-10-11 20:37.
  */
 public class MainVerticle extends AbstractVerticle {
+    private Logger log = LoggerFactory.getLogger(getClass());
     private Router mainRouter;
     private SubRouterFactory factory;
+    private HttpServer server;
 
     @Override
     public void start() throws Exception {
@@ -39,6 +43,13 @@ public class MainVerticle extends AbstractVerticle {
         deployDAOVerticles();//部署数据库访问的Verticle
         mountSubRouters();//挂载所有子路由
         startServer();//启动服务器
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        HikariCPManager.close();
+        server.close(res -> log.info("HTTP服务器关闭" + (res.succeeded()?"成功":"失败")));
     }
 
     /**
@@ -51,6 +62,7 @@ public class MainVerticle extends AbstractVerticle {
         JWTAuth jwtProvider = initJWTProvider();
         this.factory = SubRouterFactoryImpl.of(jwtProvider);
         this.mainRouter = Router.router(vertx);
+        this.server = vertx.createHttpServer();
     }
 
     /**
@@ -69,8 +81,18 @@ public class MainVerticle extends AbstractVerticle {
      */
     private void deployDAOVerticles() {
         DeploymentOptions options = new DeploymentOptions().setWorker(true);
-        vertx.deployVerticle(AccountDBVerticle.class.getName(), options);
-        vertx.deployVerticle(OrderDBVerticle.class.getName(), options);
+        vertx.deployVerticle(AccountDBVerticle.class.getName(), options, verticleDeployResultHandler("AccountDBVerticle"));
+        vertx.deployVerticle(OrderDBVerticle.class.getName(), options, verticleDeployResultHandler("OrderDBVerticle"));
+    }
+
+    private Handler<AsyncResult<String>> verticleDeployResultHandler(String verticleName) {
+        return res -> {
+            if(res.succeeded()){
+                log.info(verticleName + "部署成功,部署ID={}", res.result());
+            } else {
+                log.error(verticleName + "部署失败,错误原因:{}", res.cause());
+            }
+        };
     }
 
     /**
@@ -91,7 +113,7 @@ public class MainVerticle extends AbstractVerticle {
         mainRouter.mountSubRouter("/pay/zfb", factory.create(ALIPAY_PAY));
         //消息发送服务子路由
         mainRouter.mountSubRouter("/msg/wx", factory.create(WECHAT_MSG));
-        mainRouter.mountSubRouter("/msg/zfb", factory.create(ALIPAY_MSG));//TODO 支付宝消息发送
+        //mainRouter.mountSubRouter("/msg/zfb", factory.create(ALIPAY_MSG));//TODO 支付宝消息发送
         //JsTicket和AccessTOken服务子路由
         mainRouter.mountSubRouter("/tk/wx", factory.create(WECHAT_TOKEN));
         //登录BMS的子路由
@@ -106,7 +128,8 @@ public class MainVerticle extends AbstractVerticle {
      * 启动服务器
      */
     private void startServer() {
-        vertx.createHttpServer().requestHandler(mainRouter::accept).listen(config().getInteger("serverPort", 8083));
+        Integer port = config().getInteger("serverPort", 8083);
+        server.requestHandler(mainRouter::accept).listen(port, res -> log.info("监听{}端口的HTTP服务器启动{}", port, res.succeeded()?"成功":"失败"));
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");

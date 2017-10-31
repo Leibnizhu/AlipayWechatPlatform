@@ -57,6 +57,7 @@ public class HikariCPManager implements ConnectionPoolManager {
             throw new RuntimeException("请先初始化Constants类！");
         }
         INSTANCE = new HikariCPManager(Constants.vertxContext()); //创建单例实例
+        INSTANCE.log.info("HikariCP连接池初始化成功！");
         return INSTANCE;
     }
 
@@ -68,6 +69,10 @@ public class HikariCPManager implements ConnectionPoolManager {
             throw new RuntimeException("HikariCPManager is still not initialized!!!");
         }
         return INSTANCE;
+    }
+
+    public static void close(){
+        INSTANCE.client.close(res -> INSTANCE.log.info("HikariCP连接池关闭" + (res.succeeded()?"成功":"失败")));
     }
 
     @Override
