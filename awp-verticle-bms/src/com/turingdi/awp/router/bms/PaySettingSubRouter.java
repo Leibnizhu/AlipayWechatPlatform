@@ -1,7 +1,7 @@
-package com.turingdi.awp.router.admin;
+package com.turingdi.awp.router.bms;
 
 import com.turingdi.awp.router.EventBusNamespace;
-import com.turingdi.awp.router.JwtAccessSubRouter;
+import com.turingdi.awp.router.impl.JwtAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.common.CommonUtils;
 import com.turingdi.awp.util.common.Constants;

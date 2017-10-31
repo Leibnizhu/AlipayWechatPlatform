@@ -13,7 +13,7 @@
     <modules>
         <module>awp-final</module>
         <module>awp-base</module>
-        <module>awp-verticle-admin</module>
+        <module>awp-verticle-bms</module>
         <module>awp-verticle-base</module>
         <module>awp-verticle-db</module>
         <module>awp-verticle-oauth</module>

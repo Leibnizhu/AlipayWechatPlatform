@@ -10,9 +10,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>awp-verticle-admin</artifactId>
+    <artifactId>awp-verticle-bms</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>awp-verticle-admin</name>
+    <name>awp-verticle-bms</name>
 
     <dependencies>
 
@@ -29,7 +29,7 @@
     </dependencies>
 
     <build>
-        <finalName>awp-verticle-admin</finalName>
+        <finalName>awp-verticle-bms</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

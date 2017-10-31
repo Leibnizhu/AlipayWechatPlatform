@@ -28,14 +28,9 @@
             <artifactId>awp-base</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>com.turingdi.awp</groupId>
-            <artifactId>awp-launcher</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>com.turingdi.awp</groupId>
-            <artifactId>awp-verticle-admin</artifactId>
+            <artifactId>awp-verticle-bms</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

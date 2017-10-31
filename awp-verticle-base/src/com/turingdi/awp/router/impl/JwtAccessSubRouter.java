@@ -1,5 +1,6 @@
-package com.turingdi.awp.router;
+package com.turingdi.awp.router.impl;
 
+import com.turingdi.awp.router.SubRouter;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * @author Leibniz.Hu
  * Created on 2017-10-27 17:38.
  */
-public abstract class JwtAccessSubRouter implements SubRouter{
+public abstract class JwtAccessSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     /**

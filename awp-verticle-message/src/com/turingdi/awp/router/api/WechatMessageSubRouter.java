@@ -2,7 +2,7 @@ package com.turingdi.awp.router.api;
 
 import com.turingdi.awp.entity.db.Account;
 import com.turingdi.awp.entity.wechat.TemplateMessage;
-import com.turingdi.awp.router.LanAccessSubRouter;
+import com.turingdi.awp.router.impl.LanAccessSubRouter;
 import com.turingdi.awp.router.SubRouter;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.wechat.WxApiClient;

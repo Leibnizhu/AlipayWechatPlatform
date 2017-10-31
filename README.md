@@ -1,5 +1,5 @@
 # Alipay-Wechat-Platform
-![](awp-verticle-admin/resources/static/img/logo.png)
+![](awp-verticle-bms/resources/static/img/logo.png)
 ## 命名
 原来命名是Wechat-Alipay-Platform，但这样缩写WAP、可能引起歧义，所以改成Alipay-Wechat-Platform，缩写AWP（还是有歧义，但至少不是一个领域的）。
 ## 意义
@@ -26,7 +26,7 @@
 ## Maven子模块
 - `awp-base`: PoJo类，工具类（通用工具、微信工具、支付宝工具）
 - `awp-final`: 最终打成Vert.X整合包，包括后台管理和服务的入口
-- `awp-verticle-admin`: 后台管理页面，需要JWT授权登录
+- `awp-verticle-bms`: 后台管理页面，需要JWT授权登录
 - `awp-verticle-base`: Verticle基础通用类，包括一个基础接口机器抽象类，以及定义EventBus常量的命名空间
 - `awp-verticle-db`: 数据库相关类
 - `awp-verticle-message`: 微信、支付宝(模板/客服/图文)消息发送服务(TODO)

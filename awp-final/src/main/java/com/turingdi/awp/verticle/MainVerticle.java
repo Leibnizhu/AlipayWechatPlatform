@@ -2,7 +2,7 @@ package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.db.pool.HikariCPManager;
 import com.turingdi.awp.router.SubRouterFactory;
-import com.turingdi.awp.router.SubRouterFactoryImpl;
+import com.turingdi.awp.router.impl.SubRouterFactoryImpl;
 import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import io.vertx.core.*;
@@ -32,8 +32,8 @@ import static com.turingdi.awp.router.SubRouterFactory.SubRouterType.*;
  */
 public class MainVerticle extends AbstractVerticle {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private Router mainRouter;
     private SubRouterFactory factory;
+    private Router mainRouter;
     private HttpServer server;
 
     @Override
