@@ -2,18 +2,19 @@
 <configuration scan="true" scanPeriod="10 minutes">
     <property name="LOG_HOME" value="/var/log/awp"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{HH:mm:ss.SSS} [%-5level]-%logger{36}[%L]: %msg%n</pattern>
-        </layout>
+        <encoder>
+            <layout>
+                <pattern>%d{HH:mm:ss.SSS} [%-5level]-%logger{36}[%L]: %msg%n</pattern>
+            </layout>
+        </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <FileNamePattern>${LOG_HOME}/awp_log.%d{yyyy-MM-dd}(%i).log</FileNamePattern>          、
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>100MB</MaxFileSize>
-            </TimeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <charset>utf-8</charset>
@@ -23,13 +24,15 @@
         <prudent>false</prudent>
     </appender>
 
-    <root level="info">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
         <!--<appender-ref ref="FILE"/>-->
     </root>
 
     <logger name="com.turingdi">
         <level value="DEBUG" />
-       <!-- <appender-ref ref="FILE"/>-->
+    </logger>
+    <logger name="com.zaxxer.hikari.pool.HikariPool">
+        <level value="INFO" />
     </logger>
 </configuration>
