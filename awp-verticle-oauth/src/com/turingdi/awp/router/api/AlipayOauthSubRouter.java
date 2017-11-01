@@ -116,31 +116,14 @@ public class AlipayOauthSubRouter implements SubRouter {
         });
     }
 
-    private void oauthSuccessProcess(HttpServerRequest req, HttpServerResponse resp, AlipayResponse res, Handler<String> callback) {
-        if (res != null) {
-            String visitUrl = req.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
-            if (visitUrl.length() > 0) {
-                visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
-                callback.handle(visitUrl);
-                resp.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(getCLearJson(res).toString())).end();
-            } else {
-                log.error("没有找到授权后回调地址" + req.absoluteURI());
-                resp.end("未设置授权后回调地址");
-            }
-        }
-    }
-
-    private JsonObject getCLearJson(AlipayResponse res) {
-        JsonObject bodyJson = new JsonObject(res.getBody());
-        if(bodyJson.containsKey("alipay_user_info_share_response")){
-            return bodyJson.getJsonObject("alipay_user_info_share_response");
-        } else if(bodyJson.containsKey("alipay_system_oauth_token_response")){
-            return bodyJson.getJsonObject("alipay_system_oauth_token_response");
-        } else {
-            return bodyJson;
-        }
-    }
-
+    /**
+     * 查询账户信息，并创建AliAccountInfo对象，调用回调方法
+     *
+     * @param resp     HTTP响应对象
+     * @param eid      企业用户ID
+     * @param callback 创建成功后的回调方法
+     * @author Leibniz.Hu
+     */
     private void getAccountAndExecute(HttpServerResponse resp, Integer eid, Handler<AliAccountInfo> callback) {
         vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_GET_ACCOUNT_BY_ID, eid), ar -> {
             if (ar.succeeded()) {
@@ -152,5 +135,47 @@ public class AlipayOauthSubRouter implements SubRouter {
                 resp.setStatusCode(500).end("EventBus error!");
             }
         });
+    }
+
+    /**
+     * 解析授权前访问的地址，解析所需的json并编码，最后重定向
+     *
+     * @param req      HTTP请求对象
+     * @param resp     HTTP响应对象
+     * @param res      ALipay接口返回的响应
+     * @param callback 解析地址后的处理方法
+     * @author Leibniz.Hu
+     */
+    private void oauthSuccessProcess(HttpServerRequest req, HttpServerResponse resp, AlipayResponse res, Handler<String> callback) {
+        if (res != null) {
+            String visitUrl = req.getParam("visitUrl");//getRedirectAddress(request, REMOVE_PARAMS);
+            if (visitUrl.length() > 0) {
+                visitUrl = TuringBase64Util.decode(visitUrl).replaceAll("[\\s*\t\n\r]", "");
+                callback.handle(visitUrl);
+                resp.setStatusCode(302).putHeader("Location", visitUrl + (visitUrl.contains("?") ? "&rs=" : "?rs=") + TuringBase64Util.encode(getClearJson(res).toString())).end();
+            } else {
+                log.error("没有找到授权后回调地址" + req.absoluteURI());
+                resp.end("未设置授权后回调地址");
+            }
+        }
+    }
+
+    /**
+     * 解析支付宝授权后的响应对象，获取对应简洁的JSON
+     *
+     * @param res 支付宝授权后的响应对象
+     * @return 简洁的JSON，不包含签名及重复的一些字段
+     *
+     * @author Leibniz.Hu
+     */
+    private JsonObject getClearJson(AlipayResponse res) {
+        JsonObject bodyJson = new JsonObject(res.getBody());
+        if (bodyJson.containsKey("alipay_user_info_share_response")) {
+            return bodyJson.getJsonObject("alipay_user_info_share_response");
+        } else if (bodyJson.containsKey("alipay_system_oauth_token_response")) {
+            return bodyJson.getJsonObject("alipay_system_oauth_token_response");
+        } else {
+            return bodyJson;
+        }
     }
 }
