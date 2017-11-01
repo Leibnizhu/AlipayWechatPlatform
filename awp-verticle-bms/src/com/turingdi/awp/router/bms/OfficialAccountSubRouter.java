@@ -192,7 +192,7 @@ public class OfficialAccountSubRouter extends JwtAccessSubRouter implements SubR
                 if (newPassword != null && newPassword.trim().length() > 0) {
                     String rePassword = req.getParam("rePassword");
                     if (rePassword == null || rePassword.trim().length() == 0) {
-                        log.error("输入的重复密码为空", rePassword);
+                        log.error("输入的重复密码为空");
                         resp.setStatusCode(500).end("EMPTY_REPEAT_PSWD");
                         return;
                     }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Kode is a Premium Bootstrap Admin Template, It's responsive, clean coded and mobile friendly">
+    <meta name="keywords" content="bootstrap, admin, dashboard, flat admin template, responsive," />
+    <title>支付宝-微信管理平台</title>
+    <link href="../../css/root.css" rel="stylesheet">
+    <style type="text/css">
+        body{background: #F5F5F5;}
+    </style>
+</head>
+<body onkeydown="keyLogin();">
+<div class="login-form">
+    <form id="regForm" method="POST" action="/bms/login/reg" style="background-color: rgba(0, 162, 182, 0.25)">
+        <div class="top">
+            <img src="../../img/logo.png" style="margin-bottom: 0px;">
+            <h4 style="margin-top: 0px;margin-bottom: 0px;">支付宝-微信管理平台</h4>
+        </div>
+        <div class="form-area">
+            <div class="group">
+                <input type="text" class="form-control" placeholder="登录邮箱" id="email" name="email">
+                <i class="fa fa-user"></i>
+            </div>
+            <div class="group">
+                <input type="text" class="form-control" placeholder="账号名" id="name" name="name">
+                <i class="fa fa-user"></i>
+            </div>
+            <div class="group">
+                <input type="password" class="form-control" placeholder="登录密码" id="password" name="password">
+                <i class="fa fa-key"></i>
+            </div>
+            <div class="group">
+                <input type="password" class="form-control" placeholder="重复密码" id="repassword" name="repassword">
+                <i class="fa fa-key"></i>
+            </div>
+            <div id="tips"></div>
+            <button type="submit" class="btn btn-default btn-block">注册</button>
+        </div>
+    </form>
+    <br>
+</div>
+
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.validate.js"></script>
+<script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.md5.js"></script>
+<script type="text/javascript" src="../../turing/common/common.js"></script>
+<script type="text/javascript" src="../../turing/account/reg.js">
+</script>
+</body>
+</html>

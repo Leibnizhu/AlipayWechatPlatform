@@ -71,7 +71,7 @@ public class AccountDao extends BaseVertXDao {
         }
         sql.append(" where id=?");
         params.add(id);
-        update(sql.toString(), params, callback);
+        update(sql.toString(), params, res -> callback.handle(res.getInteger(UPDATED)));
     }
 
     /**
@@ -143,7 +143,7 @@ public class AccountDao extends BaseVertXDao {
         }
         sql.append(" where id=?");
         params.add(id);
-        update(sql.toString(), params, callback);
+        update(sql.toString(), params, res -> callback.handle(res.getInteger(UPDATED)));
     }
 
     /**
@@ -185,6 +185,13 @@ public class AccountDao extends BaseVertXDao {
         }
         sql.append(" where id=?");
         params.add(id);
-        update(sql.toString(), params, callback);
+        update(sql.toString(), params, res -> callback.handle(res.getInteger(UPDATED)));
+    }
+
+    public void register(String email, String password, String name, Handler<Integer> callback) {
+        update("INSERT INTO awp_account (email, password, name, role, createtime) VALUES (?,?,?,1,NOW()) RETURNING id",
+                new JsonArray().add(email).add(password).add(name),
+                res -> callback.handle(res.getJsonArray(KEYS).getInteger(0)));
+
     }
 }
