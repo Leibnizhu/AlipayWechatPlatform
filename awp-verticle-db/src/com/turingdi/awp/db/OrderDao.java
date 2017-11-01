@@ -32,7 +32,7 @@ public class OrderDao extends BaseVertXDao {
             throw new IllegalArgumentException("Type in Order object cannot be null!!!");
         String sql = "INSERT INTO awp_order (eid,orderId,callback,type,createTime) VALUES (?,?,?,?,NOW())";
         JsonArray params = new JsonArray().add(eid).add(orderId).add(orderCallback).add(type);
-        update(sql, params, res -> callback.handle(res.getInteger(UPDATED)));
+        update(sql, params, callback);
     }
 
     /**
@@ -65,6 +65,6 @@ public class OrderDao extends BaseVertXDao {
             throw new IllegalArgumentException("Type in Order object cannot be null!!!");
         String sql = "UPDATE awp_order SET platOrderId = ?, payTime = NOW() where orderId=? and type=?";
         JsonArray params = new JsonArray().add(platOrderId).add(orderId).add(type);
-        update(sql, params, res -> callback.handle(res.getInteger(UPDATED)));
+        update(sql, params, callback);
     }
 }
