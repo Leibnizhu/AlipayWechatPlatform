@@ -103,9 +103,11 @@ public class MainVerticle extends AbstractVerticle {
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
         mainRouter.get("/").handler(ctx -> ctx.reroute("/static/index.html"));
-        mainRouter.get("/static/*").handler(StaticHandler.create().setWebRoot("static"));
         mainRouter.get("/favicon.ico").handler(this::getLogo);
+        mainRouter.get("/README.md").handler(this::getReadme);
+        mainRouter.get("/static/page/sys/img/*").handler(this::getReadmeImg);
         mainRouter.get("/MP_verify_*").handler(this::getWechatVerify);
+        mainRouter.get("/static/*").handler(StaticHandler.create().setWebRoot("static"));
         //授权服务的子路由
         mainRouter.mountSubRouter("/oauth/wx", factory.create(WECHAT_OAUTH));
         mainRouter.mountSubRouter("/oauth/zfb", factory.create(ALIPAY_OAUTH));//TODO 支付宝授权
@@ -153,5 +155,13 @@ public class MainVerticle extends AbstractVerticle {
      */
     private void getLogo(RoutingContext rc) {
         rc.response().sendFile("static/img/favicon.ico").close();
+    }
+
+    private void getReadme(RoutingContext rc) {
+        rc.response().putHeader("content-type", "plain/html;charset=UTF-8").sendFile("README.md").close();
+    }
+    private void getReadmeImg(RoutingContext rc) {
+        String imgUri = rc.request().uri().replace("/static/page/sys/", "");
+        rc.response().sendFile(imgUri).close();
     }
 }

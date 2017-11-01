@@ -2,21 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>系统管理</title>
+    <title>README</title>
     <link rel="stylesheet" type="text/css" href="../../css/root.css">
     <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/fileinput.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/responsive.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/plugin/sweet-alert/sweet-alert.css">
-    <style type="text/css">
-        label.error {
-            color: #ef4836; /*错误信息的颜色*/
-        }
-
-        span.required {
-            color: #ef4836; /*必填字段星号的颜色*/
-        }
+    <style>
+        code,kbd,pre,samp{font-family:Consolas,"Courier New",monospace;font-size:1em}code{padding:2px 4px;font-size:90%;color:#c7254e;background-color:#f9f2f4;border-radius:4px}kbd{padding:2px 4px;font-size:90%;color:#fff;background-color:#333;border-radius:3px;-webkit-box-shadow:inset 0 -1px 0 rgba(0,0,0,.25);box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}kbd kbd{padding:0;font-size:100%;font-weight:700;-webkit-box-shadow:none;box-shadow:none}pre{display:block;padding:9.5px;margin:0 0 10px;font-size:13px;line-height:1.42857143;color:#333;word-break:break-all;word-wrap:break-word;background-color:#f5f5f5;border:1px solid #ccc;border-radius:4px}pre code{padding:0;font-size:inherit;color:inherit;white-space:pre-wrap;background-color:transparent;border-radius:0}
+        h3,h4{text-align: left}
     </style>
 </head>
 <body>
@@ -53,7 +48,8 @@
                 </a>
                 <span id="topIdsteName"></span>
                 <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
-                    <img src="../../img/profileimg.png" alt="img"><b>{{curName}}</b><span class="caret"></span>
+                    <img src="../../img/profileimg.png" alt="img"><b id="userName">{{curName}}</b><span
+                        class="caret"></span>
                 </a>
             </li>
         </ul>
@@ -103,19 +99,8 @@
         <div class="page-header">
             <h1 class="title">系统管理</h1>
             <ol class="breadcrumb">
-                <li class="active">修改密码</li>
+                <li class="active">README</li>
             </ol>
-            <!-- 主账号操作公众号配置时显示出来。 -->
-            <div class="right text-r" id="accountList" style="display: none">
-                <div class="pull-right padding-r-15">
-                    <span id="accountTitle" style="display: inline-block;padding-top: 6px;">帐号：</span>
-                    <div class="pull-right padding-r-50">
-                        <select class="form-control" style="width: 200px;" v-model="selectedEid">
-                            <option v-for="acc in accList" :value="acc.id">{{acc.name}}</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
         </div>
         <!-- End Page Header -->
 
@@ -127,51 +112,9 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="pull-right"></div>
-                        <div class="panel-title"><h4>修改密码/邮箱</h4></div>
                         <div class="panel-body">
-                            <form id="accPswd" class="form-horizontal" role="form" action="#">
-                                <input type="hidden" name="id" id="id" :value="eid">
-                                <div class="col-md-10">
-                                    <div class="form-group">
-                                        <label for="email" class="col-sm-4 control-label">登录邮箱<span
-                                                class="required">*</span></label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control" id="email" name="email"
-                                                   v-model="email">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="oldPassword" class="col-sm-4 control-label">原密码<span
-                                                class="required">*</span></label>
-                                        <div class="col-sm-4">
-                                            <input type="password" class="form-control" id="oldPassword" name="password"
-                                                   v-model="password">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="newPassword" class="col-sm-4 control-label">新密码<span
-                                                class="required"></span></label>
-                                        <div class="col-sm-4">
-                                            <input type="password" class="form-control" id="newPassword"
-                                                   name="newPassword" v-model="newPassword">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="rePassword" class="col-sm-4 control-label">重复密码<span
-                                                class="required"></span></label>
-                                        <div class="col-sm-4">
-                                            <input type="password" class="form-control" id="rePassword"
-                                                   name="rePassword" v-model="rePassword">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-offset-5 col-sm-10">
-                                            <input class="btn btn btn-success wechatNumber-btn" style="width:150px"
-                                                   id="submits" type="submit" value="提交">
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                            <div id="content" style="text-align: left;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -182,14 +125,38 @@
         <!-- END CONTAINER -->
     </div>
 </div>
+<xmp>
+
+</xmp>
 <!-- END CONTENT -->
 <script type="text/javascript" src="../../js/jquery.min.js"></script>
-<script type="text/javascript" src="../../js/jquery.validate.js"></script>
-<script type="text/javascript" src="../../js/jquery.md5.js"></script>
 <script type="text/javascript" src="../../js/bootstrap/bootstrap.min.js"></script>
 <script type="text/javascript" src="../../js/vue.min.js"></script>
-<script type="text/javascript" src="../../js/sweet-alert.min.js"></script>
 <script type="text/javascript" src="../../turing/common/common.js"></script>
-<script type="text/javascript" src="../../turing/account/editInfo.js"></script>
+<script type="text/javascript">
+    $("#systemManager").addClass("active");
+    $("#systemManager").show();
+    $("#readmeMenuLi a").addClass("active");
+    var vm = new Vue({
+        el: "#all",
+        data: {
+            curName: localStorage.getItem("name") || "",
+            eid: localStorage.getItem("id") || 0,
+        }});
+    $.ajax({
+        url: BASE_PATH + "/README.md",
+        type: 'GET',
+        success: function (data) {
+            $("xmp")[0].innerHTML = data;
+            var u = "../../js/marked.js";
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript';
+            g.async = true;
+            g.defer = true;
+            g.src = u;
+            s.parentNode.insertBefore(g, s);
+        }
+    })
+</script>
 </body>
 </html>

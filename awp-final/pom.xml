@@ -72,6 +72,13 @@
                     <exclude>**/*.java</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>..</directory>
+                <includes>
+                    <include>README.md</include>
+                    <include>img/*.*</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
