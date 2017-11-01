@@ -21,8 +21,6 @@ import java.util.List;
 class BaseVertXDao {
     private static Logger LOG = LoggerFactory.getLogger(BaseVertXDao.class);
     private static ConnectionPoolManager hikariCPM = HikariCPManager.getInstance();
-    protected static String KEYS = "keys";
-    protected static String UPDATED = "updated";
 
     /**
      * 无参数查询
@@ -53,7 +51,7 @@ class BaseVertXDao {
                 callback.handle(rows);
             } else {
                 Throwable cause = ar.cause();
-                LOG.error("读取数据库失败:{}!", cause);
+                LOG.error("读取数据库失败!", cause);
                 throw new RuntimeException(cause);
             }
             conn.close();
@@ -111,8 +109,8 @@ class BaseVertXDao {
                 }
             } else {
                 Throwable cause = ar.cause();
-                LOG.error("读取数据库失败:{}!", ar.cause());
-                throw new RuntimeException(cause);
+                LOG.error("读取数据库失败,原因：{}", ar.cause().getMessage());
+                callback.handle(-1);
             }
             conn.close();
         }));

@@ -62,6 +62,12 @@ $().ready(function () {
                         var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";
                         $('#tips').html(tips);
                     }
+                },
+                error: function (e) {
+                    if (e.responseText === "DUPLICATE_EMAIL") {
+                        alert("邮箱已被注册，请更换邮箱");
+                        $('#email').val("");
+                    }
                 }
             });
             return false;

@@ -131,6 +131,10 @@ public class LoginSubRouter implements SubRouter {
                     if (ar.succeeded()) {
                         JsonObject result = new JsonObject();
                         Integer id = ar.result().body();
+                        if(id == -1){
+                            resp.setStatusCode(500).end("DUPLICATE_EMAIL");
+                            return;
+                        }
                         //jwt保存
                         String token = provider.generateToken(new JsonObject().put("id", id).put("role", 1), JWT_OPTIONS);
                         log.info("用户({},{})注册成功，ID={},角色=普通用户,token={}", name, email, id, token);
