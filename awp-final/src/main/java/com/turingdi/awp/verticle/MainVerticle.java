@@ -102,9 +102,10 @@ public class MainVerticle extends AbstractVerticle {
         //请求体解析
         mainRouter.route().handler(BodyHandler.create());
         //静态资源路由
-        mainRouter.route("/static/*").handler(StaticHandler.create().setWebRoot("static"));
-        mainRouter.route("/favicon.ico").handler(this::getLogo);
-        mainRouter.route("/MP_verify_*").handler(this::getWechatVerify);
+        mainRouter.get("/").handler(ctx -> ctx.reroute("/static/index.html"));
+        mainRouter.get("/static/*").handler(StaticHandler.create().setWebRoot("static"));
+        mainRouter.get("/favicon.ico").handler(this::getLogo);
+        mainRouter.get("/MP_verify_*").handler(this::getWechatVerify);
         //授权服务的子路由
         mainRouter.mountSubRouter("/oauth/wx", factory.create(WECHAT_OAUTH));
         mainRouter.mountSubRouter("/oauth/zfb", factory.create(ALIPAY_OAUTH));//TODO 支付宝授权
