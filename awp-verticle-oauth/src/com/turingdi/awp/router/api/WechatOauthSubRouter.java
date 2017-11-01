@@ -45,8 +45,8 @@ public class WechatOauthSubRouter implements SubRouter {
     private WechatOauthSubRouter(){
         wxOauthRouter = Router.router(vertx);
         wxOauthRouter.get("/apply/:body").handler(this::applyForOauth);//申请微信授权
-        wxOauthRouter.get("/baseCb").handler(this::oauthBaseCallback);//静默授权回调
-        wxOauthRouter.get("/infoCb").handler(this::oauthInfoCallback);//用户信息授权回调
+        wxOauthRouter.route("/baseCb").handler(this::oauthBaseCallback);//静默授权回调
+        wxOauthRouter.route("/infoCb").handler(this::oauthInfoCallback);//用户信息授权回调
     }
 
     @Override

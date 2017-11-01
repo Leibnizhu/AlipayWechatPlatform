@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -112,8 +113,12 @@ public class AliPayApi {
      * @param response http响应体
      * Create by quandong
      */
-    public static void auth(AliAccountInfo aliAccountInfo, HttpServerResponse response, boolean needDetail) throws IOException {
-        String authReqUrl = "https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=" + aliAccountInfo.getAppId() + "&scope=" + (needDetail?"auth_user,auth_base":"auth_base") + "&redirect_uri=" + URLEncoder.encode(aliAccountInfo.getRedirectUrl(), AlipayConstants.CHARSET_UTF8); // 将参数拼接到发送给支付宝的的链接上
+    public static void auth(AliAccountInfo aliAccountInfo, HttpServerResponse response, boolean needDetail) {
+        String authReqUrl = null; // 将参数拼接到发送给支付宝的的链接上
+        try {
+            authReqUrl = "https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=" + aliAccountInfo.getAppId() + "&scope=" + (needDetail?"auth_user,auth_base":"auth_base") + "&redirect_uri=" + URLEncoder.encode(aliAccountInfo.getRedirectUrl(), AlipayConstants.CHARSET_UTF8);
+        } catch (UnsupportedEncodingException ignore) {
+        }
         response.setStatusCode(302)
                 .putHeader("Location", authReqUrl) // 通过响应体的重定向方法，向支付宝发送请求，页面上会弹出支付宝授权页面
                 .end();
@@ -133,7 +138,7 @@ public class AliPayApi {
      * @return AlipayResponse类型，调用者根据是否需要获取详细信息的标识强转成不同类型的对象，false强转成AlipaySystemOauthTokenResponse，true强转成AlipayUserInfoShareResponse，意外情况返回空
      * Create by quandong
      */
-    private static AlipayResponse getUserInfo(AliAccountInfo aliAccountInfo, boolean isNeedDetail, HttpServerRequest request) throws IOException {
+    private static AlipayResponse getUserInfo(AliAccountInfo aliAccountInfo, boolean isNeedDetail, HttpServerRequest request) {
         Map<String, String> params = AliPayApi.getRequestParams(request); // 解析请求参数
         String authCode = params.get("auth_code"); // 获得authCode
 
@@ -194,7 +199,7 @@ public class AliPayApi {
      * @return AlipayUserInfoShareResponse实例，用于获取用户详细信息
      * @throws IOException
      */
-    public static AlipayUserInfoShareResponse getUserDetailInfo(AliAccountInfo aliAccountInfo, HttpServerRequest request) throws IOException{
+    public static AlipayUserInfoShareResponse getUserDetailInfo(AliAccountInfo aliAccountInfo, HttpServerRequest request){
         return (AlipayUserInfoShareResponse) getUserInfo(aliAccountInfo, true, request); // 调用上面方法
     }
 
@@ -206,7 +211,7 @@ public class AliPayApi {
      * @return AlipaySystemOauthTokenResponse实例，用于获取用于简要信息
      * @throws IOException
      */
-    public static AlipaySystemOauthTokenResponse getUserId(AliAccountInfo aliAccountInfo, HttpServerRequest request) throws IOException{
+    public static AlipaySystemOauthTokenResponse getUserId(AliAccountInfo aliAccountInfo, HttpServerRequest request){
         return (AlipaySystemOauthTokenResponse) getUserInfo(aliAccountInfo, false, request); // 调用上面方法
     }
 

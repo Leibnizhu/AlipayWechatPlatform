@@ -64,6 +64,20 @@ java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar run com.turingdi.awp.MainV
 }
 ```
 
+### 支付宝授权
+申请支付宝授权。web服务需要授权时，向用户发送重定向到该接口。
+- 请求地址：`http://localhost:8083/oauth/zfb/apply/{body}`  
+- 参数：body，格式为变种Base64编码的JSON，请用http://localhost:8083/static/page/sys/base64.html 进行编码
+
+例如（请修改域名后打开，静默授权，授权后跳到百度首页(为了展示可以回调到任何地址)，观察地址，rs参数是图灵Base64加密后的结果）: http://localhost:8083/oauth/wx/apply/bgNVIODVIfwpZOI2dADsO3DVIOD3TmLgZSI2KOgxIODVIOkBHCjsHfqB1YI2IfhMTmD2oY60T0cuHfqpZm8uHt6nIVp6OV~~
+```json
+{
+    "eid":1, /*web项目使用的公众号在本项目中的用户ID*/
+    "type":0,/*0=静默授权，只能获取OpenID，1=正常授权，会弹出授权确认页面，可以获取到用户信息*/
+    "callback":"http://dict.baidu.com"/*授权成功后调用的web项目回调接口地址,请使用完整地址,回调时会使用GET方法，加上rs参数，rs参数值是turingBase64加密的授权结果(JSON)*/
+}
+```
+
 ### 微信公众号的AccessToken与JsTicket
 #### AccessToken
 - 请求方法：POST  
@@ -182,4 +196,11 @@ P.S. 支付的页面需要引入`https://res.wx.qq.com/open/js/jweixin-1.2.0.js`
 #### 支付宝客服消息
 (TODO)
 #### 支付宝模板消息
-(TODO)
+- 请求方法：PUT  
+- 来源限制：与awp同网段的访问（通过请求头的`X-Forwarded-For`与`X-Real-IP`请求头判断，通过nginx反代访问的都会带上）  
+- 接口地址：`http://localhost:8083/msg/zfb/tp`  
+- 请求参数：JSON格式，无需编码，详见`请求体示例`  
+- 响应格式：JSON
+- 响应内容：微信公众号模板消息接口返回的消息
+
+与微信的类似，示例略。
