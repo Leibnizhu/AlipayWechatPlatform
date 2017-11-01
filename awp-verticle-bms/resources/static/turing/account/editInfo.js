@@ -86,10 +86,10 @@ var vm = new Vue({
                             }
                         },
                         error: function (e) {
-                            if (e.respnoseText === "EMPTY_REPEAT_PSWD") {
+                            if (e.responseText === "EMPTY_REPEAT_PSWD") {
                                 vm.password = vm.newPassword = vm.rePassword = "";
                                 swal("错误", "必须重复输入新密码", "error");
-                            } else if (e.respnoseText === "PSWD_NOT_EQUAL") {
+                            } else if (e.responseText === "PSWD_NOT_EQUAL") {
                                 vm.password = vm.newPassword = vm.rePassword = "";
                                 swal("错误", "两次输入新密码不一致", "error");
                             } else {
