@@ -2,7 +2,6 @@ package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.db.AccountDao;
 import com.turingdi.awp.router.EventBusNamespace;
-import com.turingdi.awp.service.AccountService;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -20,12 +19,11 @@ import static com.turingdi.awp.router.EventBusNamespace.ADDR_ACCOUNT_DB;
 @SuppressWarnings("unchecked")
 public class AccountDBVerticle extends AbstractDatabaseAccessVerticle {
     protected Logger log = LoggerFactory.getLogger(getClass());
-    private AccountService accountSrv;
+    private AccountDao accDao;
 
     public AccountDBVerticle() {
         super(ADDR_ACCOUNT_DB);
-        AccountDao accDao = new AccountDao();
-        accountSrv = new AccountService(accDao);
+        accDao = new AccountDao();
     }
 
     @Override
@@ -63,6 +61,8 @@ public class AccountDBVerticle extends AbstractDatabaseAccessVerticle {
             case COMMAND_UPDATE_ALIPAY:
                 updateAlipayPay(replyMsg, params);
                 break;
+            case COMMAND_REGISTER:
+                register(replyMsg, params);
             default:
                 log.error("未能处理的请求方法：{}", method);
         }
@@ -70,37 +70,44 @@ public class AccountDBVerticle extends AbstractDatabaseAccessVerticle {
 
     private void getAccountById(Handler replyMsg, JsonArray params) {
         int eid = params.getInteger(0);
-        accountSrv.getById(eid, replyMsg);
+        accDao.getById(eid, replyMsg);
     }
 
     private void loginByEmail(Handler replyMsg, JsonArray params) {
         String email = params.getString(0);
         String password = params.getString(1);
-        accountSrv.loginByEmail(email, password, replyMsg);
+        accDao.loginByEmail(email, password, replyMsg);
     }
 
     private void loginById(Handler replyMsg, JsonArray params) {
         Long id = params.getLong(0);
         String password = params.getString(1);
-        accountSrv.loginById(id, password, replyMsg);
+        accDao.loginById(id, password, replyMsg);
     }
 
     private void getAllAccount(Handler replyMsg) {
-        accountSrv.getAccountList(replyMsg);
+        accDao.getAccountList(replyMsg);
     }
 
     private void updateNormalInfo(Handler replyMsg, JsonArray params) {
         JsonObject acc = params.getJsonObject(0);
-        accountSrv.update(acc, replyMsg);
+        accDao.updateBase(acc, replyMsg);
     }
 
     private void updateWechatPay(Handler replyMsg, JsonArray params) {
         JsonObject acc = params.getJsonObject(0);
-        accountSrv.updateWxPay(acc, replyMsg);
+        accDao.updateWxPay(acc, replyMsg);
     }
 
     private void updateAlipayPay(Handler replyMsg, JsonArray params) {
         JsonObject acc = params.getJsonObject(0);
-        accountSrv.updateZfbPay(acc, replyMsg);
+        accDao.updateZfbPay(acc, replyMsg);
+    }
+
+    private void register(Handler replyMsg, JsonArray params) {
+        String email = params.getString(0);
+        String password = params.getString(1);
+        String name = params.getString(2);
+        accDao.register(email, password, name, replyMsg);
     }
 }

@@ -2,7 +2,6 @@ package com.turingdi.awp.verticle;
 
 import com.turingdi.awp.db.OrderDao;
 import com.turingdi.awp.router.EventBusNamespace;
-import com.turingdi.awp.service.OrderService;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -20,12 +19,11 @@ import static com.turingdi.awp.router.EventBusNamespace.ADDR_ORDER_DB;
 @SuppressWarnings("unchecked")
 public class OrderDBVerticle extends AbstractDatabaseAccessVerticle {
     protected Logger log = LoggerFactory.getLogger(getClass());
-    private OrderService orderSrv;
+    private OrderDao orderDao;
 
     public OrderDBVerticle() {
         super(ADDR_ORDER_DB);
-        OrderDao orderDao = new OrderDao();
-        orderSrv = new OrderService(orderDao);
+        orderDao = new OrderDao();
     }
 
     @Override
@@ -61,21 +59,21 @@ public class OrderDBVerticle extends AbstractDatabaseAccessVerticle {
 
     private void insertOrder(Handler replyMsg, JsonArray params) {
         JsonObject orderInsert = params.getJsonObject(0);
-        orderSrv.insert(orderInsert, replyMsg);
+        orderDao.insert(orderInsert, replyMsg);
     }
 
     private void getOrderByAlipayOrderId(Handler replyMsg, JsonArray params) {
         String orderId = params.getString(0);
-        orderSrv.getByAlipayOrderId(orderId, replyMsg);
+        orderDao.getByOrderId(orderId, 1, replyMsg);
     }
 
     private void getOrderByWechatOrderId(Handler replyMsg, JsonArray params) {
         String orderId = params.getString(0);
-        orderSrv.getByWechatOrderId(orderId, replyMsg);
+        orderDao.getByOrderId(orderId, 0, replyMsg);
     }
 
     private void updateAfterPaid(Handler replyMsg, JsonArray params) {
         JsonObject orderUpdate = params.getJsonObject(0);
-        orderSrv.updateAfterPaid(orderUpdate, replyMsg);
+        orderDao.updateAfterPaid(orderUpdate, replyMsg);
     }
 }
