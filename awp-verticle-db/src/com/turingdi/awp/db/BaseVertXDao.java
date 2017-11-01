@@ -20,6 +20,8 @@ import java.util.List;
 class BaseVertXDao {
     private static Logger LOG = LoggerFactory.getLogger(BaseVertXDao.class);
     private static ConnectionPoolManager hikariCPM = HikariCPManager.getInstance();
+    protected static String KEYS = "keys";
+    protected static String UPDATED = "updated";
 
     /**
      * 无参数查询
@@ -65,12 +67,12 @@ class BaseVertXDao {
      * @param callback 执行结束的回调方法，内容是影响的数据库行数
      * @author Leibniz.Hu
      */
-    static void update(String sql, JsonArray params, Handler<Integer> callback) {
+    static void update(String sql, JsonArray params, Handler<JsonObject> callback) {
         LOG.debug("准备执行INSERT/UPDATE/DELETE语句: \"{}\", 参数:{}", sql, params);
         hikariCPM.getConnection(conn -> conn.updateWithParams(sql, params, ar -> {
             if (ar.succeeded()) {
-                int updated = ar.result().getUpdated();
-                LOG.debug("影响了{}行记录……", updated);
+                JsonObject updated = ar.result().toJson();
+                LOG.debug("影响了{}行记录，更新返回数据{}……", ar.result().getUpdated(), updated);
                 callback.handle(updated);
             } else {
                 Throwable cause = ar.cause();
