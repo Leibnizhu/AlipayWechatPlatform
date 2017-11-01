@@ -141,6 +141,9 @@
                                 回调地址：<input type="text" style="width: 250px; height: auto" v-model="callback">
                                 <button @click="calOauth">生成授权接口参数</button>
                                 <textarea rows="2" :value="oauth" v-model="oauth"></textarea>
+                                <br/>
+                                <a id="wxOauth">微信授权测试</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a id="zfbOauth">支付宝授权测试</a>
                             </div>
                         </div>
                     </div>
@@ -169,7 +172,7 @@
             curName: localStorage.getItem("name") || "",
             eid: localStorage.getItem("id") || 0,
             type: 1,
-            callback: "http://www.baidu.com",
+            callback: BASE_PATH + "/static/page/sys/oauthdemo.html",
             oauth: undefined
         },
         mounted: function () {
@@ -185,6 +188,8 @@
             calOauth: function(){
                 var json = "{\"eid\":" + this.eid + ",\"type\":" + this.type + ",\"callback\":\"" + this.callback + "\"}";
                 this.oauth = json.tren();
+                $("#wxOauth").prop("href", BASE_PATH + "/oauth/wx/apply/" + this.oauth);
+                $("#zfbOauth").prop("href", BASE_PATH + "/oauth/zfb/apply/" + this.oauth);
             }
         }
     });
