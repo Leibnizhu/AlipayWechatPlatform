@@ -58,7 +58,7 @@ function authAjax(config){
         cache: config.cache,
         dataType: config.dataType || "json",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", "Bearer " + Cookies.get(TOKEN_COOKIE_KEY));
+            xhr.setRequestHeader("Authorization", "Bearer " + (Cookies.get(TOKEN_COOKIE_KEY) || ""));
         },
         error:function(e,b){
             if(e.status === 401){
