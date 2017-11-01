@@ -1,5 +1,6 @@
 package com.tuiringdi.awp.test;
 
+import com.turingdi.awp.util.common.Constants;
 import com.turingdi.awp.util.common.NetworkUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
@@ -16,6 +17,7 @@ public class NetworkUtilTest {
     @Test
     public void asyncPostTest() throws IOException {
         Vertx vertx = Vertx.vertx();
+        Constants.init(vertx.getOrCreateContext());
         NetworkUtils.init();
         System.out.println("===================Test start===================");
         NetworkUtils.asyncPostString("http://breo.turing.asia/gzwx/smartBox/poll", System.out::println);
