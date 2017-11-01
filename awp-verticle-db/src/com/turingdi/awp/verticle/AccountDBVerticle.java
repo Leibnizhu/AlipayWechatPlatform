@@ -44,7 +44,7 @@ public class AccountDBVerticle extends AbstractDatabaseAccessVerticle {
                 getAccountById(replyMsg, params);
                 break;
             case COMMAND_EMAIL_LOGIN:
-                loginByEmail(replyMsg, params);
+                selectByEmail(replyMsg, params);
                 break;
             case COMMAND_ID_LOGIN:
                 loginById(replyMsg, params);
@@ -73,10 +73,9 @@ public class AccountDBVerticle extends AbstractDatabaseAccessVerticle {
         accDao.getById(eid, replyMsg);
     }
 
-    private void loginByEmail(Handler replyMsg, JsonArray params) {
+    private void selectByEmail(Handler replyMsg, JsonArray params) {
         String email = params.getString(0);
-        String password = params.getString(1);
-        accDao.loginByEmail(email, password, replyMsg);
+        accDao.selectByEmail(email, replyMsg);
     }
 
     private void loginById(Handler replyMsg, JsonArray params) {

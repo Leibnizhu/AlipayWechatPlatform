@@ -89,9 +89,9 @@ public class AccountDao extends BaseVertXDao {
     /**
      * 根据Emaile和密码登录
      */
-    public void loginByEmail(String email, String password, Handler<JsonObject> callback) {
-        query("SELECT * FROM awp_account WHERE email = ? and password = ?",
-                new JsonArray().add(email).add(password),
+    public void selectByEmail(String email, Handler<JsonObject> callback) {
+        query("SELECT * FROM awp_account WHERE email = ?",
+                new JsonArray().add(email),
                 result -> callback.handle(result.size() > 0 ? result.get(0) : null));
     }
 

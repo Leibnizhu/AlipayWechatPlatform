@@ -61,14 +61,18 @@ public class LoginSubRouter implements SubRouter {
         String email = req.getParam("username");
         String password = req.getParam("password");
         log.debug("有用户(email={})尝试登录，登录密码MD5={}", email, password);
-        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_EMAIL_LOGIN, email, password),
+        vertx.eventBus().<JsonObject>send(ADDR_ACCOUNT_DB.get(), makeMessage(COMMAND_EMAIL_LOGIN, email),
                 ar -> {
                     if (ar.succeeded()) {
                         JsonObject acc = ar.result().body();
                         JsonObject result = new JsonObject();
                         if (acc == null) {//密码错误或用户不存在
-                            log.warn("用户(email={})登录失败，密码错误或用户不存在", email);
-                            result.put("result", "fail");
+                            log.warn("用户(email={})登录失败，用户不存在", email);
+                            result.put("result", "EMAIL_NO_EXIST");
+                            resp.end(result.toString());
+                        } else if(!password.equals(acc.getString(PASSWORD))){
+                            log.warn("用户(email={})登录失败，密码({})不正确", email, password);
+                            result.put("result", "PASSWORD_ERROR");
                             resp.end(result.toString());
                         } else {
                             //jwt保存

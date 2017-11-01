@@ -1,3 +1,8 @@
+function showTips(msg) {
+    var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>"+msg+"</div>";
+    $('#tips').html(tips);
+}
+
 $().ready(function() {
     // 在键盘按下并释放及提交后验证提交表单
     $("#signUpForm").validate({
@@ -38,10 +43,16 @@ $().ready(function() {
                         localStorage.setItem("id", result.id);
                         localStorage.setItem("email", result.email);
                         window.location.href = "/static/";
+                    } else if(result.result === "EMAIL_NO_EXIST"){
+                        showTips("邮箱"+$('#username').val()+"未注册");
+                    } else if (result.result === "PASSWORD_ERROR"){
+                        showTips("密码错误");
                     } else {
-                        var tips = "<div class=\"alert alert-warning\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a><strong>提示！</strong>用户名或密码错误</div>";
-                        $('#tips').html(tips);
+                        showTips("后台发生错误");
                     }
+                },
+                error: function (e) {
+                    alert("后台发生错误");
                 }
             });
             return false;
