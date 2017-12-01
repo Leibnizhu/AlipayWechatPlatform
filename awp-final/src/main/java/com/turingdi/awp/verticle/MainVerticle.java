@@ -132,7 +132,13 @@ public class MainVerticle extends AbstractVerticle {
      */
     private void startServer() {
         Integer port = config().getInteger("serverPort", 8083);
-        server.requestHandler(mainRouter::accept).listen(port, res -> log.info("监听{}端口的HTTP服务器启动{}", port, res.succeeded()?"成功":"失败"));
+        server.requestHandler(mainRouter::accept).listen(port, res -> {
+            if(res.succeeded()){
+                log.info("监听{}端口的HTTP服务器启动成功", port);
+            } else {
+                log.error("监听{}端口的HTTP服务器失败，原因：{}", port, res.cause().getLocalizedMessage());
+            }
+        });
     }
 
     private static final Pattern WECHAT_VERIFY = Pattern.compile("^MP_verify_(\\w{16})\\.txt$");
