@@ -63,6 +63,7 @@ public class AccountDBVerticle extends AbstractDatabaseAccessVerticle {
                 break;
             case COMMAND_REGISTER:
                 register(replyMsg, params);
+                break;
             default:
                 log.error("未能处理的请求方法：{}", method);
         }
