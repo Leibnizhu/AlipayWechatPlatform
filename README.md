@@ -34,6 +34,12 @@
 - `awp-verticle-pay`: 微信、支付宝支付服务(TODO)
 
 ## 启动方式
+### 增加支付宝Maven依赖
+进入项目目录，执行以下命令：
+```bash
+mvn install:install-file -Dfile=dependencies/com.alipay.api-1.0.jar -DgroupId=com.alipay -DartifactId=api -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=dependencies/com.antgroup.zmxy.openplatform-1.0.jar -DgroupId=com.antgroup -DartifactId=zmxy.openplatform -Dversion=1.0 -Dpackaging=jar
+```
 ### 配置文件
 可以放在任何位置，任何文件名，内容参考`awp-final/src/main/resources/config.json`。  
 
