@@ -1,4 +1,9 @@
 var curEid = -1;
+authAjax({
+    type: "GET",  //提交方式
+    url: "/bms/offAcc/all",
+    dataType: "json"
+});
 var vm = new Vue({
     el: "#all",
     data: {
