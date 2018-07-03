@@ -15,6 +15,9 @@ public class MainLauncher extends Launcher{
         DefaultChannelId.newInstance();
         System.setProperty("vertx.logger-delegate-factory-class-name",
                 "io.vertx.core.logging.SLF4JLogDelegateFactory");
-        new Launcher().dispatch(args);
+        String[] finalArgs = new String[3 + args.length];
+        System.arraycopy(new String[]{"run", "com.turingdi.awp.verticle.MainVerticle", "-conf"}, 0, finalArgs, 0, 3);
+        System.arraycopy(args, 0, finalArgs, 3, args.length);
+        new Launcher().dispatch(finalArgs);
     }
 }
