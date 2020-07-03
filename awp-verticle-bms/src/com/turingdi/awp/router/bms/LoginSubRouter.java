@@ -7,7 +7,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.auth.jwt.JWTOptions;
+import io.vertx.ext.jwt.JWTOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import static com.turingdi.awp.router.EventBusNamespace.*;
  */
 public class LoginSubRouter implements SubRouter {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private static final JWTOptions JWT_OPTIONS = new JWTOptions().setExpiresInMinutes(60 * 4L);//4小时有效
+    private static final JWTOptions JWT_OPTIONS = new JWTOptions().setExpiresInMinutes(60 * 4);//4小时有效
     private Vertx vertx = Constants.vertx();
     private Router loginRouter;
     private JWTAuth provider;
