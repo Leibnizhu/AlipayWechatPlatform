@@ -48,6 +48,11 @@ mvn install:install-file -Dfile=dependencies/com.antgroup.zmxy.openplatform-1.0.
 mvn clean package
 java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar [/path/to/配置文件]
 ```
+注: `awp-final`编译时会调用Docker的Remote API(2375端口)进行push等操作，在MacOS下的Docker Desktop没有开启，可以通过以下命令开启:
+```bash
+brew install socat
+socat -d TCP-LISTEN:2375,range=127.0.0.1/32,reuseaddr,fork UNIX:/var/run/docker.sock
+```
 
 ### 调试
 从`awp-final`子模块中的`com.turingdi.awp.MainLauncher`类启动项目即可，启动参数参考命令行启动的命令（从`run`开始）。
