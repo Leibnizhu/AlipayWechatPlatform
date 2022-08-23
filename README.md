@@ -45,7 +45,7 @@ mvn install:install-file -Dfile=dependencies/com.antgroup.zmxy.openplatform-1.0.
 
 ### 命令行启动
 ```bash
-mvn clean && maven package
+mvn clean package
 java -jar awp-final/target/awp-0.0.1-SNAPSHOT-fat.jar [/path/to/配置文件]
 ```
 
